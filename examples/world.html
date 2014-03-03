@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>D3 SVG Geographic Map</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="platform-0.2.0.js"></script>
+	<script src="polymer-0.2.0.js"></script>
+	<link rel="import" href="../src/d3-datamaps.html">
+  </head>
+  <body unresolved>
+  
+	<template id="example" bind>
+	  <d3-datamaps width="1000" selected="{{selected}}" hover="{{hover}}"></d3-datamaps>
+	</template>
+
+	<p />
+
+	<input type="button" onclick="model.selected = []" value="Clear">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#23819C" value="NATO Countries" data="nato">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#06DCFB" value="USAN Countries" data="usan">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#01F33E" value="EU Countries" data="eu">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#B6BA18" value="AU Countries" data="au">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#FF800D" value="Middle East Countries" data="me">
+	
+	<input type="button" onclick="changeCountries(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
+
+	<input type="button" onclick="changeCountries(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
+
+	<p />
+	
+	<template id="info" bind>
+		User Hover: <strong>{{hover.id}}</strong> - {{hover.properties.name}}
+	</template>
+	
+<script>
+	var nato = [
+		'ALB','BEL','BGR','CAN','HRV','CZE','DNK',
+		'EST','FRA','DEU','GRC','HUN','ISL','ITA',
+		'LVA','LTU','LUX','NLD','NOR','POL','PRT',
+		'ROU','SVK','SVN','ESP','TUR','GBR','USA'
+	];
+
+	var eu = [
+		'AUT','BEL','BGR','HRV','CYP','CZE','DNK',
+		'EST','FIN','FRA','DEU','GRC','HUN','IRL',
+		'ITA','LVA','LTU','LUX','MLT','NLD','POL',
+		'PRT','ROU','SVK','SVN','ESP','SWE','GBR'
+	];
+
+	var g8 = [
+		'CAN','FRA','DEU','ITA','JPN','RUS','GBR','USA'
+	];
+
+	var g20 = [
+		'ARG','AUS','BRA','CAN','CHN',
+		'FRA','DEU','IND','IDN','ITA',
+		'JPN','MEX','RUS','SAU','ZAF',
+		'KOR','TUR','GBR','USA',
+		'AUT','BEL','BGR','HRV','CYP','CZE','DNK',
+		'EST','FIN','FRA','DEU','GRC','HUN','IRL',
+		'ITA','LVA','LTU','LUX','MLT','NLD','POL',
+		'PRT','ROU','SVK','SVN','ESP','SWE','GBR'
+	];
+
+	var asean = [
+		'BRU','KHM','IDN','LAO','MYS','MMR',
+		'PHL','SGP','THA','VNM','TLS','PNG'
+	];
+
+	// -99 Western Sahara, correct is ESH
+	// SDS south sudan, correct is SSD
+	var au = [
+		'DZA','AGO','BEN','BWA','BFA','BDI','CPV',
+		'CMR','CAF','TCD','COM','COD','CIV','COG',
+		'DJI','EGY','GNQ','ERI','ETH','GAB','GMB',
+		'GHA','GIN','GNB','KEN','LSO','LBR','LBY',
+		'MDG','MWI','MLI','MRT','MUS','MOZ','NAM',
+		'NER','NGA','RWA','ESH','STP','SEN','SYC',
+		'SLE','SOM','ZAF','SSD','SDN','SWZ','TZA',
+		'TGO','TUN','UGA','ZMB','ZWE'
+	];
+
+	var usan = [
+		'ARG','BOL','BRA','CHL','COL','ECU','GUY',
+		'PRY','PER','SUR','URY','VEN','MEX','PAN'
+	];
+
+	var me = [
+		'BHR','CYP','EGY','IRN','IRQ','ISR','JOR',
+		'KWT','LBN','OMN','PSE','QAT','SAU','SYR',
+		'TUR','ARE','YEM'
+	];
+
+	var model = {
+		selected: []
+	}
+	
+	function createFill(arr, fill){
+		var r = [];
+		for(var i=0;i<arr.length;i++){
+			r.push({ id: arr[i], fill: fill });
+		}
+		return r;
+	}
+	
+	function changeCountries(b){
+		var arr = window[b.getAttribute('data')];
+		var fill = b.style.backgroundColor;
+		var s = createFill(arr,fill);
+		model.selected = s;
+	}
+	
+	window.addEventListener('polymer-ready', function(){
+		document.getElementById('example').model = model;
+		document.getElementById('info').model = model;
+	});
+</script>
+
+  </body>
+</html>

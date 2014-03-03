@@ -1,0 +1,30 @@
+{
+  "name": "d3-datamaps",
+  "version": "0.0.1",
+  "homepage": "https://github.com/stevenrskelton/d3-datamaps",
+  "description": "Polymer Web Component for geographic topology visualization",
+  "main": "src/d3-datamaps.html",
+  "authors": [
+    "Steven Skelton"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "datamaps",
+    "geography",
+    "countries",
+    "world",
+    "map"
+  ],
+  "dependencies": {
+    "polymer": "0.2.0"
+  }
+}
