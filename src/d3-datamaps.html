@@ -4,87 +4,87 @@
 
 <script src="js/d3/d3.v3.min.js"></script>
 <script src="js/topojson/topojson.v1.min.js"></script>
-<script src="js/datamaps/datamaps.all.js"></script>
+<script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="width selected hover">
+<polymer-element name="d3-datamaps" attributes="selected hover clicked">
   <template>
     <style>
       #container {
 		position:relative;
-		border: 1px solid #DDDDDD;
-		border-radius: 10px;
 		background-color: #56A5EC;
       }
     </style>
-    <div id="container" style="width:{{width}}px;height:{{width*0.5}}px;cursor:crosshair;"></div>
+    <div id="container" style="cursor:crosshair;"></div>
   </template>
   <script>
 	//https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started
+	Polymer('d3-datamaps', {
+		map: null,
+		width: 425,
+		hover: null,
+		attached: function(){
+			var self = this;
+			this.$.container.style.height = (this.$.container.scrollWidth*0.5) + 'px';
+			this.map = new Datamap({element: this.$.container,
+			fills: {
+				defaultFill: '#ABDDA4'
+			},
+			data: {},
+			geographyConfig: {
+				dataUrl: '../src/js/datamaps/world.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
+				hideAntarctica: false,
+				borderWidth: 1,
+				borderColor: '#99C68E',
+				popupTemplate: function(geography, data) { //this function should just return a string
+					if(!self.hover || self.hover.id != geography.id) self.hover = geography;
+					//if(c.indexOf(geography.id)>-1){
+					return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong></div>';
+					//}else{
+					//  return '';
+					//}
+				},
+				popupOffHover: function(){
+					self.hover = null;
+				},
+				userClick: function(geography){
+					self.fire('clicked', geography);
+				},
+				popupOnHover: true, //disable the popup while hovering
+				highlightOnHover: true,
+				highlightFillColor: '#F0F033',
+				highlightBorderColor: '#DDDD33',
+				highlightBorderWidth: 1
+			}
+			});
+		},
+		selectedChanged: function(oldVal, newVal) {
+			var cleared = { color: '#ABDDA4' };
+			var selectedToFill = {};
 
-    Polymer('d3-datamaps', {
-      map: null,
-      width: 425,
-      hover: null,
-      attached: function(){
-		var self = this;
-		this.map = new Datamap({element: this.$.container,
-		  fills: {
-			  MEDIUM: '#FBB917',
-			  defaultFill: '#ABDDA4'
-		  },
-		  data: {},
-		  geographyConfig: {
-			  //dataUrl: '../src/js/datamaps/world.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
-			  hideAntarctica: false,
-			  borderWidth: 1,
-			  borderColor: '#99C68E',
-			  popupTemplate: function(geography, data) { //this function should just return a string
-				if(!self.hover || self.hover.id != geography.id) self.hover = geography;
-				//if(c.indexOf(geography.id)>-1){
-				  return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong></div>';
-				//}else{
-				//  return '';
-				//}
-			  },
-			  popupOnHover: true, //disable the popup while hovering
-			  highlightOnHover: true,
-			  highlightFillColor: '#F0F033',
-			  highlightBorderColor: '#DDDD33',
-			  highlightBorderWidth: 1
-		  }
-		});
-      },
-      selectedChanged: function(oldVal, newVal) {
-		var filled = { fillKey: 'MEDIUM' };
-		var cleared = { fillKey: 'defaultFill' };
-		var selectedToFill = {};
-
-		//clear old
-		var c = oldVal;
-		if(c){
-			for(i = 0; i < c.length;i++){
-				if(c[i].id){
-					selectedToFill[c[i].id] = cleared;
-				}else{
-					selectedToFill[c[i]] = cleared;
+			//clear old
+			if(oldVal){
+				for (var key in oldVal) {
+					if (oldVal.hasOwnProperty(key)) {
+						selectedToFill[key] = cleared;
+					}
 				}
 			}
-		}
 
-		//fill new
-		var c = newVal;
-		if(c){
-			for(i = 0; i < c.length;i++){
-				if(c[i].id){
-					selectedToFill[c[i].id] = c[i].fill;
-				}else{
-					selectedToFill[c[i]] = filled;
+			//fill new
+			if(newVal){
+				for (var key in newVal) {
+					if (newVal.hasOwnProperty(key)) {
+						if(typeof newVal[key] === 'string'){
+							selectedToFill[key] = { color: newVal[key] };
+						}else{
+							selectedToFill[key] = newVal[key];
+						}
+					}
 				}
 			}
-		}
 
-		if(this.map) this.map.updateChoropleth(selectedToFill);
-      }
-    });
+			if(this.map) this.map.updateChoropleth(selectedToFill);
+		}
+	});
   </script>    
 </polymer-element>

@@ -6,9 +6,9 @@ Polymer Web Component for geographic topology visualization.
 This is a web component wrapper to another SVG map visualization library [DataMaps](http://datamaps.github.io/) by Mark DiMarco.
 It uses the popular [D3 Data-Driven Documents](http://d3js.org/) to handle low level HTML and SVG rendering.
 
-Features will mirror the DataMaps features, however the format for interaction will be adjusted to follow the web component paradigm. 
-This means significant simplifications will be made to improve the usability for the majority of users.  Advanced use cases may find 
-the web component encapsulation too restrictive, and it may be necessary for them to interact with the DataMaps library directly.
+Features will mirror DataMaps features, however the format for interaction will be adjusted to follow the web component paradigm. 
+This means significant simplifications will be made to provide an improved usability for the majority of users.  Advanced use cases may find 
+a web component encapsulation too restrictive, and those uses are outside the scope of this project.
 
 Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
@@ -39,17 +39,26 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Options
 
-Attribute			| Options		| Default		| Description
+Attribute			| Type			| Default		| Description
 ---					| ---			| ---			| ---
-`selected`	 		| *array*		| `[]`			| ISO 3166-1 alpha-3 country codes of selected countries
+`selected`	 		| *object*		| `null`		| keys are region id, values are either a CSS color, or a __region element__
 `hover`				| *object*		| `null`		| Region hovered over by user pointer
-`width`				| *int*			| 425			| Size in pixels to make map.  Height is automatically calculated.
+
+Event				| Value			| Description
+---					| ---			| ---
+`clicked`			| *object*		| Region clicked by user
+
+## Region Elements
+
+Regions are JSON objects describing sections of the topology, and they must be uniquely keyed.
+For the world map the key is the ISO 3166-1 alpha-3 country code.
+They can have arbitrary properties, but there are a few special properties reserved for internal use.
+`color` is used to describe the background color, and it is a standard CSS color.
 
 ## Todo
 
-- make API more usable
 - fix bugs
-- expose more functionality
+- expose more DataMaps functionality
 - D3 and DataMaps dependencies using bower
 - different maps (USA, etc)
 - __Internet Explorer is completely broken__

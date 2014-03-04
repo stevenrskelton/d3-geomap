@@ -12,35 +12,31 @@
   <body unresolved>
   
 	<template id="example" bind>
-	  <d3-datamaps width="1000" selected="{{selected}}" hover="{{hover}}"></d3-datamaps>
+		<d3-datamaps style="width:1000px;display:block;margin:0 auto;" selected="{{selected}}" hover="{{hover}}"></d3-datamaps>
 	</template>
 
 	<p />
 
-	<input type="button" onclick="model.selected = []" value="Clear">
+	<div style="text-align:center">
+		<input type="button" onclick="model.selected = null" value="Clear">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#23819C" value="NATO Countries" data="nato">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#06DCFB" value="USAN Countries" data="usan">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#01F33E" value="EU Countries" data="eu">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#B6BA18" value="AU Countries" data="au">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#FF800D" value="Middle East Countries" data="me">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
+		<input type="button" onclick="changeCountries(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
+		<br />
+		<template id="info" bind if="{{hover.id}}">
+			User Hover: <strong>{{hover.id}}</strong> - {{hover.properties.name}}
+		</template>
+		<br/>
+		<template id="clicks" bind if="{{id}}">
+			User Click: <strong>{{id}}</strong> - {{properties.name}}
+		</template>
+	</div>
 
-	<input type="button" onclick="changeCountries(this)" style="background-color:#23819C" value="NATO Countries" data="nato">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#06DCFB" value="USAN Countries" data="usan">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#01F33E" value="EU Countries" data="eu">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#B6BA18" value="AU Countries" data="au">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#FF800D" value="Middle East Countries" data="me">
-	
-	<input type="button" onclick="changeCountries(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
-
-	<input type="button" onclick="changeCountries(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
-
-	<p />
-	
-	<template id="info" bind>
-		User Hover: <strong>{{hover.id}}</strong> - {{hover.properties.name}}
-	</template>
-	
 <script>
 	var nato = [
 		'ALB','BEL','BGR','CAN','HRV','CZE','DNK',
@@ -78,6 +74,7 @@
 
 	// -99 Western Sahara, correct is ESH
 	// SDS south sudan, correct is SSD
+	// -99 Somaliland, correct is duplicate of SOM
 	var au = [
 		'DZA','AGO','BEN','BWA','BFA','BDI','CPV',
 		'CMR','CAF','TCD','COM','COD','CIV','COG',
@@ -94,6 +91,7 @@
 		'PRY','PER','SUR','URY','VEN','MEX','PAN'
 	];
 
+	// -99 Northern Cyprus, correct is ??
 	var me = [
 		'BHR','CYP','EGY','IRN','IRQ','ISR','JOR',
 		'KWT','LBN','OMN','PSE','QAT','SAU','SYR',
@@ -101,27 +99,35 @@
 	];
 
 	var model = {
-		selected: []
-	}
-	
-	function createFill(arr, fill){
-		var r = [];
-		for(var i=0;i<arr.length;i++){
-			r.push({ id: arr[i], fill: fill });
-		}
-		return r;
+		selected: {}
 	}
 	
 	function changeCountries(b){
 		var arr = window[b.getAttribute('data')];
 		var fill = b.style.backgroundColor;
-		var s = createFill(arr,fill);
+
+		function arrayToMap(arr, fill){
+			var r = [];
+			for(var i=0;i<arr.length;i++){
+				r[arr[i]] = fill;
+			}
+			return r;
+		}
+
+		var s = arrayToMap(arr,fill);
 		model.selected = s;
 	}
 	
 	window.addEventListener('polymer-ready', function(){
 		document.getElementById('example').model = model;
 		document.getElementById('info').model = model;
+
+		document.addEventListener('clicked', function(e) {
+			document.getElementById('clicks').model = e.detail;
+			setTimeout(function(){
+				document.getElementById('clicks').model = null;
+			},1000);
+		});
 	});
 </script>
 
