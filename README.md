@@ -77,7 +77,7 @@ Attribute				| Type		| Default					| Description
 `highlightFillColor`	| *color*	| #FC8D59					| Fill for selected/highlighted regions
 `highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for selected/highlighted regions
 `highlightBorderWidth`	| *int*		| 2							| Border width (px) for selected/highlighted regions
-`cursor`				| *(cursor)[http://www.w3.org/wiki/CSS/Properties/cursor]*	| pointer	| Border width (px) for selected/highlighted regions
+`cursor`				| *cursor*	| pointer					| See (W3C Spec)[http://www.w3.org/wiki/CSS/Properties/cursor]
 
 ## Todo
 
