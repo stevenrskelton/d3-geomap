@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>D3 SVG Geographic Map</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="platform-0.2.0.js"></script>
+	<script src="polymer-0.2.0.js"></script>
+	<link rel="import" href="../src/d3-datamaps.html">
+  </head>
+  <body unresolved>
+
+	<h2>USA Map</h2>
+	United States of America state map with dynamic region colouring, highlighting, ,user hover and click events, and custom data.
+
+	<p />
+  
+	<template id="example" bind>
+		<d3-datamaps style="width:1000px;display:block;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" data="{{data}}" map="usa"></d3-datamaps>
+	</template>
+
+	<p />
+
+	<div style="text-align:center">
+		<input type="button" onclick="model.selected = null" value="Clear">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#23819C" value="1787-1788" data="s1">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#06DCFB" value="1789-1803" data="s2">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#01F33E" value="1812-1821" data="s3">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#B6BA18" value="1836-1850" data="s4">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#FF800D" value="1858-1867" data="s5">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#B96F6F" value="1876-1890" data="s6">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#4A9586" value="1896-1912" data="s7">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#5EAE9E" value="1959" data="s8">
+		<br />
+		<template id="info" bind if="{{hover}}">
+			User Hover: <strong>{{hover.geography.id}}</strong> - {{hover.geography.properties.name}}, {{hover.data.statehood}} ({{hover.data.preceding}})
+		</template>
+		<br/>
+		<template id="clicks" bind if="{{geography}}">
+			User Click: <strong>{{geography.id}}</strong> - {{geography.properties.name}}, {{data.statehood}} ({{data.preceding}})
+		</template>
+	</div>
+
+<script>
+	var data = {
+		DE: { statehood : 'December 7, 1787', preceding: 'Lower Counties on Delaware, i.e., the lower counties of Pennsylvania, then a sovereign State in Confederation' },
+		PA: { statehood : 'December 12, 1787', preceding: 'Province of Pennsylvania, then sovereign state in Confederation.' },
+		NJ: { statehood : 'December 18, 1787', preceding: 'Province of New Jersey, then sovereign state in Confederation' },
+		GA: { statehood : 'January 2, 1788', preceding: 'Province of Georgia, then sovereign state in Confederation' },
+		CT: { statehood : 'January 9, 1788', preceding: 'Connecticut Colony, then sovereign state in Confederation' },
+		MA: { statehood : 'February 6, 1788', preceding: 'Province of Massachusetts Bay, then sovereign state in Confederation' },
+		MD: { statehood : 'April 28, 1788', preceding: 'Province of Maryland, then sovereign state in Confederation' },
+		SC: { statehood : 'May 23, 1788', preceding: 'Province of South Carolina, then sovereign state in Confederation' },
+		NH: { statehood : 'June 21, 1788', preceding: 'Province of New Hampshire, then sovereign state in Confederation' },
+		VA: { statehood : 'June 25, 1788', preceding: 'Virginia Colony, then sovereign state in Confederation' },
+		NY: { statehood : 'July 26, 1788', preceding: 'Province of New York, then sovereign state in Confederation' },
+		NC: { statehood : 'November 21, 1789', preceding: 'Province of North Carolina, then sovereign state in Confederation' },
+		RI: { statehood : 'May 29, 1790', preceding: 'Colony of Rhode Island and Providence Plantations, then sovereign state in Confederation' },
+		VT: { statehood : 'March 4, 1791', preceding: 'Province of New York and New Hampshire Grants (ownership disputed), the Republic of Vermont' },
+		KY: { statehood : 'June 1, 1792', preceding: 'Kentucky County, Virginia. Split off with consent of that state\'s legislature.' },
+		TN: { statehood : 'June 1, 1796', preceding: 'Formed from western land donated to the Federal government by North Carolina, and first state to originate from a territory' },
+		OH: { statehood : 'March 1, 1803', preceding: 'The Northwest Territory, land claims ceeded to the Federal government by the Eastern states such as Pennsylvania, Virginia, Massachusetts, Connecticut, and New York' },
+		LA: { statehood : 'April 30, 1812', preceding: 'Territory of Orleans' },
+		IN: { statehood : 'December 11, 1816', preceding: 'Indiana Territory, formed from the Northwest Territory' },
+		MS: { statehood : 'December 10, 1817', preceding: 'Mississippi Territory, formed from land ceded to the Federal government by Georgia' },
+		IL: { statehood : 'December 3, 1818', preceding: 'Illinois Territory, formed from the Northwest Territory' },
+		AL: { statehood : 'December 14, 1819', preceding: 'Alabama Territory, formed from the Mississippi Territory, land ceded to the Federal government by the State of Georgia' },
+		ME: { statehood : 'March 15, 1820', preceding: 'Split off from Massachusetts with consent of the legislature that state (formerly called the District of Maine)' },
+		MO: { statehood : 'August 10, 1821', preceding: 'Missouri Territory, from the Louisiana Purchase' },
+		AR: { statehood : 'June 15, 1836', preceding: 'Arkansas Territory from the Louisiana Purchase' },
+		MI: { statehood : 'January 26, 1837', preceding: 'Michigan Territory, formed from the Northwest Territory' },
+		FL: { statehood : 'March 3, 1845', preceding: 'Florida Territory, purchased from the Spanish Empire' },
+		TX: { statehood : 'December 29, 1845', preceding: 'The Republic of Texas, which voluntarily merged into the United States' },
+		IA: { statehood : 'December 28, 1846', preceding: 'Iowa Territory from the Louisiana Purchase' },
+		WI: { statehood : 'May 29, 1848', preceding: 'Wisconsin Territory, formed from the Northwest Territory' },
+		CA: { statehood : 'September 9, 1850', preceding: 'Admitted directly from the Mexican Cession' },
+		MN: { statehood : 'May 11, 1858', preceding: 'Minnesota Territory' },
+		OR: { statehood : 'February 14, 1859', preceding: 'Oregon Territory' },
+		KS: { statehood : 'January 29, 1861', preceding: 'Kansas Territory' },
+		WV: { statehood : 'June 20, 1863', preceding: 'Divided off from Virginia, with the "consent" of a pro-Union Virginia government in Wheeling unrecognized by that state\'s rebelling legislature in Richmond' },
+		MV: { statehood : 'October 31, 1864', preceding: 'Nevada Territory, with some adjacent parts of the Arizona Territory and the partially from the Deseret Territory added later on' },
+		NE: { statehood : 'March 1, 1867', preceding: 'Nebraska Territory' },
+		CO: { statehood : 'August 1, 1876', preceding: 'Colorado Territory created from portions of the Kansas, Nebraska, New Mexico, and Utah territories.' },
+		ND: { statehood : 'November 2, 1889', preceding: 'Dakota Territory' },
+		SD: { statehood : 'November 2, 1889', preceding: 'Dakota Territory' },
+		MT: { statehood : 'November 8, 1889', preceding: 'Montana Territory, partially from the Deseret Territory' },
+		WA: { statehood : 'November 11, 1889', preceding: 'Washington Territory, formed from the Oregon Territory' },
+		ID: { statehood : 'July 3, 1890', preceding: 'Idaho Territory (1863), formed from the Deseret Territory' },
+		WY: { statehood : 'July 10, 1890', preceding: 'Wyoming Territory, partially from the Deseret Territory' },
+		UT: { statehood : 'January 4, 1896', preceding: 'Utah Territory, from the Deseret Territory' },
+		OK: { statehood : 'November 16, 1907', preceding: 'Oklahoma Territory and Indian Territory' },
+		NM: { statehood : 'January 6, 1912', preceding: 'New Mexico Territory' },
+		AZ: { statehood : 'February 14, 1912', preceding: 'Arizona Territory' },
+		AK: { statehood : 'January 3, 1959', preceding: 'Russian America, Department of Alaska, District of Alaska, and then the Territory of Alaska' },
+		HI: { statehood : 'August 21, 1959', preceding: 'The Kingdom of Hawaii, the Republic of Hawaii, and then the Territory of Hawaii' }
+	};
+
+	var s1 = [
+		'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY'
+	];
+
+	var s2 = [
+		'NC','RI','VT','KY','TN','OH'
+	];
+
+	var s3 = [
+		'LA','IN','MS','IL','AL','ME','MO'
+	];
+
+	var s4 = [
+		'AR','MI','FL','TX','IA','WI','CA'
+	];
+
+	var s5 = [
+		'MN','OR','KS','WV','NV','NE'
+	];
+
+	var s6 = [
+		'CO','ND','SD','MT','WA','ID','WY'
+	];
+
+	var s7 = [
+		'UT','OK','NM','AZ'
+	];
+
+	var s8 = [
+		'AK','HI'
+	];
+
+	function changeSelection(b){
+		var arr = window[b.getAttribute('data')];
+		var fill = b.style.backgroundColor;
+
+		function arrayToMap(arr, fill){
+			var r = [];
+			for(var i=0;i<arr.length;i++){
+				r[arr[i]] = fill;
+			}
+			return r;
+		}
+
+		var s = arrayToMap(arr,fill);
+		model.selected = s;
+	}
+
+	var model = {
+		data: data,
+		selected: null
+	}
+
+	window.addEventListener('polymer-ready', function(){
+		document.getElementById('example').model = model;
+		document.getElementById('info').model = model;
+
+		document.addEventListener('clicked', function(e) {
+			document.getElementById('clicks').model = e.detail;
+			setTimeout(function(){
+				document.getElementById('clicks').model = null;
+			},1000);
+		});
+	});
+</script>
+
+  </body>
+</html>

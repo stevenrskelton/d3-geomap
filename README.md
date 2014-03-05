@@ -14,7 +14,9 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Live Demos
  
-> [World Map](http://files.stevenskelton.ca/d3-datamaps/examples/world.html)
+> [World Countries Map](http://files.stevenskelton.ca/d3-datamaps/examples/world.html)
+
+> [USA State Map](http://files.stevenskelton.ca/d3-datamaps/examples/usa.html)
 
 ## Usage
 
@@ -43,6 +45,8 @@ Attribute			| Type			| Default		| Description
 ---					| ---			| ---			| ---
 `selected`	 		| *object*		| `null`		| keys are region id, values are either a CSS color, or a __region element__
 `hover`				| *object*		| `null`		| Region hovered over by user pointer
+`data`				| *object*		| `null`		| keys are region id, values are arbitrary data to be associated with region
+`map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
 
 Event				| Value			| Description
 ---					| ---			| ---
@@ -51,7 +55,7 @@ Event				| Value			| Description
 ## Region Elements
 
 Regions are JSON objects describing sections of the topology, and they must be uniquely keyed.
-For the world map the key is the ISO 3166-1 alpha-3 country code.
+For the world map the key is the [ISO 3166-1 alpha-3](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) country code.
 They can have arbitrary properties, but there are a few special properties reserved for internal use.
 `color` is used to describe the background color, and it is a standard CSS color.
 

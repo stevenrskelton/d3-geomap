@@ -10,7 +10,12 @@
 	<link rel="import" href="../src/d3-datamaps.html">
   </head>
   <body unresolved>
-  
+
+	<h2>World Map</h2>
+	World countries map with dynamic region colouring, highlighting, and user hover and click events.
+
+	<p />
+
 	<template id="example" bind>
 		<d3-datamaps style="width:1000px;display:block;margin:0 auto;" selected="{{selected}}" hover="{{hover}}"></d3-datamaps>
 	</template>
@@ -19,21 +24,21 @@
 
 	<div style="text-align:center">
 		<input type="button" onclick="model.selected = null" value="Clear">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#23819C" value="NATO Countries" data="nato">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#06DCFB" value="USAN Countries" data="usan">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#01F33E" value="EU Countries" data="eu">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#B6BA18" value="AU Countries" data="au">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#FF800D" value="Middle East Countries" data="me">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
-		<input type="button" onclick="changeCountries(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#23819C" value="NATO Countries" data="nato">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#06DCFB" value="USAN Countries" data="usan">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#01F33E" value="EU Countries" data="eu">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#B6BA18" value="AU Countries" data="au">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#FF800D" value="Middle East Countries" data="me">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
+		<input type="button" onclick="changeSelection(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
 		<br />
-		<template id="info" bind if="{{hover.id}}">
-			User Hover: <strong>{{hover.id}}</strong> - {{hover.properties.name}}
+		<template id="info" bind if="{{hover}}">
+			User Hover: <strong>{{hover.geography.id}}</strong> - {{hover.geography.properties.name}}
 		</template>
 		<br/>
-		<template id="clicks" bind if="{{id}}">
-			User Click: <strong>{{id}}</strong> - {{properties.name}}
+		<template id="clicks" bind if="{{geography}}">
+			User Click: <strong>{{geography.id}}</strong> - {{geography.properties.name}}
 		</template>
 	</div>
 
@@ -98,11 +103,7 @@
 		'TUR','ARE','YEM'
 	];
 
-	var model = {
-		selected: {}
-	}
-	
-	function changeCountries(b){
+	function changeSelection(b){
 		var arr = window[b.getAttribute('data')];
 		var fill = b.style.backgroundColor;
 
@@ -117,7 +118,11 @@
 		var s = arrayToMap(arr,fill);
 		model.selected = s;
 	}
-	
+
+	var model = {
+		selected: null
+	}
+
 	window.addEventListener('polymer-ready', function(){
 		document.getElementById('example').model = model;
 		document.getElementById('info').model = model;

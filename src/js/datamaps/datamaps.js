@@ -164,13 +164,6 @@
             self.updatePopup($this, d, options, svg);
           }
         })
-		.on('click',function(){
-			//ADDED click
-			if(options.userClick){
-				var $this = d3.select(this);
-				options.userClick($this[0][0].__data__);
-			}
-		})
         .on('mouseout', function() {
           var $this = d3.select(this);
 
@@ -183,9 +176,9 @@
           }
           $this.on('mousemove', null);
           //FIXED: d3.selectAll('.datamaps-hoverover').style('display', 'none');
-		  self.options.element.querySelector('.datamaps-hoverover').style.display = 'none';
-		  //ADDED
-		  if(options.popupOffHover) options.popupOffHover();
+          self.options.element.querySelector('.datamaps-hoverover').style.display = 'none';
+          //ADDED
+          if(options.popupOffHover) options.popupOffHover();
         });
     }
     
