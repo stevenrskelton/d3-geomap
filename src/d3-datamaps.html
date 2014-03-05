@@ -6,38 +6,81 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map">
+<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme">
   <template>
-    <style>
-      #container {
-		position:relative;
-		background-color: #56A5EC;
-      }
-    </style>
-    <div id="container" style="cursor:crosshair;"></div>
+	<style>
+		:host { display: block; }
+	</style>
+    <div id="container" style="vertical-align:top;position:relative;"></div>
   </template>
   <script>
 	//https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started
+	var defaultTheme = {
+		defaultFill: '#ABDDA4',
+		backgroundColor: '#56A5EC',
+		borderWidth: 1,
+		borderColor: '#FDFDFD',
+		highlightFillColor: '#FC8D59',
+		highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
+		highlightBorderWidth: 2,
+		cursor: 'pointer'
+	};
+	
 	Polymer('d3-datamaps', {
 		d3map: null,
-		width: 425,
 		hover: null,
-		map: 'world',
 		data: null,
+		map: 'world',
+		theme: {
+			defaultFill: defaultTheme.defaultFill,
+			backgroundColor: defaultTheme.backgroundColor,
+			borderWidth: defaultTheme.borderWidth,
+            borderColor: defaultTheme.borderColor,
+            highlightFillColor: defaultTheme.highlightFullColor,
+            highlightBorderColor: defaultTheme.highlightBorderColor,
+            highlightBorderWidth: defaultTheme.highlighBorderWidth,
+			cursor: defaultTheme.cursor
+		},
+		themeChanged: function(){
+			//fill in defaults
+			for (var key in defaultTheme) {
+				if (defaultTheme.hasOwnProperty(key) && !this.theme.hasOwnProperty(key)) {
+					this.theme[key] = defaultTheme[key];
+				}
+			}
+		},
+		ready: function(){
+		console.log('clientwidth: ' + this.clientWidth);
+		console.log('scrollwidth: ' + this.scrollWidth);
+		},
 		attached: function(){
 			var self = this;
-			this.$.container.style.height = (this.$.container.scrollWidth*0.5) + 'px';
+			
+			//fill parent element
+			if(this.clientWidth>0){
+				var height = this.clientHeight;
+				if(height < 64){
+					if(self.map=='world') height = this.clientWidth * 0.47;
+					else if(self.map=='usa') height = this.clientWidth * 0.47;
+				}
+				this.$.container.style.height = height + 'px';
+			}
+			
+			//theme
+			this.$.container.style.backgroundColor = this.theme.backgroundColor;
+			this.$.container.style.cursor = this.theme.cursor;
+			
 			this.d3map = new Datamap({element: this.$.container,
 				scope: self.map,
 				fills: {
-					defaultFill: '#ABDDA4'
+					defaultFill: self.theme.defaultFill
 				},
 				data: self.data || {},
 				geographyConfig: {
 					dataUrl: '../src/js/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
-					//hideAntarctica: false,
-					borderWidth: 1,
-					borderColor: '#99C68E',
+					hideAntarctica: false,
+					borderWidth: self.theme.borderWidth,
+					borderColor: self.theme.borderColor,
 					popupTemplate: function(geography, data) { //this function should just return a string
 						if(!self.hover || self.hover.geography.id != geography.id) self.hover = { geography: geography, data: data };
 						//if(c.indexOf(geography.id)>-1){
@@ -53,9 +96,9 @@
 					},
 					popupOnHover: true, //disable the popup while hovering
 					highlightOnHover: true,
-					highlightFillColor: '#F0F033',
-					highlightBorderColor: '#DDDD33',
-					highlightBorderWidth: 1
+					highlightFillColor: self.theme.highlightFillColor,
+					highlightBorderColor: self.theme.highlightBorderColor,
+					highlightBorderWidth: self.theme.highlightBorderWidth
 				},
 				done: function(datamap) {
 					var subunits = datamap.svg.selectAll('.datamaps-subunit');
@@ -78,7 +121,7 @@
 			this.fire('clicked', { geography: geography, data: data });
 		},
 		selectedChanged: function(oldVal, newVal) {
-			var cleared = '#ABDDA4';
+			var cleared = this.theme.defaultFill;
 			var selectedToFill = {};
 
 			//clear old

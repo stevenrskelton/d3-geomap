@@ -18,6 +18,10 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [USA State Map](http://files.stevenskelton.ca/d3-datamaps/examples/usa.html)
 
+> [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
+
+> [Zoom and Widths](http://files.stevenskelton.ca/d3-datamaps/examples/zoom.html)
+
 ## Usage
 
 1. Import Web Components' polyfill:
@@ -47,6 +51,7 @@ Attribute			| Type			| Default		| Description
 `hover`				| *object*		| `null`		| Region hovered over by user pointer
 `data`				| *object*		| `null`		| keys are region id, values are arbitrary data to be associated with region
 `map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
+`theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
 
 Event				| Value			| Description
 ---					| ---			| ---
@@ -59,12 +64,28 @@ For the world map the key is the [ISO 3166-1 alpha-3](http://en.wikipedia.org/wi
 They can have arbitrary properties, but there are a few special properties reserved for internal use.
 `color` is used to describe the background color, and it is a standard CSS color.
 
+## Themes
+
+The map is capable to be styled via the `theme` attribute, which has the following properties:
+
+Attribute				| Type		| Default					| Description
+---						| ---		| ---						| ---
+`defaultFill`	 		| *color*	| #ABDDA4					| Regular fill for all land regions
+`backgroundColor`		| *color*	| #56A5EC					| Background fill for map (water)
+`borderWidth`			| *int*		| 1							| Border width (px) for regular regions
+`borderColor`			| *color*	| #FDFDFD					| Border color for regular regions
+`highlightFillColor`	| *color*	| #FC8D59					| Fill for selected/highlighted regions
+`highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for selected/highlighted regions
+`highlightBorderWidth`	| *int*		| 2							| Border width (px) for selected/highlighted regions
+`cursor`				| *(cursor)[http://www.w3.org/wiki/CSS/Properties/cursor]*	| pointer	| Border width (px) for selected/highlighted regions
+
 ## Todo
 
 - fix bugs
+- test responsiveness of bound data attributes
 - expose more DataMaps functionality
 - D3 and DataMaps dependencies using bower
-- different maps (USA, etc)
+- maybe: different maps (Canada, US districts, etc)
 - __Internet Explorer is completely broken__
 
 ## History
