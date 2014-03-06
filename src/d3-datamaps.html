@@ -6,7 +6,7 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect">
+<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom">
   <template>
 	<style>
 		:host { display: block; }
@@ -25,6 +25,21 @@
 		highlightBorderWidth: 2,
 		cursor: 'pointer'
 	};
+	
+	function reformatProjection(zoom){
+		if(zoom){		
+			return function(element) {
+				var projection = d3.geo.equirectangular()
+					.center([zoom.x, zoom.y])
+					.rotate([zoom.rx, zoom.ry])
+					.scale(zoom.scale)
+					.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+				var path = d3.geo.path()
+					.projection(projection);
+				return {path: path, projection: projection};
+			}
+		}else return null;
+	}
 	
 	Polymer('d3-datamaps', {
 		d3map: null,
@@ -55,16 +70,21 @@
 				this.$.container.style.height = height + 'px';
 			}
 			
+			//zoom
+			var projection = reformatProjection(this.zoom);
+			
 			//theme
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
 			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
 			
-			this.d3map = new Datamap({element: this.$.container,
+			this.d3map = new Datamap({
+				element: this.$.container,
 				scope: self.map,
 				fills: {
 					defaultFill: self.theme.defaultFill
 				},
 				data: self.data || {},
+				setProjection: projection,
 				geographyConfig: {
 					dataUrl: '../src/js/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
 					hideAntarctica: false,
@@ -160,6 +180,46 @@
 			}
 
 			if(this.d3map) this.d3map.updateChoropleth(selectedToFill);
+		},
+		observe: {
+			'zoom.x': 'zoomChanged',
+			'zoom.y': 'zoomChanged',
+			'zoom.rx': 'zoomChanged',
+			'zoom.ry': 'zoomChanged',
+			'zoom.scale': 'zoomChanged'
+		},
+		zoomChanged: function(oldVal, newVal){
+			
+			console.log('zoom');
+			
+			if(this.d3map){
+			
+				var svg = this.d3map.options.element.querySelector('svg');
+				//var old = svg.childNodes.splice();
+				while (svg.firstChild) {
+					svg.removeChild(svg.firstChild);
+				}
+				
+				var projection = reformatProjection(this.zoom);
+				/*
+				var projection = function(element) {
+					var projection = d3.geo.equirectangular()
+						.center([23, 5])
+						.rotate([4.4, 0])
+						.scale(400)
+						.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+					var path = d3.geo.path()
+						.projection(projection);
+					return {path: path, projection: projection};
+				}
+				*/
+				this.d3map.options.setProjection = projection;
+
+				
+				var d = this.d3map.draw();
+				//console.log('draw')				
+			//	console.log(d);
+			}
 		}
 	});
   </script>    
