@@ -18,6 +18,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [USA State Map](http://files.stevenskelton.ca/d3-datamaps/examples/usa.html)
 
+> [Multi-Select](http://files.stevenskelton.ca/d3-datamaps/examples/multiselect.html)
+
 > [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
 
 > [Zoom and Widths](http://files.stevenskelton.ca/d3-datamaps/examples/zoom.html)
