@@ -6,7 +6,7 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme">
+<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect">
   <template>
 	<style>
 		:host { display: block; }
@@ -31,6 +31,7 @@
 		hover: null,
 		data: null,
 		map: 'world',
+		multiselect: false,
 		theme: {
 			defaultFill: defaultTheme.defaultFill,
 			backgroundColor: defaultTheme.backgroundColor,
@@ -40,14 +41,6 @@
             highlightBorderColor: defaultTheme.highlightBorderColor,
             highlightBorderWidth: defaultTheme.highlighBorderWidth,
 			cursor: defaultTheme.cursor
-		},
-		themeChanged: function(){
-			//fill in defaults
-			for (var key in defaultTheme) {
-				if (defaultTheme.hasOwnProperty(key) && !this.theme.hasOwnProperty(key)) {
-					this.theme[key] = defaultTheme[key];
-				}
-			}
 		},
 		attached: function(){
 			var self = this;
@@ -63,8 +56,8 @@
 			}
 			
 			//theme
-			this.$.container.style.backgroundColor = this.theme.backgroundColor;
-			this.$.container.style.cursor = this.theme.cursor;
+			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
+			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
 			
 			this.d3map = new Datamap({element: this.$.container,
 				scope: self.map,
@@ -75,8 +68,8 @@
 				geographyConfig: {
 					dataUrl: '../src/js/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
 					hideAntarctica: false,
-					borderWidth: self.theme.borderWidth,
-					borderColor: self.theme.borderColor,
+					borderWidth: self.theme.borderWidth || defaultTheme.borderWidth,
+					borderColor: self.theme.borderColor || defaultTheme.borderColor,
 					popupTemplate: function(geography, data) { //this function should just return a string
 						if(!self.hover || self.hover.geography.id != geography.id) self.hover = { geography: geography, data: data };
 						//if(c.indexOf(geography.id)>-1){
@@ -92,9 +85,9 @@
 					},
 					popupOnHover: true, //disable the popup while hovering
 					highlightOnHover: true,
-					highlightFillColor: self.theme.highlightFillColor,
-					highlightBorderColor: self.theme.highlightBorderColor,
-					highlightBorderWidth: self.theme.highlightBorderWidth
+					highlightFillColor: self.theme.highlightFillColor || defaultTheme.highlightFillColor,
+					highlightBorderColor: self.theme.highlightBorderColor || defaultTheme.highlightBorderColor,
+					highlightBorderWidth: self.theme.highlightBorderWidth || defaultTheme.highlighBorderWidth
 				},
 				done: function(datamap) {
 					var subunits = datamap.svg.selectAll('.datamaps-subunit');
@@ -115,6 +108,21 @@
 				}
 			}
 			this.fire('clicked', { geography: geography, data: data });
+
+			if(this.multiselect){
+				var color = this.theme.highlightFillColor || defaultTheme.highlightFillColor;
+				var s = this.selected || {};
+				var n = {};
+
+				if(!s[geography.id]) n[geography.id] = color;
+
+				for (var key in s) {
+					if (s.hasOwnProperty(key) && key!=geography.id){
+						n[key] = color;
+					}
+				}
+				this.selected = n;
+			}
 		},
 		selectedChanged: function(oldVal, newVal) {
 			var cleared = this.theme.defaultFill;
@@ -124,8 +132,16 @@
 			if(oldVal){
 				for (var key in oldVal) {
 					if (oldVal.hasOwnProperty(key)) {
-						oldVal.color = cleared;
-						selectedToFill[key] = oldVal;
+						//check if it's in data
+						var data;
+						if(this.data) data = this.data[key];
+						if(data){
+							data.color = cleared;
+							selectedToFill[key] = data;
+						}else{
+							oldVal.color = cleared;
+							selectedToFill[key] = oldVal;
+						}
 					}
 				}
 			}
@@ -142,6 +158,7 @@
 					}
 				}
 			}
+
 			if(this.d3map) this.d3map.updateChoropleth(selectedToFill);
 		}
 	});

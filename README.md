@@ -47,22 +47,23 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 Attribute			| Type			| Default		| Description
 ---					| ---			| ---			| ---
-`selected`	 		| *object*		| `null`		| keys are region id, values are either a CSS color, or a __region element__
-`hover`				| *object*		| `null`		| Region hovered over by user pointer
 `data`				| *object*		| `null`		| keys are region id, values are arbitrary data to be associated with region
+`hover`				| *object*		| `null`		| Region hovered over by user pointer
 `map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
+`multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
+`selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color
+
 
 Event				| Value			| Description
 ---					| ---			| ---
 `clicked`			| *object*		| Region clicked by user
 
-## Region Elements
+## Region IDs
 
-Regions are JSON objects describing sections of the topology, and they must be uniquely keyed.
-For the world map the key is the [ISO 3166-1 alpha-3](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) country code.
-They can have arbitrary properties, but there are a few special properties reserved for internal use.
-`color` is used to describe the background color, and it is a standard CSS color.
+Region IDs are used to uniquely identify regions, and are the keys to both the `data` and `selected` object maps.
+The world country map uses 3 letter [ISO 3166-1 alpha-3](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) country codes,
+while the USA state map uses 2 letter [ANSI standard INCITS 38:2009](http://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations) codes.
 
 ## Themes
 
@@ -82,9 +83,9 @@ Attribute				| Type		| Default					| Description
 ## Todo
 
 - hover template using Template
-- fix bugs
+- zoom
 - test responsiveness of bound data attributes
-- expose more DataMaps functionality
+- expose more DataMaps functionality (bubbles)
 - D3 and DataMaps dependencies using bower
 - maybe: different maps (Canada, US districts, etc)
 - __Internet Explorer is a work in progress__
