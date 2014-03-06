@@ -16,18 +16,15 @@
 			width: 900px;
 			display: inline-block;
 		}
-		body {
-			width: 100%;
-		}
 	</style>
   </head>
   <body unresolved>
 
 	<h2>Themes</h2>
 	Default background, land, highlight, and border colors should be exposed.
-	
+
 	<p />
-	
+
 	<template id="example1" bind>
 		<div>
 			<d3-datamaps></d3-datamaps>
@@ -36,27 +33,48 @@
 	</template>
 
 	<template id="example2" bind>
+		<div style="width:900px">
+			<d3-datamaps theme="{{theme}}" style="background-image:url('../src/SRTM30_Plus/srtm30plus.jpg');background-size: cover;background-position: -5% 15%;background-repeat:none;"></d3-datamaps>
+			Background Image
+		</div>
+	</template>
+
+	<template id="example3" bind>
 		<div>
 			<d3-datamaps theme="{{theme}}"></d3-datamaps>
-			Full Custom
+			Full
 		</div>
 	</template>
 	
-	<template id="example3" bind>
+	<template id="example4" bind>
 		<div>
 			<d3-datamaps theme="{{theme}}" style="border-radius:50px;border:1px solid #ddd;overflow:hidden"></d3-datamaps>
-			Partial Custom
+			Partial
 		</div>
 	</template>
+
 	<p />
 
 <script>
 	window.addEventListener('polymer-ready', function(){
+
 		document.getElementById('example1').model = {};
+
 		document.getElementById('example2').model = {
 			theme: {
-				backgroundColor: 'none',
-				defaultFill: 'green',			
+				defaultFill: 'transparent',
+				borderWidth: 1,
+				borderColor: 'rgba(255,255,255,0.1)',
+				highlightFillColor: 'rgba(240,240,51,0.5)',
+				highlightBorderColor: '#DDDD33',
+				highlightBorderWidth: 1,
+			}
+		};
+
+		document.getElementById('example3').model = {
+			theme: {
+				backgroundColor: 'LightCyan ',
+				defaultFill: 'Green',
 				borderWidth: 1,
 				borderColor: '#99C68E',
 				highlightFillColor: '#F0F033',
@@ -65,11 +83,14 @@
 				cursor: 'crosshair'
 			}
 		};
-		document.getElementById('example3').model = {
+
+		document.getElementById('example4').model = {
 			theme: {
+				backgroundColor: '#56A5EC',
 				defaultFill: 'navy'
 			}
 		};
+
 	});
 </script>
 

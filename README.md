@@ -71,22 +71,23 @@ The map is capable to be styled via the `theme` attribute, which has the followi
 Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
 `defaultFill`	 		| *color*	| #ABDDA4					| Regular fill for all land regions
-`backgroundColor`		| *color*	| #56A5EC					| Background fill for map (water)
+`backgroundColor`		| *color*	| transparent				| Background fill for map (water)
 `borderWidth`			| *int*		| 1							| Border width (px) for regular regions
 `borderColor`			| *color*	| #FDFDFD					| Border color for regular regions
-`highlightFillColor`	| *color*	| #FC8D59					| Fill for selected/highlighted regions
-`highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for selected/highlighted regions
-`highlightBorderWidth`	| *int*		| 2							| Border width (px) for selected/highlighted regions
-`cursor`				| *cursor*	| pointer					| See (W3C Spec)[http://www.w3.org/wiki/CSS/Properties/cursor]
+`highlightFillColor`	| *color*	| #FC8D59					| Fill for highlighted/hover region
+`highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for highlighted/hover region
+`highlightBorderWidth`	| *int*		| 2							| Border width (px) for highlighted/hover region
+`cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
 
 ## Todo
 
+- hover template using Template
 - fix bugs
 - test responsiveness of bound data attributes
 - expose more DataMaps functionality
 - D3 and DataMaps dependencies using bower
 - maybe: different maps (Canada, US districts, etc)
-- __Internet Explorer is completely broken__
+- __Internet Explorer is a work in progress__
 
 ## History
 

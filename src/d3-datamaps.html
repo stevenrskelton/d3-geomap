@@ -11,13 +11,13 @@
 	<style>
 		:host { display: block; }
 	</style>
-    <div id="container" style="vertical-align:top;position:relative;"></div>
+    <div id="container" style="position:relative;"></div>
   </template>
   <script>
-	//https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started
+
 	var defaultTheme = {
 		defaultFill: '#ABDDA4',
-		backgroundColor: '#56A5EC',
+		backgroundColor: 'transparent',
 		borderWidth: 1,
 		borderColor: '#FDFDFD',
 		highlightFillColor: '#FC8D59',
@@ -49,10 +49,6 @@
 				}
 			}
 		},
-		ready: function(){
-		console.log('clientwidth: ' + this.clientWidth);
-		console.log('scrollwidth: ' + this.scrollWidth);
-		},
 		attached: function(){
 			var self = this;
 			
@@ -60,8 +56,8 @@
 			if(this.clientWidth>0){
 				var height = this.clientHeight;
 				if(height < 64){
-					if(self.map=='world') height = this.clientWidth * 0.47;
-					else if(self.map=='usa') height = this.clientWidth * 0.47;
+					if(self.map=='world') height = this.clientWidth * 0.43;
+					else if(self.map=='usa') height = this.clientWidth * 0.465;
 				}
 				this.$.container.style.height = height + 'px';
 			}
