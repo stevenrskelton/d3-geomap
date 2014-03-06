@@ -2,7 +2,6 @@
  https://github.com/stevenrskelton/d3-datamaps
 -->
 
-<script src="js/d3/d3.v3.min.js"></script>
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
@@ -25,7 +24,7 @@
 		highlightBorderWidth: 2,
 		cursor: 'pointer'
 	};
-	
+
 	function reformatProjection(zoom){
 		if(zoom){		
 			return function(element) {
@@ -40,7 +39,7 @@
 			}
 		}else return null;
 	}
-	
+
 	Polymer('d3-datamaps', {
 		d3map: null,
 		hover: null,
@@ -51,15 +50,15 @@
 			defaultFill: defaultTheme.defaultFill,
 			backgroundColor: defaultTheme.backgroundColor,
 			borderWidth: defaultTheme.borderWidth,
-            borderColor: defaultTheme.borderColor,
-            highlightFillColor: defaultTheme.highlightFullColor,
-            highlightBorderColor: defaultTheme.highlightBorderColor,
-            highlightBorderWidth: defaultTheme.highlighBorderWidth,
+			borderColor: defaultTheme.borderColor,
+			highlightFillColor: defaultTheme.highlightFullColor,
+			highlightBorderColor: defaultTheme.highlightBorderColor,
+			highlightBorderWidth: defaultTheme.highlighBorderWidth,
 			cursor: defaultTheme.cursor
 		},
 		attached: function(){
 			var self = this;
-			
+
 			//fill parent element
 			if(this.clientWidth>0){
 				var height = this.clientHeight;
@@ -69,14 +68,14 @@
 				}
 				this.$.container.style.height = height + 'px';
 			}
-			
+
 			//zoom
 			var projection = reformatProjection(this.zoom);
-			
+
 			//theme
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
 			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
-			
+
 			this.d3map = new Datamap({
 				element: this.$.container,
 				scope: self.map,

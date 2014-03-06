@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="platform-0.2.0.js"></script>
 	<script src="polymer-0.2.0.js"></script>
+	<script src="d3.v3.min.js"></script>
 	<link rel="import" href="../src/d3-datamaps.html">
 
 	<style>
@@ -38,9 +39,9 @@
 			<tr><td>RY</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.ry}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.ry}}"></td></tr>
 			<tr><td>Scale</td>	<td>0</td>		<td><input type="range" onfocus="this.select()" min="0" max="1000" value="{{zoom.scale}}"></td>	<td>1000</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
 		</table>
-		
+
 		<p />
-		
+
 		<d3-datamaps zoom="{{zoom}}" style="width:1000px;"></d3-datamaps>
 	</template>
 

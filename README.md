@@ -33,6 +33,7 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 	```html
 	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.0/platform.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.0/polymer.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
 	```
 
 2. Import Custom Element:
