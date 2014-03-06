@@ -30,10 +30,10 @@
 		if(zoom){		
 			return function(element) {
 				var projection = d3.geo.equirectangular()
-					.center([zoom.x, zoom.y])
-					.rotate([zoom.rx, zoom.ry])
-					.scale(zoom.scale)
-					.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+					.center([zoom.x || 0, zoom.y || 0])
+					.rotate([zoom.rx || 0, zoom.ry || 0])
+					.scale(zoom.scale || ((element.offsetWidth + 1) / 2 / Math.PI))
+					.translate([element.offsetWidth / 2, element.offsetHeight / 1.82]);
 				var path = d3.geo.path()
 					.projection(projection);
 				return {path: path, projection: projection};
@@ -189,36 +189,9 @@
 			'zoom.scale': 'zoomChanged'
 		},
 		zoomChanged: function(oldVal, newVal){
-			
-			console.log('zoom');
-			
 			if(this.d3map){
-			
-				var svg = this.d3map.options.element.querySelector('svg');
-				//var old = svg.childNodes.splice();
-				while (svg.firstChild) {
-					svg.removeChild(svg.firstChild);
-				}
-				
-				var projection = reformatProjection(this.zoom);
-				/*
-				var projection = function(element) {
-					var projection = d3.geo.equirectangular()
-						.center([23, 5])
-						.rotate([4.4, 0])
-						.scale(400)
-						.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
-					var path = d3.geo.path()
-						.projection(projection);
-					return {path: path, projection: projection};
-				}
-				*/
-				this.d3map.options.setProjection = projection;
-
-				
-				var d = this.d3map.draw();
-				//console.log('draw')				
-			//	console.log(d);
+				this.d3map.setProjection = reformatProjection(this.zoom);
+				this.d3map.transitionProjection();
 			}
 		}
 	});

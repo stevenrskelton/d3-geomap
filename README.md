@@ -22,6 +22,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
 
+> [Sizing and Aspect Ratio](http://files.stevenskelton.ca/d3-datamaps/examples/size.html)
+
 > [Zoom and Widths](http://files.stevenskelton.ca/d3-datamaps/examples/zoom.html)
 
 ## Usage
@@ -55,6 +57,7 @@ Attribute			| Type			| Default		| Description
 `multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
 `selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color
+`zoom`	 			| *object*		| _default_		| Center of map and size, see __Zoom__
 
 
 Event				| Value			| Description
@@ -82,12 +85,21 @@ Attribute				| Type		| Default					| Description
 `highlightBorderWidth`	| *int*		| 2							| Border width (px) for highlighted/hover region
 `cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
 
+## Zoom
+
+The map can be centered and scaled using the `zoom` object, which has the following properties:
+
+Attribute				| Type		| Default					| Description
+---						| ---		| ---						| ---
+`x`	 					| *float*	| 0							| Horizontal center
+`y`						| *float*	| 0							| Vertical center
+`scale`					| *float*	| width/2pi					| Fill for highlighted/hover region
+
 ## Todo
 
 - hover template using Template
-- zoom
 - test responsiveness of bound data attributes
-- expose more DataMaps functionality (bubbles)
+- expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
 - maybe: different maps (Canada, US districts, etc)
 - __Internet Explorer is a work in progress__

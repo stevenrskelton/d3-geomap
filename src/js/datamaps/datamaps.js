@@ -458,7 +458,21 @@
 
     return this.draw();
   }
-
+  Datamap.prototype.transitionProjection = function() {
+	var self = this;
+	var options = self.options;			
+	
+	var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
+	self.path = pathAndProjection.path;
+	self.projection = pathAndProjection.projection;
+	
+	var data = self.jsonData;
+	var subunits = self.svg.select('g.datamaps-subunits');
+	var geoData = topojson.feature( data, data.objects[ options.scope ] ).features;
+	var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
+	
+	geo.transition().attr('d', self.path);
+  }
   // actually draw the features(states & countries)
   Datamap.prototype.draw = function() {
     //save off in a closure
@@ -475,12 +489,13 @@
     if ( options.geographyConfig.dataUrl ) {
       d3.json( options.geographyConfig.dataUrl, function(error, results) {
         if ( error ) throw new Error(error);
-
-        draw( results );
+		self.jsonData = results;
+        draw( self.jsonData );
       });
     }
     else {
-      draw( this[options.scope + 'Topo'] );
+		self.jsonData = this[options.scope + 'Topo'];
+      draw( self.jsonData );
     }
 
     return this;

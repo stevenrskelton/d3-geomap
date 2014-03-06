@@ -8,58 +8,49 @@
 	<script src="platform-0.2.0.js"></script>
 	<script src="polymer-0.2.0.js"></script>
 	<link rel="import" href="../src/d3-datamaps.html">
+
+	<style>
+		d3-datamaps { display:inline-block;border:1px solid black; }
+		.params { display: inline-block; vertical-align: top; }
+		.params tr td:nth-of-type(1) { font-weight: bold; width: 50px; }
+		.params tr td:nth-of-type(2) { text-align: right; }
+		.params tr td:nth-of-type(3) { text-align: center; width: 200px }
+		.params tr td:nth-of-type(4) { text-align: right; }
+		.params tr td:nth-of-type(5) { text-align: right; width: 100px; }
+		.params input[type=text] { text-align: right; width: 50px; }
+	</style>
   </head>
   <body unresolved>
 
-	<h2>Zoom and Size</h2>
-	Map should fill parent element, respecting width and height.  Map should expose zoom functionality.
-	<h3>TODO: Responsive to size changes</h3>
-	
-	<p />
-
-	<h3>2:1 Aspect Height determined by Width</h3>
-	<d3-datamaps style="display:inline-block;width:500px;" map="world"></d3-datamaps>
-	<d3-datamaps style="display:inline-block;width:500px;" map="usa"></d3-datamaps>
-
-	<p />
-
-	<h3>Fixed Width and Height</h3>
-	<d3-datamaps style="display:inline-block;width:500px;height:100px;" map="world"></d3-datamaps>
-	<d3-datamaps style="display:inline-block;width:500px;height:100px;" map="usa"></d3-datamaps>
+	<h2>Zoom</h2>
+	Map should expose zoom functionality.
 
 	<p />
 		
 	<template id="example" bind>
 		<h3>Zoom</h3>
-		<d3-datamaps style="display:inline-block;width:500px;height:525px;border:1px solid black;" zoom="{{zoom}}"></d3-datamaps>
+		<d3-datamaps style="width:500px;height:525px;" zoom="{{zoom}}"></d3-datamaps>
 		
-		<style>
-			.params { display: inline-block; vertical-align: top; }
-			.params tr td:nth-of-type(1) { font-weight: bold; width: 50px; }
-			.params tr td:nth-of-type(2) { text-align: right; }
-			.params tr td:nth-of-type(3) { text-align: center; width: 200px }
-			.params tr td:nth-of-type(4) { text-align: right; }
-			.params tr td:nth-of-type(5) { text-align: right; width: 50px; font-weight: bold; }
-			.params input[type=text] { text-align: right; display: inline; width: 100px; }
-		</style>
 		<table class="params">
-			<tr><td>X </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.x}}"></td>	<td>100</td>	<td>{{zoom.x}}</td></tr>
-			<tr><td>Y </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.y}}"></td>	<td>100</td>	<td>{{zoom.y}}</td></tr>
-			<tr><td>RX</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.rx}}"></td>	<td>100</td>	<td>{{zoom.rx}}</td></tr>
-			<tr><td>RY</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.ry}}"></td>	<td>100</td>	<td>{{zoom.ry}}</td></tr>
-			<tr><td>Scale</td>	<td>0</td>		<td><input type="range" onfocus="this.select()" min="0" max="1000" value="{{zoom.scale}}"></td>	<td>1000</td>	<td>{{zoom.scale}}</td></tr>
+			<tr><td>X </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.x}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
+			<tr><td>Y </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.y}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
+			<tr><td>RX</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.rx}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.rx}}"></td></tr>
+			<tr><td>RY</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.ry}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.ry}}"></td></tr>
+			<tr><td>Scale</td>	<td>0</td>		<td><input type="range" onfocus="this.select()" min="0" max="1000" value="{{zoom.scale}}"></td>	<td>1000</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
 		</table>
+		
+		<p />
+		
+		<d3-datamaps zoom="{{zoom}}" style="width:1000px;"></d3-datamaps>
 	</template>
-
-	<p />
 
 <script>
 
 	var model = {
 		zoom: {
-			x: 23,
-			y: 2,
-			rx: 4.4,
+			x: 17,
+			y: -2,
+			rx: 0,
 			ry: 0,
 			scale: 400
 		}
