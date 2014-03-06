@@ -28,7 +28,7 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Usage
 
-1. Import Web Components' polyfill:
+1. Import Web Components' polyfill, and a D3 library:
 
 	```html
 	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.0/platform.js"></script>
@@ -94,7 +94,7 @@ Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
 `x`	 					| *float*	| 0							| Horizontal center
 `y`						| *float*	| 0							| Vertical center
-`scale`					| *float*	| width/2pi					| Fill for highlighted/hover region
+`scale`					| *float*	| width/2&#960;				| Fill for highlighted/hover region
 
 ## Todo
 
