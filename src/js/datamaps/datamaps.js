@@ -471,7 +471,7 @@
 	var geoData = topojson.feature( data, data.objects[ options.scope ] ).features;
 	var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
 	
-	geo.transition().attr('d', self.path);
+	geo.transition().duration(0).attr('d', self.path);
   }
   // actually draw the features(states & countries)
   Datamap.prototype.draw = function() {

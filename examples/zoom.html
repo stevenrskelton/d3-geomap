@@ -24,26 +24,27 @@
   <body unresolved>
 
 	<h2>Zoom</h2>
-	Map should expose zoom functionality.
+	Map background should be adjusted by zoom functionality.
 
 	<p />
-		
+
 	<template id="example" bind>
 		<h3>Zoom</h3>
-		<d3-datamaps style="width:500px;height:525px;" zoom="{{zoom}}"></d3-datamaps>
-		
+		<d3-datamaps style="width:500px;height:525px;" zoom="{{zoom}}" theme="{{theme}}"></d3-datamaps>
+
 		<table class="params">
-			<tr><td>X </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.x}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
-			<tr><td>Y </td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.y}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
-			<tr><td>RX</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.rx}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.rx}}"></td></tr>
-			<tr><td>RY</td>		<td>-100</td>	<td><input type="range" onfocus="this.select()" min="-100" max="100" value="{{zoom.ry}}"></td>	<td>100</td>	<td><input type="text" value="{{zoom.ry}}"></td></tr>
-			<tr><td>Scale</td>	<td>0</td>		<td><input type="range" onfocus="this.select()" min="0" max="1000" value="{{zoom.scale}}"></td>	<td>1000</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
+			<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>		<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
+			<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>			<td>90°</td>		<td><input type="text" value="{{zoom.y}}"></td></tr>
+			<tr><td>Scale</td>	<td>100%</td>	<td><input type="range" onfocus="this.select()" min="100" max="1500" value="{{zoom.scale}}"></td>	<td>1500%</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
+			<tr style="height:40px"><td colspan="5"></td></tr>
+			<tr><td>backgroundImage</td>	<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
+			<tr><td>backgroundPositionX</td><td>-500px</td>	<td><input disabled type="range" onfocus="this.select()" min="-500" max="500" value="{{theme.backgroundPositionX}}"></td>	<td>500px</td>	<td><input type="text" value="{{theme.backgroundPositionX}}"></td></tr>
+			<tr><td>backgroundPositionY</td><td>-500px</td>	<td><input disabled type="range" onfocus="this.select()" min="-500" max="500" value="{{theme.backgroundPositionY}}"></td>	<td>500px</td>	<td><input type="text" value="{{theme.backgroundPositionY}}"></td></tr>
+			<tr><td>backgroundSize</td>		<td>100%</td>	<td><input disabled type="range" onfocus="this.select()" min="10" max="200" value="{{theme.backgroundSize}}"></td>			<td>1500%</td>	<td><input type="text" value="{{theme.backgroundSize}}"></td></tr>
 		</table>
+	</template>
 
 		<p />
-
-		<d3-datamaps zoom="{{zoom}}" style="width:1000px;"></d3-datamaps>
-	</template>
 
 <script>
 
@@ -51,9 +52,16 @@
 		zoom: {
 			x: 17,
 			y: -2,
-			rx: 0,
-			ry: 0,
-			scale: 400
+			scale: 550
+		},
+		theme: {
+			defaultFill: 'transparent',
+			borderWidth: 1,
+			borderColor: '#ddd',
+			backgroundImage: "url('../src/SRTM30_Plus/srtm30plus.jpg')", //srtm30plus_hilldhading_B.overview_res5km.jpg')", //
+			backgroundSize: 100,
+			backgroundPositionX: 0,
+			backgroundPositionY: -13
 		}
 	}
 

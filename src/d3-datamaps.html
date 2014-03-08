@@ -10,7 +10,7 @@
 	<style>
 		:host { display: block; }
 	</style>
-    <div id="container" style="position:relative;"></div>
+	<div id="container" style="position:relative;"></div>
   </template>
   <script>
 
@@ -22,16 +22,20 @@
 		highlightFillColor: '#FC8D59',
 		highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
 		highlightBorderWidth: 2,
-		cursor: 'pointer'
+		cursor: 'pointer',
+		backgroundImage: 'none',
+		backgroundPositionX: 0,
+		backgroundPositionY: 0
 	};
 
 	function reformatProjection(zoom){
-		if(zoom){		
+		if(zoom){
 			return function(element) {
+				var scale = (element.offsetWidth + 1) / 2 / Math.PI;
+				if(zoom.scale) scale = scale * zoom.scale / 100;
 				var projection = d3.geo.equirectangular()
 					.center([zoom.x || 0, zoom.y || 0])
-					.rotate([zoom.rx || 0, zoom.ry || 0])
-					.scale(zoom.scale || ((element.offsetWidth + 1) / 2 / Math.PI))
+					.scale(scale)
 					.translate([element.offsetWidth / 2, element.offsetHeight / 1.82]);
 				var path = d3.geo.path()
 					.projection(projection);
@@ -54,7 +58,10 @@
 			highlightFillColor: defaultTheme.highlightFullColor,
 			highlightBorderColor: defaultTheme.highlightBorderColor,
 			highlightBorderWidth: defaultTheme.highlighBorderWidth,
-			cursor: defaultTheme.cursor
+			cursor: defaultTheme.cursor,
+			backgroundImage: defaultTheme.backgroundImage,
+			backgroundPositionX: defaultTheme.backgroundPositionX,
+			backgroundPositionY: defaultTheme.backgroundPositionY
 		},
 		attached: function(){
 			var self = this;
@@ -75,6 +82,7 @@
 			//theme
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
 			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
+			this.renderBackgroundImage();
 
 			this.d3map = new Datamap({
 				element: this.$.container,
@@ -183,14 +191,41 @@
 		observe: {
 			'zoom.x': 'zoomChanged',
 			'zoom.y': 'zoomChanged',
-			'zoom.rx': 'zoomChanged',
-			'zoom.ry': 'zoomChanged',
 			'zoom.scale': 'zoomChanged'
+		},
+		zoom: {
+			x: 0,
+			y: 0,
+			scale: 100
 		},
 		zoomChanged: function(oldVal, newVal){
 			if(this.d3map){
+				if(this.theme.backgroundImage!='none'){
+					//scale
+					this.renderBackgroundImage();
+				}
 				this.d3map.setProjection = reformatProjection(this.zoom);
 				this.d3map.transitionProjection();
+			}
+		},
+		renderBackgroundImage: function(){
+			if(this.theme.backgroundImage != 'none'){
+				this.$.container.style.backgroundImage = this.theme.backgroundImage;
+
+				var translatedPositionX = this.theme.backgroundPositionX || defaultTheme.backgroundPositionX;
+				var translatedPositionY = this.theme.backgroundPositionY || defaultTheme.backgroundPositionY;
+
+				var scale = this.zoom.scale / 100;
+				var width = this.$.container.offsetWidth;
+				var height2 = width * 0.43;
+				var height = this.$.container.offsetHeight;
+
+				//zoom
+				translatedPositionX = (( width  - (scale * width  )) / 2) - (translatedPositionX * scale) - (( this.zoom.x || 0 ) / 360 * scale * width        );
+				translatedPositionY = (( height - (scale * height2)) / 2) - (translatedPositionY * scale) + (( this.zoom.y || 0 ) / 360 * scale * (height - 24)) - (30.3 * scale) + (15.3 * height / height2) - 11;
+
+				this.$.container.style.backgroundSize =  width * scale + 'px';
+				this.$.container.style.backgroundPosition = translatedPositionX + 'px ' + translatedPositionY + 'px';
 			}
 		}
 	});

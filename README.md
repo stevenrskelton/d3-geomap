@@ -18,6 +18,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [USA State Map](http://files.stevenskelton.ca/d3-datamaps/examples/usa.html)
 
+> [Backgrounds](http://files.stevenskelton.ca/d3-datamaps/examples/backgrounds.html)
+
 > [Multi-Select](http://files.stevenskelton.ca/d3-datamaps/examples/multiselect.html)
 
 > [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
@@ -85,6 +87,9 @@ Attribute				| Type		| Default					| Description
 `highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for highlighted/hover region
 `highlightBorderWidth`	| *int*		| 2							| Border width (px) for highlighted/hover region
 `cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
+`backgroundImage`		| *image*	| none						| See the W3C Spec http://www.w3.org/TR/css3-background/#the-background-image
+`backgroundPositionX`	| *pixel*	| 0							| Horizontal offset correction for `backgroundImage`
+`backgroundPositionY`	| *pixel*	| 0							| Vertical offset correction for `backgroundImage`
 
 ## Zoom
 
@@ -92,17 +97,27 @@ The map can be centered and scaled using the `zoom` object, which has the follow
 
 Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
-`x`	 					| *float*	| 0							| Horizontal center
-`y`						| *float*	| 0							| Vertical center
-`scale`					| *float*	| width/2&#960;				| Fill for highlighted/hover region
+`x`	 					| *float*	| 0							| Horizontal offset from center in °, range [-180,180]
+`y`						| *float*	| 0							| Vertical offset from center in °, range [-90,90]
+`scale`					| *float*	| 100						| Percent to zoom, 100% = 1X
+
+## Backgrounds
+
+Backgrounds are applied to a `div[id="container"]` that contains the `svg` map element.  Changing the __zoom__ will automatically 
+adjust the background to be in the appropriate position.
+
+The __world__ topology is a standard (Equirectangular projection)[http://en.wikipedia.org/wiki/Equirectangular_projection].
 
 ## Todo
 
 - hover template using Template
+- better built-in background interface
+- better transitions between zoom changes
+- disabled regions
 - test responsiveness of bound data attributes
 - expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
-- maybe: different maps (Canada, US districts, etc)
+- maybe: different maps (provinces/states, US districts, etc)
 - __Internet Explorer is a work in progress__
 
 ## History
