@@ -106,7 +106,9 @@ Attribute				| Type		| Default					| Description
 Backgrounds are applied to a `div[id="container"]` that contains the `svg` map element.  Changing the __zoom__ will automatically 
 adjust the background to be in the appropriate position.
 
-The __world__ topology is a standard (Equirectangular projection)[http://en.wikipedia.org/wiki/Equirectangular_projection].
+The __world__ topology is a standard [Equirectangular projection](http://en.wikipedia.org/wiki/Equirectangular_projection).
+
+The __usa__ topology is a standard [Equirectangular projection](http://en.wikipedia.org/wiki/Equirectangular_projection).
 
 ## Todo
 
@@ -115,6 +117,7 @@ The __world__ topology is a standard (Equirectangular projection)[http://en.wiki
 - better transitions between zoom changes
 - disabled regions
 - mouse controlled pan, scroll-wheel zoom
+- different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
 - test responsiveness of bound data attributes
 - expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
