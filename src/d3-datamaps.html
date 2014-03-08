@@ -28,18 +28,36 @@
 		backgroundPositionY: 0
 	};
 
-	function reformatProjection(zoom){
+	function reformatProjection(zoom, map){
 		if(zoom){
-			return function(element) {
-				var scale = (element.offsetWidth + 1) / 2 / Math.PI;
-				if(zoom.scale) scale = scale * zoom.scale / 100;
-				var projection = d3.geo.equirectangular()
-					.center([zoom.x || 0, zoom.y || 0])
-					.scale(scale)
-					.translate([element.offsetWidth / 2, element.offsetHeight / 1.82]);
-				var path = d3.geo.path()
-					.projection(projection);
-				return {path: path, projection: projection};
+			if ( map === 'usa' ) {
+				return function(element){
+					var scale = element.offsetWidth;
+					if(zoom.scale) scale = scale * zoom.scale / 100;
+
+					projection = d3.geo.albersUsa()
+						.scale(scale)
+						.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+
+					var path = d3.geo.path()
+						.projection(projection);
+
+					return {path: path, projection: projection};
+				}
+			} else if ( map === 'world' ) {
+				return function(element) {
+					var scale = (element.offsetWidth + 1) / 2 / Math.PI;
+					if(zoom.scale) scale = scale * zoom.scale / 100;
+
+					var projection = d3.geo.equirectangular()
+						.center([zoom.x || 0, zoom.y || 0])
+						.scale(scale)
+						.translate([element.offsetWidth / 2, element.offsetHeight / 1.82]);
+					var path = d3.geo.path()
+						.projection(projection);
+
+					return {path: path, projection: projection};
+				}
 			}
 		}else return null;
 	}
@@ -77,7 +95,7 @@
 			}
 
 			//zoom
-			var projection = reformatProjection(this.zoom);
+			var projection = reformatProjection(this.zoom, self.map);
 
 			//theme
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
@@ -204,7 +222,7 @@
 					//scale
 					this.renderBackgroundImage();
 				}
-				this.d3map.setProjection = reformatProjection(this.zoom);
+				this.d3map.setProjection = reformatProjection(this.zoom, this.map);
 				this.d3map.transitionProjection();
 			}
 		},

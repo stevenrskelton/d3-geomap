@@ -40,6 +40,13 @@
 		</div>
 	</template>
 
+	<template id="example3" bind>
+		<div style="width:100%">
+			<d3-datamaps theme="{{theme}}"></d3-datamaps>
+			High Resolution Elevation
+		</div>
+	</template>
+
 	<p />
 
 <script>
@@ -73,6 +80,19 @@
 			}
 		};
 
+		document.getElementById('example3').model = {
+			theme: {
+				defaultFill: 'transparent',
+				borderWidth: 1,
+				borderColor: 'rgba(255,255,255,0.1)',
+				highlightFillColor: 'rgba(240,240,51,0.5)',
+				highlightBorderColor: '#DDDD33',
+				highlightBorderWidth: 1,
+				backgroundImage: "url('../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg')",
+				backgroundPositionX: 0,
+				backgroundPositionY: 0
+			}
+		};
 	});
 </script>
 

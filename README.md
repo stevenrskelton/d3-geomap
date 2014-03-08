@@ -114,6 +114,7 @@ The __world__ topology is a standard (Equirectangular projection)[http://en.wiki
 - better built-in background interface
 - better transitions between zoom changes
 - disabled regions
+- mouse controlled pan, scroll-wheel zoom
 - test responsiveness of bound data attributes
 - expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
