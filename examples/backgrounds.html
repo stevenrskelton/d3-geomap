@@ -22,32 +22,25 @@
   <body unresolved>
 
 	<h2>Backgrounds</h2>
-	Different maps available (you are always free to use your own).
+	Different maps available (you are always free to use your own).  Large images, <strong><em>please be patient</em></strong>.
 
 	<p />
 
 	<template id="example1" bind>
 		<div>
 			<d3-datamaps theme="{{theme}}"></d3-datamaps>
-			Realistic
+			Realistic ( 2048 x 1026, 595KB )<br/>
+			&nbsp;
 		</div>
 	</template>
 
 	<template id="example2" bind>
 		<div>
 			<d3-datamaps theme="{{theme}}"></d3-datamaps>
-			Elevation
+			Elevation ( 1920 x 960, 170KB )<br/>
+			<a href="../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" alt="high resolution">High Resolution Elevation</a> ( 8640 x 4320, 4.2MB )
 		</div>
 	</template>
-
-	<template id="example3" bind>
-		<div style="width:100%">
-			<d3-datamaps theme="{{theme}}"></d3-datamaps>
-			High Resolution Elevation
-		</div>
-	</template>
-
-	<p />
 
 <script>
 	window.addEventListener('polymer-ready', function(){
@@ -74,25 +67,12 @@
 				highlightFillColor: 'rgba(240,240,51,0.5)',
 				highlightBorderColor: '#DDDD33',
 				highlightBorderWidth: 1,
-				backgroundImage: "url('../src/SRTM30_Plus/srtm30plus.jpg')",
+				backgroundImage: "url('../src/SRTM30_Plus/srtm30plus.jpg')", //"url('../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg')",
 				backgroundPositionX: 0,
 				backgroundPositionY: -13
 			}
 		};
 
-		document.getElementById('example3').model = {
-			theme: {
-				defaultFill: 'transparent',
-				borderWidth: 1,
-				borderColor: 'rgba(255,255,255,0.1)',
-				highlightFillColor: 'rgba(240,240,51,0.5)',
-				highlightBorderColor: '#DDDD33',
-				highlightBorderWidth: 1,
-				backgroundImage: "url('../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg')",
-				backgroundPositionX: 0,
-				backgroundPositionY: 0
-			}
-		};
 	});
 </script>
 
