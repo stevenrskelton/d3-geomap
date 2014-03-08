@@ -108,7 +108,7 @@ adjust the background to be in the appropriate position.
 
 The __world__ topology is a standard [Equirectangular projection](http://en.wikipedia.org/wiki/Equirectangular_projection).
 
-The __usa__ topology is a standard [Equirectangular projection](http://en.wikipedia.org/wiki/Equirectangular_projection).
+The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4090848).
 
 ## Todo
 
