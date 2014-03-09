@@ -5,7 +5,7 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom hoverTemplate">
+<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom hoverTemplate rootDirectory">
   <template>
 	<style>
 		:host { display: block; }
@@ -16,6 +16,7 @@
 
 	var defaultTheme = {
 		defaultFill: '#ABDDA4',
+		defaultSelectedFill: '#FBB917',
 		backgroundColor: 'transparent',
 		borderWidth: 1,
 		borderColor: '#FDFDFD',
@@ -63,6 +64,7 @@
 	}
 
 	Polymer('d3-datamaps', {
+		rootDirectory: '../src/',
 		d3map: null,
 		hover: null,
 		data: null,
@@ -70,6 +72,7 @@
 		multiselect: false,
 		theme: {
 			defaultFill: defaultTheme.defaultFill,
+			defaultSelectedFill: defaultTheme.defaultSelectedFill,
 			backgroundColor: defaultTheme.backgroundColor,
 			borderWidth: defaultTheme.borderWidth,
 			borderColor: defaultTheme.borderColor,
@@ -111,7 +114,7 @@
 				data: self.data || {},
 				setProjection: projection,
 				geographyConfig: {
-					dataUrl: '../src/js/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
+					dataUrl: self.rootDirectory + '/js/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
 					hideAntarctica: false,
 					borderWidth: self.theme.borderWidth || defaultTheme.borderWidth,
 					borderColor: self.theme.borderColor || defaultTheme.borderColor,
@@ -136,6 +139,44 @@
 					var subunits = datamap.svg.selectAll('.datamaps-subunit');
 					subunits.on('click', function(geography) {
 						self.itemClicked(geography);
+					});
+					self.selectedChanged(null,self.selected);
+					var observer = new ObjectObserver(self.selected);
+					observer.open(function(added, removed, changed, getOldValueFn) {
+						if(self.d3map){
+							var cleared = self.theme.defaultFill || defaultTheme.defaultFill;;
+							var defaultSelectedFill = self.theme.defaultSelectedFill || defaultTheme.defaultSelectedFill;
+							var selectedToFill = {};
+							Object.keys(removed).forEach(function(property) {
+								//check if it's in data
+								var data;
+								if(self.data) data = self.data[property];
+								if(data){
+									data.color = cleared;
+									selectedToFill[property] = data;
+								}else{
+									var oldVal = getOldValueFn(property);
+									oldVal.color = cleared;
+									selectedToFill[property] = oldVal;
+								}
+							});
+							// respond to changes to the obj.
+							Object.keys(added).forEach(function(property) {
+								if(typeof added[property] === 'string'){
+									selectedToFill[property] = { color: added[property] };
+								}else{
+									selectedToFill[property] = added[property];
+								}
+							});
+							Object.keys(changed).forEach(function(property) {
+								if(typeof changed[property] === 'string'){
+									selectedToFill[property] = { color: changed[property] };
+								}else{
+									selectedToFill[property] = changed[property];
+								}
+							});
+							self.d3map.updateChoropleth(selectedToFill);
+						}
 					});
 				}
 			});
@@ -168,41 +209,64 @@
 			}
 		},
 		selectedChanged: function(oldVal, newVal) {
-			var cleared = this.theme.defaultFill;
-			var selectedToFill = {};
+			if(this.d3map){
+				var cleared = this.theme.defaultFill;
+				var defaultSelectedFill = this.theme.defaultSelectedFill;
+				var selectedToFill = {};
 
-			//clear old
-			if(oldVal){
-				for (var key in oldVal) {
-					if (oldVal.hasOwnProperty(key)) {
-						//check if it's in data
-						var data;
-						if(this.data) data = this.data[key];
-						if(data){
-							data.color = cleared;
-							selectedToFill[key] = data;
-						}else{
-							oldVal.color = cleared;
-							selectedToFill[key] = oldVal;
+				//clear old
+				if(oldVal){
+					for (var key in oldVal) {
+						if (oldVal.hasOwnProperty(key)) {
+							//check if it's in data
+							var data;
+							if(this.data) data = this.data[key];
+							if(data){
+								data.color = cleared;
+								selectedToFill[key] = data;
+							}else{
+								oldVal.color = cleared;
+								selectedToFill[key] = oldVal;
+							}
+						}
+					}
+					//handle array
+					if(oldVal.length>0){
+						for(var i=0;i<oldVal.length;i++){
+							var key = oldVal[i];
+							//check if it's in data
+							var data;
+							if(this.data) data = this.data[key];
+							if(data){
+								data.color = cleared;
+								selectedToFill[key] = data;
+							}else{
+								selectedToFill[key] = cleared;
+							}
 						}
 					}
 				}
-			}
-
-			//fill new
-			if(newVal){
-				for (var key in newVal) {
-					if (newVal.hasOwnProperty(key)) {
-						if(typeof newVal[key] === 'string'){
-							selectedToFill[key] = { color: newVal[key] };
-						}else{
-							selectedToFill[key] = newVal[key];
+				//fill new
+				if(newVal){
+					if(newVal.length>0){
+						//handle array
+						for(var i=0;i<newVal.length;i++){
+							selectedToFill[newVal[i]] = defaultSelectedFill;
+						}
+					}else{
+						for (var key in newVal) {
+							if (newVal.hasOwnProperty(key)) {
+								if(typeof newVal[key] === 'string'){
+									selectedToFill[key] = { color: newVal[key] };
+								}else{
+									selectedToFill[key] = newVal[key];
+								}
+							}
 						}
 					}
 				}
+				this.d3map.updateChoropleth(selectedToFill);
 			}
-
-			if(this.d3map) this.d3map.updateChoropleth(selectedToFill);
 		},
 		observe: {
 			'zoom.x': 'zoomChanged',

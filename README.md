@@ -60,8 +60,9 @@ Attribute			| Type			| Default		| Description
 `map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
 `multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
-`selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color
+`selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color.  Also supports an `array` if region ids where `defaultSelectedFill` color is assumed
 `zoom`	 			| *object*		| _default_		| Center of map and size, see __Zoom__
+`rootDirectory`		| *string*		| ../src/		| Hack to get relative directory for topology maps from where web component is included
 
 
 Event				| Value			| Description
@@ -81,6 +82,7 @@ The map is capable to be styled via the `theme` attribute, which has the followi
 Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
 `defaultFill`	 		| *color*	| #ABDDA4					| Regular fill for all land regions
+`defaultSelectedFill`	| *color*	| #FBB917					| Fill for selected regions if `selected` is an array
 `backgroundColor`		| *color*	| transparent				| Background fill for map (water)
 `borderWidth`			| *int*		| 1							| Border width (px) for regular regions
 `borderColor`			| *color*	| #FDFDFD					| Border color for regular regions
@@ -100,7 +102,7 @@ Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
 `x`	 					| *float*	| 0							| Horizontal offset from center in °, range [-180,180]
 `y`						| *float*	| 0							| Vertical offset from center in °, range [-90,90]
-`scale`					| *float*	| 100						| Percent to zoom, 100% = 1X
+`scale`					| *float*	| 100						| Percent to zoom, 100% = 1x
 
 ## Backgrounds
 
