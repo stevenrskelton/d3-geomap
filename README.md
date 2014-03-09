@@ -56,6 +56,7 @@ Attribute			| Type			| Default		| Description
 ---					| ---			| ---			| ---
 `data`				| *object*		| `null`		| keys are region id, values are arbitrary data to be associated with region
 `hover`				| *object*		| `null`		| Region hovered over by user pointer
+`hoverTemplate`		| *function*	| `null`		| Function with `geometry` and `data` parameters, returns HTML `string` to display in region hover-over
 `map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
 `multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__

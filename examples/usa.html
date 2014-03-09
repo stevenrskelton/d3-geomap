@@ -18,7 +18,7 @@
 	<p />
   
 	<template id="example" bind>
-		<d3-datamaps style="width:1000px;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" data="{{data}}" map="usa"></d3-datamaps>
+		<d3-datamaps style="width:1000px;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" data="{{data}}" hoverTemplate="{{hoverTemplate}}" map="usa"></d3-datamaps>
 	</template>
 
 	<p />
@@ -147,7 +147,12 @@
 
 	var model = {
 		data: data,
-		selected: null
+		selected: null,
+		hoverTemplate: function(geography, data) { //this function should just return a string
+			var d = '';
+			if(data && data.statehood) d = ' ' + data.statehood;
+			return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong>' + d + '</div>';
+		}
 	}
 
 	window.addEventListener('polymer-ready', function(){

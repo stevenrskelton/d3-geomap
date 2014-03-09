@@ -460,7 +460,7 @@
   }
   Datamap.prototype.transitionProjection = function() {
 	var self = this;
-	var options = self.options;			
+	var options = self.options;
 	
 	var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
 	self.path = pathAndProjection.path;

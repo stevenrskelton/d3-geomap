@@ -5,7 +5,7 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom">
+<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom hoverTemplate">
   <template>
 	<style>
 		:host { display: block; }
@@ -117,13 +117,11 @@
 					borderColor: self.theme.borderColor || defaultTheme.borderColor,
 					popupTemplate: function(geography, data) { //this function should just return a string
 						if(!self.hover || self.hover.geography.id != geography.id) self.hover = { geography: geography, data: data };
-						//if(c.indexOf(geography.id)>-1){
-						var d = ''; //data.statehood;
-						if(data && data.statehood) d = ' ' + data.statehood;
-						return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong>' + d + '</div>';
-						//}else{
-						//  return '';
-						//}
+						if(self.hoverTemplate){
+							 return self.hoverTemplate(geography, data);
+						}else{
+							return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong></div>';
+						}
 					},
 					popupOffHover: function(){
 						self.hover = null;
