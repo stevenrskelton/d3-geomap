@@ -43,6 +43,16 @@
       strokeWidth: 1,
       arcSharpness: 1,
       animationSpeed: 600
+    },
+    backgroundConfig: {
+		backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg', //srtm30plus_hilldhading_B.overview_res5km.jpg')", //
+		backgroundPositionX: 0,
+		backgroundPositionY: -0.13,
+		zoom: {
+			x: 17,
+			y: -2,
+			scale: 5
+		}
     }
   };
 
@@ -105,9 +115,13 @@
     }
 
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
-
+	console.log('dgg');
+console.log(data);
+console.log(geoData);
+console.log(geo);
     geo.enter()
       .append('path')
+	  .attr('o', function(d){ /*console.log(d);*/ return ''; })
       .attr('d', this.path)
       .attr('class', function(d) {
         return 'datamaps-subunit ' + d.id;
@@ -223,6 +237,170 @@
       .html(html);
   }
 
+    /** plugin to render background image */
+  function handleBackground (layer, data, options) {
+
+    var self = this,
+     svg = this.svg,
+     position = null;
+	 console.log('handleBackground');
+	 console.log(options)
+	 console.log(svg);
+	 
+	 var container = d3.select( this.options.element )[0][0]
+	 var w = container.clientWidth;
+	 var h = container.clientHeight;
+	 console.log(w + ' x ' + h);
+	 
+	 var subunits = this.svg.select('g.datamaps-subunits');
+    if ( subunits.empty() ) {
+      subunits = this.addLayer('datamaps-subunits', null, true);
+    }
+	 
+	 var layer = svg.select('g.datamaps-background')[0][0];
+	 if(!layer){
+		layer = svg.insert('g', ':first-child');
+		layer.attr('id','datamaps-background')
+		image = layer.insert('image', ':first-child');
+	 }
+	 
+	 var x = (w / -2) - (options.backgroundPositionX);
+	 var y = (w * 0.5 / -2) - (options.backgroundPositionY);
+	 var height = w * 0.5
+	 var width = w
+
+	 var sx = options.zoom.scale, sy = options.zoom.scale, cx = w / 2, cy = h /2 + 25;
+	 
+	image.attr('xlink:href', options.backgroundImage)
+	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + (cx-sx*cx * (1 + options.zoom.x/180)) + ', ' + (cy-sy*cy + (options.zoom.y/180 *h/2*sy)) + ')')
+	  //.attr('transform','translate(20,0)')
+	  .attr('y', (h - height + 50) / 2 + 'px')
+	  .attr('x', (w - width) / 2 + 'px')
+      .attr('height', height + 'px')
+	  .attr('width', width + 'px');
+	  
+	  //disable built in image dragging in firefox
+	image.on('dragstart', function(e){ d3.event.preventDefault(); })
+	
+	svg[0][0].addEventListener("translation",function(){
+		//read translation and apply to image
+		var g = svg.select('g.datamaps-subunits')[0][0];
+		var transform = g.getAttribute('transform');
+		layer.attr('transform',transform);
+	},false);
+  }
+
+  /** plugin to allow pan and zoom */
+  function handleUserMovement (layer, data, options) {
+
+    var self = this,
+     svg = this.svg,
+     position = null;
+
+	 function getScale(){
+		var g = svg.select('g.datamaps-subunits')[0][0];
+		var s = g.transform.baseVal.getItem(0);
+		var sx = 0, sy = 0;
+		if (s.type == SVGTransform.SVG_TRANSFORM_SCALE){
+			sx = s.matrix.a;
+			//sy = s.matrix.d;
+		}
+		return sx;
+	 }
+	 function setScale(scale){
+		var g = svg.select('g.datamaps-subunits')[0][0];
+		var s = g.transform.baseVal.getItem(0);
+		
+		var oldSize = g.getBoundingClientRect();
+
+		var oldScale = getScale();
+		s.setScale(scale, scale);
+		console.log('w:' + oldSize.width + ' h:'+ oldSize.height + ' l:' + oldSize.left + ' t:' + oldSize.top);
+
+		//also need to re-center
+		var size = g.getBoundingClientRect();
+		console.log('dw: ' + (size.width - oldSize.width) + ' dh:'+ (size.height - oldSize.height) + ' dl:' + (size.left - oldSize.left) + ' dt:' + (size.top - oldSize.top));
+		//console.log('change left: ' + (size.left - oldSize.left));
+
+		var cx = -20 / scale; //(size.left - oldSize.left) / 10 * scale;
+		var cy = -20 / scale; //(size.top - oldSize.top) / 10 * scale;
+
+		if(oldScale > scale){
+			cx = 20 / scale;
+			cy = 20 / scale;
+		}/*
+		var s = (scale - oldScale) + 1;
+		var cx = (oldSize.left * s - size.left)/oldScale;
+		var cy = (oldSize.top * s - size.top)/oldScale;
+		*/
+		console.log('old: ' + oldScale + ' scale: ' + scale + ' ds: ' + (oldScale / scale));
+		var t = getTranslation();
+		//console.log(cx + ' ' + cy);
+		setTranslation(t.x + cx, t.y + cy);
+	 }
+	 
+	 function getTranslation(){
+		var g = svg.select('g.datamaps-subunits')[0][0];
+		var t = g.transform.baseVal.getItem(1);
+		var tx = 0, ty = 0;
+		if (t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+			tx = t.matrix.e;
+			ty = t.matrix.f;
+		}
+		return {x: tx, y:ty};
+	 }
+	 function setTranslation(x, y){
+		var g = svg.select('g.datamaps-subunits')[0][0];
+		var t = g.transform.baseVal.getItem(1);
+		t.setTranslate(x, y);
+		var event = document.createEvent("Event");
+		event.initEvent("translation",true,true);
+		g.dispatchEvent(event);
+	 }
+	 var clean = true;
+	svg.on('mousedown', function ( datum ) {
+		if(d3.event.which == 1){
+			position = d3.mouse(this);
+			var scale = getScale();
+			var translation = getTranslation();
+			var oldCursor = svg[0][0].style.cursor;
+			if(!clean) oldCursor = '';
+			clean = false;
+			svg.style('cursor','move');
+			svg.on('mousemove', null);
+			svg.on('mousemove', function(e) {
+				var newPosition = d3.mouse(this);
+				//scale to keep movements porportional to mouse movements
+				var x = (newPosition[0] - (position[0]||0)) / scale;
+				var y = (newPosition[1] - (position[1]||1)) / scale;
+				setTranslation(translation.x + x, translation.y + y);
+			});
+			svg.on('mouseup', function() {
+				svg.style('cursor',oldCursor);
+				clean = true;
+				svg.on('mousemove', null);
+			});
+		}
+	});
+	function mousewheel( datum ) {
+		var scale = getScale();
+		var change;
+		
+		if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
+		else change = d3.event.detail * -1;
+ 
+		if (change > 0){
+			scale *= 1.1;
+		}else{
+			scale *= 0.9;
+		}
+		setScale(scale);
+		d3.event.stopPropagation();
+	};
+	svg.on('mousewheel', mousewheel);
+	svg.on('DOMMouseScroll', mousewheel);
+  }
+  
   function handleArcs (layer, data, options) {
     var self = this,
         svg = this.svg;
@@ -450,6 +628,8 @@
     this.addPlugin('legend', addLegend);
     this.addPlugin('arc', handleArcs);
     this.addPlugin('labels', handleLabels);
+	this.addPlugin('userMovement', handleUserMovement);
+	this.addPlugin('background', handleBackground);
 
     //append style block with basic hoverover styles
     if ( ! this.options.disableDefaultStyles ) {
@@ -540,6 +720,7 @@
       layer = this.svg.append('g')
     }
     return layer.attr('id', id || '')
+	  .attr('transform', 'scale(1,1), translate(0,0)')
       .attr('class', className || '');
   };
 

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>D3 SVG Geographic Map</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="platform-0.2.0.js"></script>
+	<script src="polymer-0.2.0.js"></script>
+	<script src="d3.v3.min.js"></script>
+	<link rel="import" href="../src/d3-datamaps.html">
+
+	<style>
+		d3-datamaps { display:inline-block;border:1px solid black; }
+		.params { display: inline-block; vertical-align: top; }
+		.params tr td:nth-of-type(1) { font-weight: bold; width: 50px; }
+		.params tr td:nth-of-type(2) { text-align: right; }
+		.params tr td:nth-of-type(3) { text-align: center; width: 200px }
+		.params tr td:nth-of-type(4) { text-align: right; }
+		.params tr td:nth-of-type(5) { text-align: right; width: 100px; }
+		.params input[type=text] { text-align: right; width: 50px; }
+	</style>
+  </head>
+  <body unresolved>
+
+	<h2>Zoom</h2>
+	Map background should be adjusted by zoom functionality.
+
+	<p />
+
+	<template id="example" bind>
+		<h3>Zoom</h3>
+		<d3-datamaps style="width:500px;height:525px;" zoom="{{zoom}}" theme="{{theme}}"></d3-datamaps>
+
+		<table class="params">
+			<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>		<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
+			<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>			<td>90°</td>		<td><input type="text" value="{{zoom.y}}"></td></tr>
+			<tr><td>Scale</td>	<td>100%</td>	<td><input type="range" onfocus="this.select()" min="100" max="1500" value="{{zoom.scale}}"></td>	<td>1500%</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
+			<tr style="height:40px"><td colspan="5"></td></tr>
+			<tr><td>backgroundImage</td>	<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
+			<tr><td>backgroundPositionX</td><td>-500px</td>	<td><input disabled type="range" onfocus="this.select()" min="-500" max="500" value="{{theme.backgroundPositionX}}"></td>	<td>500px</td>	<td><input type="text" value="{{theme.backgroundPositionX}}"></td></tr>
+			<tr><td>backgroundPositionY</td><td>-500px</td>	<td><input disabled type="range" onfocus="this.select()" min="-500" max="500" value="{{theme.backgroundPositionY}}"></td>	<td>500px</td>	<td><input type="text" value="{{theme.backgroundPositionY}}"></td></tr>
+		</table>
+	</template>
+
+		<p />
+
+<script>
+
+	var model = {
+		zoom: {
+			x: 17,
+			y: -2,
+			scale: 500
+		},
+		theme: {
+			defaultFill: 'transparent',
+			borderWidth: 1,
+			borderColor: '#ddd',
+			backgroundImage: "url('../src/SRTM30_Plus/srtm30plus.jpg')", //srtm30plus_hilldhading_B.overview_res5km.jpg')", //
+			backgroundPositionX: 0,
+			backgroundPositionY: -13
+		}
+	}
+
+	window.addEventListener('polymer-ready', function(){
+		document.getElementById('example').model = model;
+	});
+</script>
+
+  </body>
+</html>
