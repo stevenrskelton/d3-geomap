@@ -115,10 +115,6 @@
     }
 
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
-	console.log('dgg');
-console.log(data);
-console.log(geoData);
-console.log(geo);
     geo.enter()
       .append('path')
 	  .attr('o', function(d){ /*console.log(d);*/ return ''; })
@@ -243,9 +239,6 @@ console.log(geo);
     var self = this,
      svg = this.svg,
      position = null;
-	 console.log('handleBackground');
-	 console.log(options)
-	 console.log(svg);
 	 
 	 var container = d3.select( this.options.element )[0][0]
 	 var w = container.clientWidth;
@@ -315,11 +308,11 @@ console.log(geo);
 
 		var oldScale = getScale();
 		s.setScale(scale, scale);
-		console.log('w:' + oldSize.width + ' h:'+ oldSize.height + ' l:' + oldSize.left + ' t:' + oldSize.top);
+		//console.log('w:' + oldSize.width + ' h:'+ oldSize.height + ' l:' + oldSize.left + ' t:' + oldSize.top);
 
 		//also need to re-center
 		var size = g.getBoundingClientRect();
-		console.log('dw: ' + (size.width - oldSize.width) + ' dh:'+ (size.height - oldSize.height) + ' dl:' + (size.left - oldSize.left) + ' dt:' + (size.top - oldSize.top));
+		//console.log('dw: ' + (size.width - oldSize.width) + ' dh:'+ (size.height - oldSize.height) + ' dl:' + (size.left - oldSize.left) + ' dt:' + (size.top - oldSize.top));
 		//console.log('change left: ' + (size.left - oldSize.left));
 
 		var cx = -20 / scale; //(size.left - oldSize.left) / 10 * scale;
@@ -333,6 +326,8 @@ console.log(geo);
 		var cx = (oldSize.left * s - size.left)/oldScale;
 		var cy = (oldSize.top * s - size.top)/oldScale;
 		*/
+				console.log(size.x + ' ' + size.y + '     ' + x + ' ' + y + '    ' + w + ' ' + h + '     ' + size.width + ' ' + size.height);
+
 		console.log('old: ' + oldScale + ' scale: ' + scale + ' ds: ' + (oldScale / scale));
 		var t = getTranslation();
 		//console.log(cx + ' ' + cy);
@@ -352,35 +347,56 @@ console.log(geo);
 	 function setTranslation(x, y){
 		var g = svg.select('g.datamaps-subunits')[0][0];
 		var t = g.transform.baseVal.getItem(1);
+		
+		var trans = getTranslation();
+		var scale = getScale();
+		
+		//limit to edges
+		var container = d3.select( self.options.element )[0][0]
+		var w = container.clientWidth;
+		var h = container.clientHeight;
+
+		var size = svg[0][0].getBBox();
+
+		if(size.x + (x - trans.x) >= 0) x = trans.x - 0.01;
+		if(size.y + (y - trans.y) >= 0) y = trans.y - 0.01;
+
+		if(w - size.x - size.width - (x - trans.x) >= 0) x = trans.x + 0.01;
+		if(h - size.y - size.height - (y - trans.y) >= 0) y = trans.y + 0.01;
+	
 		t.setTranslate(x, y);
 		var event = document.createEvent("Event");
 		event.initEvent("translation",true,true);
 		g.dispatchEvent(event);
 	 }
-	 var clean = true;
+
+	 var oldCursor;
 	svg.on('mousedown', function ( datum ) {
 		if(d3.event.which == 1){
 			position = d3.mouse(this);
 			var scale = getScale();
 			var translation = getTranslation();
-			var oldCursor = svg[0][0].style.cursor;
-			if(!clean) oldCursor = '';
-			clean = false;
+			oldCursor = svg[0][0].style.cursor;
 			svg.style('cursor','move');
 			svg.on('mousemove', null);
 			svg.on('mousemove', function(e) {
 				var newPosition = d3.mouse(this);
 				//scale to keep movements porportional to mouse movements
 				var x = (newPosition[0] - (position[0]||0)) / scale;
-				var y = (newPosition[1] - (position[1]||1)) / scale;
+				var y = (newPosition[1] - (position[1]||0)) / scale;
 				setTranslation(translation.x + x, translation.y + y);
 			});
 			svg.on('mouseup', function() {
 				svg.style('cursor',oldCursor);
-				clean = true;
+				oldCursor = null;
 				svg.on('mousemove', null);
 			});
 		}
+	});
+	svg.on('mouseout', function(){
+		if(oldCursor) svg.style('cursor',oldCursor);
+		oldCursor = null;
+		svg.on('mousemove', null);
 	});
 	function mousewheel( datum ) {
 		var scale = getScale();
