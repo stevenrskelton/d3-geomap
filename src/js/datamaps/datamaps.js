@@ -46,7 +46,7 @@
     },
     backgroundConfig: {
 		backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg', //srtm30plus_hilldhading_B.overview_res5km.jpg')", //
-		backgroundPositionX: 0,
+		backgroundPositionX: -30,
 		backgroundPositionY: -0.13,
 		zoom: {
 			x: 17,
@@ -240,18 +240,17 @@
      svg = this.svg,
      position = null;
 	 
-	 var container = d3.select( this.options.element )[0][0]
+	 var container = d3.select( self.options.element ).node();
 	 var w = container.clientWidth;
 	 var h = container.clientHeight;
-	 console.log(w + ' x ' + h);
 	 
-	 var subunits = this.svg.select('g.datamaps-subunits');
-    if ( subunits.empty() ) {
-      subunits = this.addLayer('datamaps-subunits', null, true);
-    }
+	 var subunits = svg.select('g.datamaps-subunits');
+	if ( subunits.empty() ) {
+		subunits = self.addLayer('datamaps-subunits', null, true);
+	}
 	 
-	 var layer = svg.select('g.datamaps-background')[0][0];
-	 if(!layer){
+	 var layer = svg.select('g.datamaps-background');
+	 if(layer.empty()){
 		layer = svg.insert('g', ':first-child');
 		layer.attr('id','datamaps-background')
 		image = layer.insert('image', ':first-child');
@@ -275,9 +274,9 @@
 	  //disable built in image dragging in firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
 	
-	svg[0][0].addEventListener("translation",function(){
+	svg.node().addEventListener("translation",function(){
 		//read translation and apply to image
-		var g = svg.select('g.datamaps-subunits')[0][0];
+		var g = svg.select('g.datamaps-subunits').node();
 		var transform = g.getAttribute('transform');
 		layer.attr('transform',transform);
 	},false);
@@ -291,7 +290,7 @@
      position = null;
 
 	 function getScale(){
-		var g = svg.select('g.datamaps-subunits')[0][0];
+		var g = svg.select('g.datamaps-subunits').node();
 		var s = g.transform.baseVal.getItem(0);
 		var sx = 0, sy = 0;
 		if (s.type == SVGTransform.SVG_TRANSFORM_SCALE){
@@ -300,42 +299,36 @@
 		}
 		return sx;
 	 }
+	 if(!Math.sign){
+		Math.sign = function sign(x){
+			if( +x === x ) { // check if a number was given
+				return (x === 0) ? x : (x > 0) ? 1 : -1;
+			}
+			return NaN;
+		} 
+	 }
 	 function setScale(scale){
-		var g = svg.select('g.datamaps-subunits')[0][0];
+		var g = svg.select('g.datamaps-subunits').node();
 		var s = g.transform.baseVal.getItem(0);
 		
-		var oldSize = g.getBoundingClientRect();
+		if(scale == 1) return;
+		if(scale < 1) scale = 1;
 
 		var oldScale = getScale();
+		if(scale == oldScale) return;
+ 
 		s.setScale(scale, scale);
-		//console.log('w:' + oldSize.width + ' h:'+ oldSize.height + ' l:' + oldSize.left + ' t:' + oldSize.top);
 
 		//also need to re-center
-		var size = g.getBoundingClientRect();
-		//console.log('dw: ' + (size.width - oldSize.width) + ' dh:'+ (size.height - oldSize.height) + ' dl:' + (size.left - oldSize.left) + ' dt:' + (size.top - oldSize.top));
-		//console.log('change left: ' + (size.left - oldSize.left));
+		var cx = 20 / scale * Math.sign(oldScale - scale);
+		var cy = 20 / scale * Math.sign(oldScale - scale);
 
-		var cx = -20 / scale; //(size.left - oldSize.left) / 10 * scale;
-		var cy = -20 / scale; //(size.top - oldSize.top) / 10 * scale;
-
-		if(oldScale > scale){
-			cx = 20 / scale;
-			cy = 20 / scale;
-		}/*
-		var s = (scale - oldScale) + 1;
-		var cx = (oldSize.left * s - size.left)/oldScale;
-		var cy = (oldSize.top * s - size.top)/oldScale;
-		*/
-				console.log(size.x + ' ' + size.y + '     ' + x + ' ' + y + '    ' + w + ' ' + h + '     ' + size.width + ' ' + size.height);
-
-		console.log('old: ' + oldScale + ' scale: ' + scale + ' ds: ' + (oldScale / scale));
 		var t = getTranslation();
-		//console.log(cx + ' ' + cy);
 		setTranslation(t.x + cx, t.y + cy);
 	 }
 	 
 	 function getTranslation(){
-		var g = svg.select('g.datamaps-subunits')[0][0];
+		var g = svg.select('g.datamaps-subunits').node();
 		var t = g.transform.baseVal.getItem(1);
 		var tx = 0, ty = 0;
 		if (t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
@@ -345,26 +338,26 @@
 		return {x: tx, y:ty};
 	 }
 	 function setTranslation(x, y){
-		var g = svg.select('g.datamaps-subunits')[0][0];
+		var g = svg.select('g.datamaps-subunits').node();
 		var t = g.transform.baseVal.getItem(1);
 		
-		var trans = getTranslation();
-		var scale = getScale();
+		var current = getTranslation();
 		
 		//limit to edges
-		var container = d3.select( self.options.element )[0][0]
+		var container = d3.select( self.options.element ).node();
 		var w = container.clientWidth;
 		var h = container.clientHeight;
 
-		var size = svg[0][0].getBBox();
+		var size = svg.node().getBBox();
 
-		if(size.x + (x - trans.x) >= 0) x = trans.x - 0.01;
-		if(size.y + (y - trans.y) >= 0) y = trans.y - 0.01;
+		if(size.x + (x - current.x) >= 0) x = current.x;
+		if(size.y + (y - current.y) >= 0) y = current.y;
 
-		if(w - size.x - size.width - (x - trans.x) >= 0) x = trans.x + 0.01;
-		if(h - size.y - size.height - (y - trans.y) >= 0) y = trans.y + 0.01;
-	
-		t.setTranslate(x, y);
+		if(w - size.x - size.width - (x - current.x) >= 0) x = current.x;
+		if(h - size.y - size.height - (y - current.y) >= 0) y = current.y;
+
+		if(x!=current.x || y!=current.y) t.setTranslate(x, y);
+ 
 		var event = document.createEvent("Event");
 		event.initEvent("translation",true,true);
 		g.dispatchEvent(event);
@@ -376,7 +369,8 @@
 			position = d3.mouse(this);
 			var scale = getScale();
 			var translation = getTranslation();
-			oldCursor = svg[0][0].style.cursor;
+			if(cleanExit) oldCursor = svg.node().style.cursor;
+		    cleanExit = false;
 			svg.style('cursor','move');
 			svg.on('mousemove', null);
 			svg.on('mousemove', function(e) {
@@ -389,13 +383,15 @@
 			svg.on('mouseup', function() {
 				svg.style('cursor',oldCursor);
 				oldCursor = null;
+				cleanExit = true;
 				svg.on('mousemove', null);
 			});
 		}
 	});
 	svg.on('mouseout', function(){
-		if(oldCursor) svg.style('cursor',oldCursor);
+		svg.style('cursor',oldCursor);
 		oldCursor = null;
+		cleanExit = true;
 		svg.on('mousemove', null);
 	});
 	function mousewheel( datum ) {
