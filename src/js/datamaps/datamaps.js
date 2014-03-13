@@ -233,27 +233,15 @@
       .html(html);
   }
 
-  if(!Math.sign){
-	//not implemented in Chrome
-	Math.sign = function sign(x){
-		if( +x === x ) { // check if a number was given
-			return (x === 0) ? x : (x > 0) ? 1 : -1;
-		}
-		return NaN;
-	} 
-  }
-
-    /** plugin to render background image */
+  /** plugin to render background image */
   function handleBackground (layer, data, options) {
-
-	  console.log(options.scale);
-	  
+  
     var self = this,
      svg = this.svg,
      position = null;
 	 
 	 var container = d3.select( self.options.element ).node();
-	 var w = container.clientWidth;
+	 var w = container.clientWidth + 2;
 	 var h = container.clientHeight;
 	 
 	 var subunits = svg.select('g.datamaps-subunits');
@@ -273,23 +261,23 @@
 	 }
 	 
 	//map renders differently than standard format, so adjust image
-	var backgroundPositionX = 0 //-0.5;
-	var backgroundPositionY = 0 //-6;
+	var backgroundPositionX = -0.5;
+	var backgroundPositionY = 25; //17 + options.scale * 1.8;
 	
 	var aspect = options.projection === "mercator" ? 1.45 : 1.8;
-	var x = (w / -2) - backgroundPositionX;
-	var y = (w / 0.5 / -2) - backgroundPositionY;
-	var height = w * 0.5
-	var width = w
+	//var x = (w / -2) - backgroundPositionX;
+	//var y = (w / 0.5 / -2) - backgroundPositionY;
+	var height = w * 0.5;
+	var width = w;
 
 	 var sx = options.scale, sy = options.scale;
-	 var cx = w / 2, cy = h /2 + 25;
+	 var cx = w / 2, cy = h /2;
 	 
 	image.attr('xlink:href', options.backgroundImage)
 	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + 
 		(cx - sx*cx * (1 + options.centerX/180) + backgroundPositionX) + ', ' + 
 		(cy - sy*cy + sy * (options.centerY/180 *h/2) + backgroundPositionY) + ')')
-	  .attr('y', (h - height + 50) / 2 + 'px')
+	  .attr('y', (h - height) / 2 + 'px')
 	  .attr('x', (w - width) / 2 + 'px')
       .attr('height', height + 'px')
 	  .attr('width', width + 'px');
@@ -297,7 +285,7 @@
 	  //disable built in image dragging for firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
 	
-	svg.node().addEventListener("translation",function(){
+	svg.node().addEventListener("transform",function(){
 		//read translation and apply to image
 		var g = svg.select('g.datamaps-subunits').node();
 		var transform = g.getAttribute('transform');
@@ -312,55 +300,55 @@
      svg = this.svg,
      position = null;
 
-	 function getScale(){
-		var g = svg.select('g.datamaps-subunits').node();
-		var s = g.transform.baseVal.getItem(0);
-		var sx = 0;
-		if (s.type == SVGTransform.SVG_TRANSFORM_SCALE){
-			sx = s.matrix.a;
-		}
-		return sx;
-	 }
 	 function setScale(scale){
-		var g = svg.select('g.datamaps-subunits').node();
-		var s = g.transform.baseVal.getItem(0);
-		
-		if(scale == 1) return;
-		if(scale < 1) scale = 1;
+		var current = self.getSVGTransform();
+		if(scale == current.scale) return;
 
-		var oldScale = getScale();
-		if(scale == oldScale) return;
+		//limit to applied scale 1 (map may be projected)
+		if(scale < current.scale){
+			var container = d3.select( self.options.element ).node();
+			var w = container.clientWidth;
+			var h = container.clientHeight;
+			var size = svg.node().getBBox();
+
+			var incr = 0.005;
+			while( size.width * scale / current.scale < container.clientWidth
+				|| size.height * scale / current.scale < container.clientHeight){
+				scale += incr;
+			}
+			if(scale >= current.scale) return;
+		}
  
-		s.setScale(scale, scale);
+		var g = svg.select('g.datamaps-subunits').node();
+		var b = g.transform.baseVal;
+		var count = b.numberOfItems;
+		var t = null;
+		for(var i=0;i<count;i++){
+			var bi = b.getItem(i);
+			if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE){
+				t = bi;
+				break;
+			}
+		}
+		if(!t){
+			t = svg.node().createSVGTransform();
+			b.appendItem(t);
+		}
+		t.setScale(scale, scale);
 
 		//also need to re-center
-		var cx = 20 / scale * Math.sign(oldScale - scale);
-		var cy = 20 / scale * Math.sign(oldScale - scale);
+		var cx = 20 / scale * Math.sign(current.scale - scale);
+		var cy = 20 / scale * Math.sign(current.scale - scale);
 
-		var t = getTranslation();
-		setTranslation(t.x + cx, t.y + cy);
-	 }
-	 function getTranslation(){
-		var g = svg.select('g.datamaps-subunits').node();
-		var t = g.transform.baseVal.getItem(1);
-		var tx = 0, ty = 0;
-		if (t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
-			tx = t.matrix.e;
-			ty = t.matrix.f;
-		}
-		return {x: tx, y:ty};
+		setTranslation(current.x + cx, current.y + cy);
 	 }
 	 function setTranslation(x, y){
-		var g = svg.select('g.datamaps-subunits').node();
-		var t = g.transform.baseVal.getItem(1);
-		
-		var current = getTranslation();
+		var current = self.getSVGTransform();
 		
 		//limit to edges
 		var container = d3.select( self.options.element ).node();
 		var w = container.clientWidth;
 		var h = container.clientHeight;
-
 		var size = svg.node().getBBox();
 
 		var diffX = current.x - x;
@@ -372,22 +360,44 @@
 		if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
 		if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
 
-		if(x!=current.x || y!=current.y) t.setTranslate(x, y);
+		//snap if already out of bounds
+		if(size.height - y < h){
+			y = h * (1 / current.scale - 1) / 2;;
+		}
+ 
+		if(x!=current.x || y!=current.y){
+			var g = svg.select('g.datamaps-subunits').node();
+			var b = g.transform.baseVal;
+			var count = b.numberOfItems;
+			var t = null;
+			for(var i=0;i<count;i++){
+				var bi = b.getItem(i);
+				if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+					t = bi;
+					break;
+				}
+			}
+			if(!t){
+				t = svg.node().createSVGTransform();
+				b.appendItem(t);
+			}
+			t.setTranslate(x, y);
+		}
  
 		//raise an event
 		// other plugins might need to sync translation
 		var event = document.createEvent("Event");
-		event.initEvent("translation",true,true);
-		g.dispatchEvent(event);
+		event.initEvent("transform", true, true);
+		svg.node().dispatchEvent(event);
 	 }
 
+	 var cleanExit = true;
 	if(options.panEnabled){
 		var oldCursor;
 		svg.on('mousedown', function ( datum ) {
 			if(d3.event.which == 1){
 				position = d3.mouse(this);
-				var scale = getScale();
-				var translation = getTranslation();
+				var transform = self.getSVGTransform();
 				if(cleanExit) oldCursor = svg.node().style.cursor;
 				cleanExit = false;
 				svg.style('cursor','move');
@@ -395,9 +405,9 @@
 				svg.on('mousemove', function(e) {
 					var newPosition = d3.mouse(this);
 					//scale to keep movements porportional to mouse movements
-					var x = (newPosition[0] - (position[0]||0)) / scale;
-					var y = (newPosition[1] - (position[1]||0)) / scale;
-					setTranslation(translation.x + x, translation.y + y);
+					var x = (newPosition[0] - (position[0]||0)) / transform.scale;
+					var y = (newPosition[1] - (position[1]||0)) / transform.scale;
+					setTranslation(transform.x + x, transform.y + y);
 				});
 				svg.on('mouseup', function() {
 					svg.style('cursor',oldCursor);
@@ -418,7 +428,7 @@
 	}
 	if(options.zoomEnabled){
 		function mousewheel( datum ) {
-			var scale = getScale();
+			var scale = self.getSVGTransform().scale;
 			var change;
 			
 			if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
@@ -631,6 +641,15 @@
 
   }
 
+  if(!Math.sign){
+    Math.sign = function sign(x){
+      if( +x === x ) { // check if a number was given
+        return (x === 0) ? x : (x > 0) ? 1 : -1;
+      }
+      return NaN;
+    }
+  }
+
   //stolen from underscore.js
   function defaults(obj) {
     Array.prototype.slice.call(arguments, 1).forEach(function(source) {
@@ -762,7 +781,6 @@
       layer = this.svg.append('g')
     }
     return layer.attr('id', id || '')
-	  .attr('transform', 'scale(1,1), translate(0,0)')
       .attr('class', className || '');
   };
 
@@ -802,18 +820,37 @@
     element.on('mousemove', null);
     element.on('mousemove', function() {
       var position = d3.mouse(this);
+      var transform = self.getSVGTransform();
+
       d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover')
-        .style('top', ( (position[1] + 30)) + "px")
+        .style('top', ( (position[1] + transform.y) * transform.scale + 30 ) + "px")
         .html(function() {
           var data = JSON.parse(element.attr('data-info'));
           //if ( !data ) return '';
           return options.popupTemplate(d, data);
         })
-        .style('left', ( position[0]) + "px");
+        .style('left', ( (position[0]  + transform.x) * transform.scale ) + "px");
     });
 
     d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
   };
+  
+  Datamap.prototype.getSVGTransform = function(){
+    var g = this.svg.select('g.datamaps-subunits').node();
+    var b = g.transform.baseVal;
+    var count = b.numberOfItems;
+    var sx = 1, x = 0, y = 0;
+    for(var i=0;i<count;i++){
+      var t = b.getItem(i);
+      if (t.type == SVGTransform.SVG_TRANSFORM_SCALE){
+        sx = t.matrix.a;
+      }else if(t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+        x = t.matrix.e;
+        y = t.matrix.f;
+      }
+    }
+    return { scale: sx, x: x, y: y};
+  }
 
   Datamap.prototype.addPlugin = function( name, pluginFn ) {
     var self = this;

@@ -173,8 +173,9 @@
 							self.d3map.updateChoropleth(selectedToFill);
 						}
 					});
-					var g = datamap.svg.select('g.datamaps-subunits')[0][0];
-					g.addEventListener("translation", function() { self.renderBackgroundImage.call(self); });
+					datamap.svg.node().addEventListener("transform", function() { 
+						self.renderBackgroundImage.call(self); 
+					});
 					self.renderBackgroundImage.call(self);
 				}
 			});
