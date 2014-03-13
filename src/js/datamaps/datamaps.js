@@ -45,15 +45,15 @@
       animationSpeed: 600
     },
     backgroundConfig: {
-		backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg', //srtm30plus_hilldhading_B.overview_res5km.jpg')", //
-		backgroundPositionX: -30,
-		backgroundPositionY: -0.13,
-		zoom: {
-			x: 17,
-			y: -2,
-			scale: 5
-		}
-    }
+		backgroundImage: null,
+		centerX: 0,
+		centerY: 0,
+		scale: 1
+    },
+	userMovementConfig: {
+		zoomEnabled: true,
+		panEnabled: true
+	}
   };
 
   function addContainer( element ) {
@@ -233,9 +233,21 @@
       .html(html);
   }
 
+  if(!Math.sign){
+	//not implemented in Chrome
+	Math.sign = function sign(x){
+		if( +x === x ) { // check if a number was given
+			return (x === 0) ? x : (x > 0) ? 1 : -1;
+		}
+		return NaN;
+	} 
+  }
+
     /** plugin to render background image */
   function handleBackground (layer, data, options) {
 
+	  console.log(options.scale);
+	  
     var self = this,
      svg = this.svg,
      position = null;
@@ -249,29 +261,40 @@
 		subunits = self.addLayer('datamaps-subunits', null, true);
 	}
 	 
+	 var image;
 	 var layer = svg.select('g.datamaps-background');
 	 if(layer.empty()){
 		layer = svg.insert('g', ':first-child');
-		layer.attr('id','datamaps-background')
+		layer.attr('class','datamaps-background')
 		image = layer.insert('image', ':first-child');
+		image.attr('preserveAspectRatio','xMinYMin');
+	 }else{
+		 image = layer.select('image');
 	 }
 	 
-	 var x = (w / -2) - (options.backgroundPositionX);
-	 var y = (w * 0.5 / -2) - (options.backgroundPositionY);
-	 var height = w * 0.5
-	 var width = w
+	//map renders differently than standard format, so adjust image
+	var backgroundPositionX = 0 //-0.5;
+	var backgroundPositionY = 0 //-6;
+	
+	var aspect = options.projection === "mercator" ? 1.45 : 1.8;
+	var x = (w / -2) - backgroundPositionX;
+	var y = (w / 0.5 / -2) - backgroundPositionY;
+	var height = w * 0.5
+	var width = w
 
-	 var sx = options.zoom.scale, sy = options.zoom.scale, cx = w / 2, cy = h /2 + 25;
+	 var sx = options.scale, sy = options.scale;
+	 var cx = w / 2, cy = h /2 + 25;
 	 
 	image.attr('xlink:href', options.backgroundImage)
-	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + (cx-sx*cx * (1 + options.zoom.x/180)) + ', ' + (cy-sy*cy + (options.zoom.y/180 *h/2*sy)) + ')')
-	  //.attr('transform','translate(20,0)')
+	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + 
+		(cx - sx*cx * (1 + options.centerX/180) + backgroundPositionX) + ', ' + 
+		(cy - sy*cy + sy * (options.centerY/180 *h/2) + backgroundPositionY) + ')')
 	  .attr('y', (h - height + 50) / 2 + 'px')
 	  .attr('x', (w - width) / 2 + 'px')
       .attr('height', height + 'px')
 	  .attr('width', width + 'px');
 	  
-	  //disable built in image dragging in firefox
+	  //disable built in image dragging for firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
 	
 	svg.node().addEventListener("translation",function(){
@@ -281,7 +304,7 @@
 		layer.attr('transform',transform);
 	},false);
   }
-
+  
   /** plugin to allow pan and zoom */
   function handleUserMovement (layer, data, options) {
 
@@ -292,20 +315,11 @@
 	 function getScale(){
 		var g = svg.select('g.datamaps-subunits').node();
 		var s = g.transform.baseVal.getItem(0);
-		var sx = 0, sy = 0;
+		var sx = 0;
 		if (s.type == SVGTransform.SVG_TRANSFORM_SCALE){
 			sx = s.matrix.a;
-			//sy = s.matrix.d;
 		}
 		return sx;
-	 }
-	 if(!Math.sign){
-		Math.sign = function sign(x){
-			if( +x === x ) { // check if a number was given
-				return (x === 0) ? x : (x > 0) ? 1 : -1;
-			}
-			return NaN;
-		} 
 	 }
 	 function setScale(scale){
 		var g = svg.select('g.datamaps-subunits').node();
@@ -326,7 +340,6 @@
 		var t = getTranslation();
 		setTranslation(t.x + cx, t.y + cy);
 	 }
-	 
 	 function getTranslation(){
 		var g = svg.select('g.datamaps-subunits').node();
 		var t = g.transform.baseVal.getItem(1);
@@ -350,67 +363,82 @@
 
 		var size = svg.node().getBBox();
 
-		if(size.x + (x - current.x) >= 0) x = current.x;
-		if(size.y + (y - current.y) >= 0) y = current.y;
+		var diffX = current.x - x;
+		var diffY = current.y - y;
+		
+		if(size.x >= diffX && diffX <= 0) x = current.x;
+		if(size.y >= diffY && diffY <= 0) y = current.y;
 
-		if(w - size.x - size.width - (x - current.x) >= 0) x = current.x;
-		if(h - size.y - size.height - (y - current.y) >= 0) y = current.y;
+		if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
+		if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
 
 		if(x!=current.x || y!=current.y) t.setTranslate(x, y);
  
+		//raise an event
+		// other plugins might need to sync translation
 		var event = document.createEvent("Event");
 		event.initEvent("translation",true,true);
 		g.dispatchEvent(event);
 	 }
 
-	 var oldCursor;
-	svg.on('mousedown', function ( datum ) {
-		if(d3.event.which == 1){
-			position = d3.mouse(this);
-			var scale = getScale();
-			var translation = getTranslation();
-			if(cleanExit) oldCursor = svg.node().style.cursor;
-		    cleanExit = false;
-			svg.style('cursor','move');
-			svg.on('mousemove', null);
-			svg.on('mousemove', function(e) {
-				var newPosition = d3.mouse(this);
-				//scale to keep movements porportional to mouse movements
-				var x = (newPosition[0] - (position[0]||0)) / scale;
-				var y = (newPosition[1] - (position[1]||0)) / scale;
-				setTranslation(translation.x + x, translation.y + y);
-			});
-			svg.on('mouseup', function() {
-				svg.style('cursor',oldCursor);
-				oldCursor = null;
-				cleanExit = true;
+	if(options.panEnabled){
+		var oldCursor;
+		svg.on('mousedown', function ( datum ) {
+			if(d3.event.which == 1){
+				position = d3.mouse(this);
+				var scale = getScale();
+				var translation = getTranslation();
+				if(cleanExit) oldCursor = svg.node().style.cursor;
+				cleanExit = false;
+				svg.style('cursor','move');
 				svg.on('mousemove', null);
-			});
-		}
-	});
-	svg.on('mouseout', function(){
-		svg.style('cursor',oldCursor);
-		oldCursor = null;
-		cleanExit = true;
-		svg.on('mousemove', null);
-	});
-	function mousewheel( datum ) {
-		var scale = getScale();
-		var change;
-		
-		if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
-		else change = d3.event.detail * -1;
- 
-		if (change > 0){
-			scale *= 1.1;
-		}else{
-			scale *= 0.9;
-		}
-		setScale(scale);
-		d3.event.stopPropagation();
-	};
-	svg.on('mousewheel', mousewheel);
-	svg.on('DOMMouseScroll', mousewheel);
+				svg.on('mousemove', function(e) {
+					var newPosition = d3.mouse(this);
+					//scale to keep movements porportional to mouse movements
+					var x = (newPosition[0] - (position[0]||0)) / scale;
+					var y = (newPosition[1] - (position[1]||0)) / scale;
+					setTranslation(translation.x + x, translation.y + y);
+				});
+				svg.on('mouseup', function() {
+					svg.style('cursor',oldCursor);
+					oldCursor = null;
+					cleanExit = true;
+					svg.on('mousemove', null);
+				});
+			}
+		});
+		svg.on('mouseout', function(){
+			svg.style('cursor',oldCursor);
+			oldCursor = null;
+			cleanExit = true;
+			svg.on('mousemove', null);
+		});
+	}else{
+		svg.on('mousedown', null);
+	}
+	if(options.zoomEnabled){
+		function mousewheel( datum ) {
+			var scale = getScale();
+			var change;
+			
+			if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
+			else change = -d3.event.detail;
+	
+			//10% scale
+			if (change > 0){
+				scale *= 1.1;
+			}else{
+				scale *= 0.9;
+			}
+			setScale(scale);
+			d3.event.stopPropagation();
+		};
+		svg.on('mousewheel', mousewheel);
+		svg.on('DOMMouseScroll', mousewheel);
+	}else{
+		svg.on('mousewheel', null);
+		svg.on('DOMMouseScroll', null);
+	}
   }
   
   function handleArcs (layer, data, options) {
@@ -629,6 +657,8 @@
     this.options.geographyConfig = defaults(options.geographyConfig, defaultOptions.geographyConfig);
     this.options.bubblesConfig = defaults(options.bubblesConfig, defaultOptions.bubblesConfig);
     this.options.arcConfig = defaults(options.arcConfig, defaultOptions.arcConfig);
+	this.options.backgroundConfig = defaults(options.backgroundConfig, defaultOptions.backgroundConfig);
+	this.options.userMovementConfig = defaults(options.userMovementConfig, defaultOptions.userMovementConfig);
 
     //add the SVG container
     if ( d3.select( this.options.element ).select('svg').length > 0 ) {

@@ -24,9 +24,7 @@
 		highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
 		highlightBorderWidth: 2,
 		cursor: 'pointer',
-		backgroundImage: 'none',
-		backgroundPositionX: 0,
-		backgroundPositionY: 0
+		backgroundImage: null
 	};
 
 	function reformatProjection(zoom, map){
@@ -34,7 +32,7 @@
 			if ( map === 'usa' ) {
 				return function(element){
 					var scale = element.offsetWidth;
-					if(zoom.scale) scale = scale * zoom.scale / 100;
+					if(zoom.scale) scale = scale * zoom.scale;
 
 					projection = d3.geo.albersUsa()
 						.scale(scale)
@@ -48,7 +46,7 @@
 			} else if ( map === 'world' ) {
 				return function(element) {
 					var scale = (element.offsetWidth + 1) / 2 / Math.PI;
-					if(zoom.scale) scale = scale * zoom.scale / 100;
+					if(zoom.scale) scale = scale * zoom.scale;
 
 					var projection = d3.geo.equirectangular()
 						.center([zoom.x || 0, zoom.y || 0])
@@ -80,9 +78,7 @@
 			highlightBorderColor: defaultTheme.highlightBorderColor,
 			highlightBorderWidth: defaultTheme.highlighBorderWidth,
 			cursor: defaultTheme.cursor,
-			backgroundImage: defaultTheme.backgroundImage,
-			backgroundPositionX: defaultTheme.backgroundPositionX,
-			backgroundPositionY: defaultTheme.backgroundPositionY
+			backgroundImage: defaultTheme.backgroundImage
 		},
 		attached: function(){
 			var self = this;
@@ -103,7 +99,6 @@
 			//theme
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
 			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
-			//this.renderBackgroundImage();
 
 			this.d3map = new Datamap({
 				element: this.$.container,
@@ -183,8 +178,13 @@
 					self.renderBackgroundImage.call(self);
 				}
 			});
-			this.d3map.userMovement();
-			this.d3map.background();
+			self.mouseChanged();
+			if(self.theme.backgroundImage) this.d3map.background(null, {
+				backgroundImage: self.theme.backgroundImage || defaultTheme.backgroundImage,
+				centerX: (self.zoom || defaultTheme.zoom).x,
+				centerY: (self.zoom || defaultTheme.zoom).y,
+				scale: (self.zoom || defaultTheme.zoom).scale
+			});
 		},
 		itemClicked: function(geography){
 			var data = {};
@@ -276,12 +276,24 @@
 		observe: {
 			'zoom.x': 'zoomChanged',
 			'zoom.y': 'zoomChanged',
-			'zoom.scale': 'zoomChanged'
+			'zoom.scale': 'zoomChanged',
+			'zoom.zoom': 'mouseChanged',
+			'zoom.pan': 'mouseChanged'
 		},
 		zoom: {
 			x: 0,
 			y: 0,
-			scale: 100
+			scale: 1,
+			zoom: false,
+			pan: false
+		},
+		mouseChanged: function(){
+			if(this.d3map){
+				this.d3map.userMovement(null, {
+					zoomEnabled: this.zoom.zoom,
+					panEnabled: this.zoom.pan
+				});
+			}
 		},
 		zoomChanged: function(oldVal, newVal){
 			if(this.d3map){
@@ -296,11 +308,14 @@
 		renderBackgroundImage: function(){
 			if(this.theme.backgroundImage != 'none' && this.d3map){
 				//if(this.d3map){
-				var svg = this.d3map.svg;
-				var image //= svg.querySelector('image');
-				if(image){
-				
-				}
+				var self = this;
+				this.d3map.background(null, {
+					backgroundImage: self.theme.backgroundImage || defaultTheme.backgroundImage,
+					centerX: (self.zoom || defaultTheme.zoom).x,
+					centerY: (self.zoom || defaultTheme.zoom).y,
+					scale: (self.zoom || defaultTheme.zoom).scale
+				});
+
 				//console.log('svg');
 				//console.log(svg);
 				/*
