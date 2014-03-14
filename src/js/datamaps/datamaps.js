@@ -342,12 +342,16 @@
 
 		if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
 		if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
-
+/*
 		//snap if already out of bounds
 		if(size.height - y < h){
-			y = h * (1 / current.scale - 1) / 2;;
+			console.log('bottom');
+			//y = h * (1 / current.scale - 1) / 2;;
 		}
-
+		if(size.width - x < w){
+			console.log('left');
+		}
+*/
 		if(x!=current.x || y!=current.y){
 			var g = svg.select('g.datamaps-subunits').node();
 			var b = g.transform.baseVal;
