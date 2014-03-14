@@ -173,9 +173,6 @@
 							self.d3map.updateChoropleth(selectedToFill);
 						}
 					});
-					datamap.svg.node().addEventListener("transform", function() { 
-						self.renderBackgroundImage.call(self); 
-					});
 					self.renderBackgroundImage.call(self);
 				}
 			});
@@ -304,7 +301,7 @@
 			}
 		},
 		renderBackgroundImage: function(){
-			if(this.theme.backgroundImage != 'none' && this.d3map){
+			if(this.theme.backgroundImage && this.d3map){
 				this.d3map.background(null, {
 					backgroundImage: this.theme.backgroundImage || defaultTheme.backgroundImage
 				});

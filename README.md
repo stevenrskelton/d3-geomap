@@ -119,7 +119,6 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 ## Todo
 
 - fix out of bound errors with mouse controlled pan, scroll-wheel zoom
-- optimize Firefox performance on mouse zoom and pan
 - hover template using Template
 - better built-in background interface
 - better transitions between zoom changes
