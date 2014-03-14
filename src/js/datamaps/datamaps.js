@@ -232,33 +232,35 @@
 
   /** plugin to render background image */
   function handleBackground (layer, data, options) {
-  
-    var self = this,
-     svg = this.svg,
-     position = null;
 
-	 var image;
-	 var layer = svg.select('g.datamaps-background');
-	 if(layer.empty()){
+    var self = this,
+     svg = this.svg;
+
+	var image;
+	var layer = svg.select('g.datamaps-background');
+	if(layer.empty()){
 		layer = svg.insert('g', ':first-child');
 		layer.attr('class','datamaps-background')
 		image = layer.insert('image', ':first-child');
 		image.attr('preserveAspectRatio','xMinYMin');
-	 }else{
-		 image = layer.select('image');
-	 }
-
+	}else{
+		image = layer.select('image');
+	}
 	var subunits = self.svg.select('g.datamaps-subunits');
-	var size = subunits.node().getBBox();
+	
+	function renderBackground(){
+		var size = subunits.node().getBBox();
 
-	var aspect = 0.5;
-	var diff = size.height - (size.width * aspect);
+		var aspect = 0.5;
+		var diff = size.height - (size.width * aspect);
 
-	image.attr('xlink:href', options.backgroundImage)
-	  .attr('y', (size.y + diff) + 'px')
-	  .attr('x', size.x + 'px')
-      .attr('height', (size.width * aspect) + 'px')
-	  .attr('width', size.width + 'px');
+		image.attr('xlink:href', options.backgroundImage)
+		.attr('y', (size.y + diff) + 'px')
+		.attr('x', size.x + 'px')
+		.attr('height', (size.width * aspect) + 'px')
+		.attr('width', size.width + 'px');
+	}
+	renderBackground();
 
 	  //disable built in image dragging for firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
@@ -269,6 +271,7 @@
 		var transform = g.getAttribute('transform');
 		layer.attr('transform',transform);
 	},false);
+	svg.node().addEventListener("topochanged", renderBackground);
   }
   
   /** plugin to allow pan and zoom */
@@ -701,7 +704,7 @@
 
 	geo.transition().duration(0).attr('d', self.path).call(endall, function(){
 		var event = document.createEvent("Event");
-		event.initEvent("transform", true, true);
+		event.initEvent("topochanged", true, true);
 		self.svg.node().dispatchEvent(event);
 	});
   }
@@ -819,7 +822,7 @@
           //if ( !data ) return '';
           return options.popupTemplate(d, data);
         })
-        .style('left', ((position[0] + transform.x) * transform.scale) + "px");
+        .style('left', position[0] + ((transform.x) * transform.scale) + "px");
     });
 
     d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
