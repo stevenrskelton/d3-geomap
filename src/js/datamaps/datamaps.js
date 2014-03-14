@@ -48,6 +48,7 @@
 		backgroundImage: null
     },
 	userMovementConfig: {
+		zoomScale: 0.1,
 		zoomEnabled: true,
 		panEnabled: true
 	}
@@ -114,7 +115,6 @@
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
     geo.enter()
       .append('path')
-	  .attr('o', function(d){ /*console.log(d);*/ return ''; })
       .attr('d', this.path)
       .attr('class', function(d) {
         return 'datamaps-subunit ' + d.id;
@@ -321,8 +321,10 @@
 		setTranslation(current.x + cx, current.y + cy);
 	 }
 	 function setTranslation(x, y){
+		if(Math.abs(x)==0 && Math.abs(y)==0) return;
+
 		var current = self.getSVGTransform();
-		
+
 		//limit to edges
 		var container = d3.select( self.options.element ).node();
 		var w = container.clientWidth;
@@ -331,7 +333,7 @@
 
 		var diffX = current.x - x;
 		var diffY = current.y - y;
-/*		
+
 		if(size.x >= diffX && diffX <= 0) x = current.x;
 		if(size.y >= diffY && diffY <= 0) y = current.y;
 
@@ -342,7 +344,7 @@
 		if(size.height - y < h){
 			y = h * (1 / current.scale - 1) / 2;;
 		}
- */
+
 		if(x!=current.x || y!=current.y){
 			var g = svg.select('g.datamaps-subunits').node();
 			var b = g.transform.baseVal;
@@ -370,6 +372,7 @@
 	 }
 
 	 var cleanExit = true;
+
 	if(options.panEnabled){
 		var oldCursor;
 		svg.on('mousedown', function ( datum ) {
@@ -412,11 +415,10 @@
 			if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
 			else change = -d3.event.detail;
 	
-			//10% scale
 			if (change > 0){
-				scale *= 1.1;
+				scale *= (1 + options.zoomScale);
 			}else{
-				scale *= 0.9;
+				scale *= (1 - options.zoomScale);
 			}
 			setScale(scale);
 			d3.event.stopPropagation();
@@ -810,7 +812,6 @@
     element.on('mousemove', function() {
       var position = d3.mouse(this);
       var transform = self.getSVGTransform();
-
       d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover')
         .style('top', ((position[1] + transform.y) * transform.scale + 30) + "px")
         .html(function() {

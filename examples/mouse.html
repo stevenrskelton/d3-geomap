@@ -13,7 +13,7 @@
 	<style>
 		d3-datamaps { display:inline-block;border:1px solid black; }
 		.params { display: inline-block; vertical-align: top; }
-		.params tr td:nth-of-type(1) { font-weight: bold; width: 50px; }
+		.params tr td:nth-of-type(1) { font-weight: bold; }
 		.params tr td:nth-of-type(2) { text-align: right; }
 		.params tr td:nth-of-type(3) { text-align: center; width: 200px }
 		.params tr td:nth-of-type(4) { text-align: right; }
@@ -25,21 +25,34 @@
 
 	<h2>Mouse Interactions</h2>
 	Map background should be adjusted by mouse zoom and pan functionality.
+	Zoom should stay centered, and not allow areas outside the map to be visible.
+	Pan should not allow areas outside the map to be visible.
 
 	<p />
 
-	<template id="example" bind>
-		<h3>Zoom</h3>
-		<d3-datamaps style="width:1000px;height:1050px;" zoom="{{zoom}}" theme="{{theme}}"></d3-datamaps>
+	<polymer-element name="zoom-controller" attributes="zoom theme" noscript>
+		<template>
+			<h3>Zoom</h3>
+			<d3-datamaps style="width:600px;height:630px;" zoom="{{zoom}}" theme="{{theme}}"></d3-datamaps>
 
-		<table class="params">
-			<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
-			<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
-			<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{zoom.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
-			<tr><td>Mouse Zoom</td>				<td colspan="4"><input type="checkbox" checked?="{{zoom.zoom}}"></td></tr>
-			<tr><td>Mouse Pan</td>				<td colspan="4"><input type="checkbox" checked?="{{zoom.pan}}"></td></tr>
-			<tr><td>backgroundImage</td>		<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
-		</table>
+			<table class="params">
+				<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
+				<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
+				<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{zoom.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
+				<tr><td>Mouse Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{zoom.zoomScale|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{zoom.zoomScale|toPercent}}" onchange="force()"></td></tr>
+				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.zoom}}" onchange="toggleZoom(this)"></td></tr>
+				<tr><td>Mouse Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.pan}}" onchange="togglePan(this)"></td></tr>
+				<tr><td>backgroundImage</td>		<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
+			</table>
+		</template>
+		<script>
+			PolymerExpressions.prototype.toPercent = function(value) { return value * 100; }
+			PolymerExpressions.prototype.toPercent.toModel = function(value) { return value / 100; }
+		</script>
+	</polymer-element>
+
+	<template id="example" bind>
+		<zoom-controller zoom="{{zoom}}" theme="{{theme}}"></zoom-controller>
 	</template>
 
 	<p />
@@ -51,6 +64,7 @@
 			x: 17,
 			y: -2,
 			scale: 5,
+			zoomScale: 0.1,
 			zoom: true,
 			pan: true
 		},
@@ -58,9 +72,16 @@
 			defaultFill: 'transparent',
 			borderWidth: 1,
 			borderColor: '#ddd',
-			//backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg'
-			backgroundImage: '../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg',
+			backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg'
+			//backgroundImage: '../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg',
 		}
+	}
+
+	function toggleZoom(checkbox){
+		model.zoom.zoom = checkbox.checked;
+	}
+	function togglePan(checkbox){
+		model.zoom.pan = checkbox.checked;
 	}
 
 	window.addEventListener('polymer-ready', function(){

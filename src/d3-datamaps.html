@@ -272,6 +272,7 @@
 			'zoom.x': 'zoomChanged',
 			'zoom.y': 'zoomChanged',
 			'zoom.scale': 'zoomChanged',
+			'zoom.zoomScale': 'mouseChanged',
 			'zoom.zoom': 'mouseChanged',
 			'zoom.pan': 'mouseChanged'
 		},
@@ -279,14 +280,16 @@
 			x: 0,
 			y: 0,
 			scale: 1,
+			zoomScale: 0.1,
 			zoom: false,
 			pan: false
 		},
 		mouseChanged: function(){
 			if(this.d3map){
 				this.d3map.userMovement(null, {
-					zoomEnabled: this.zoom.zoom,
-					panEnabled: this.zoom.pan
+					zoomScale: this.zoom.zoomScale || 0.1,
+					zoomEnabled: this.zoom.zoom || false,
+					panEnabled: this.zoom.pan || false
 				});
 			}
 		},

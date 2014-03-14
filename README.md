@@ -20,6 +20,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Backgrounds](http://files.stevenskelton.ca/d3-datamaps/examples/backgrounds.html)
 
+> [Mouse Control](http://files.stevenskelton.ca/d3-datamaps/examples/mouse.html)
+
 > [Multi-Select](http://files.stevenskelton.ca/d3-datamaps/examples/multiselect.html)
 
 > [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
@@ -91,8 +93,6 @@ Attribute				| Type		| Default					| Description
 `highlightBorderWidth`	| *int*		| 2							| Border width (px) for highlighted/hover region
 `cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
 `backgroundImage`		| *image*	| none						| See the W3C Spec http://www.w3.org/TR/css3-background/#the-background-image
-`backgroundPositionX`	| *pixel*	| 0							| Horizontal offset correction for `backgroundImage`
-`backgroundPositionY`	| *pixel*	| 0							| Vertical offset correction for `backgroundImage`
 
 ## Zoom
 
@@ -103,6 +103,9 @@ Attribute				| Type		| Default					| Description
 `x`	 					| *float*	| 0							| Horizontal offset from center in °, range [-180,180]
 `y`						| *float*	| 0							| Vertical offset from center in °, range [-90,90]
 `scale`					| *float*	| 100						| Percent to zoom, 100% = 1x
+`zoom`					| *boolean*	| false						| Enable mouse zoom using scroll-wheel
+`zoomScale`				| *float*	| 0.1						| Percent to increment/deincrement on mouse zoom
+`pan`					| *boolean*	| false						| Enable mouse pan on drag
 
 ## Backgrounds
 
@@ -115,11 +118,12 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 
 ## Todo
 
+- fix out of bound errors with mouse controlled pan, scroll-wheel zoom
+- optimize Firefox performance on mouse zoom and pan
 - hover template using Template
 - better built-in background interface
 - better transitions between zoom changes
 - disabled regions
-- mouse controlled pan, scroll-wheel zoom
 - different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
 - test responsiveness of bound data attributes
 - expose more DataMaps functionality (bubbles, arcs)
