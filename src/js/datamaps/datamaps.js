@@ -261,24 +261,29 @@
 	 }
 	 
 	//map renders differently than standard format, so adjust image
-	var backgroundPositionX = -0.5;
-	var backgroundPositionY = 25; //17 + options.scale * 1.8;
-	
-	var aspect = options.projection === "mercator" ? 1.45 : 1.8;
-	//var x = (w / -2) - backgroundPositionX;
-	//var y = (w / 0.5 / -2) - backgroundPositionY;
+	var backgroundPositionX = -2;
+	var backgroundPositionY = 39;
+
+	//500x825 = 40
+	//500x525 = 34
+	//500x225 = 28
+	//1000x1050 = 44
+	var aspectPositionX = -2;
+	var aspectPositionY = 0; //3;
+
 	var height = w * 0.5;
 	var width = w;
 
 	 var sx = options.scale, sy = options.scale;
-	 var cx = w / 2, cy = h /2;
+	 var cx = w / 2 + backgroundPositionX;
+	 var cy = h / 2 + backgroundPositionY;
 	 
 	image.attr('xlink:href', options.backgroundImage)
 	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + 
-		(cx - sx*cx * (1 + options.centerX/180) + backgroundPositionX) + ', ' + 
-		(cy - sy*cy + sy * (options.centerY/180 *h/2) + backgroundPositionY) + ')')
-	  .attr('y', (h - height) / 2 + 'px')
-	  .attr('x', (w - width) / 2 + 'px')
+		(cx - sx * (cx + options.centerX / 360 * width)) + ', ' + 
+		(cy - sy * (cy - options.centerY / 180 * height)) + ')')
+	  .attr('y', (h - height + backgroundPositionY + aspectPositionY) / 2 + 'px')
+	  .attr('x', (w - width + backgroundPositionX + aspectPositionX) / 2 + 'px')
       .attr('height', height + 'px')
 	  .attr('width', width + 'px');
 	  
@@ -353,7 +358,7 @@
 
 		var diffX = current.x - x;
 		var diffY = current.y - y;
-		
+/*		
 		if(size.x >= diffX && diffX <= 0) x = current.x;
 		if(size.y >= diffY && diffY <= 0) y = current.y;
 
@@ -364,7 +369,7 @@
 		if(size.height - y < h){
 			y = h * (1 / current.scale - 1) / 2;;
 		}
- 
+ */
 		if(x!=current.x || y!=current.y){
 			var g = svg.select('g.datamaps-subunits').node();
 			var b = g.transform.baseVal;
