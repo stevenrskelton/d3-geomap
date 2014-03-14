@@ -180,12 +180,6 @@
 				}
 			});
 			self.mouseChanged();
-			if(self.theme.backgroundImage) this.d3map.background(null, {
-				backgroundImage: self.theme.backgroundImage || defaultTheme.backgroundImage,
-				centerX: (self.zoom || defaultTheme.zoom).x,
-				centerY: (self.zoom || defaultTheme.zoom).y,
-				scale: (self.zoom || defaultTheme.zoom).scale
-			});
 		},
 		itemClicked: function(geography){
 			var data = {};
@@ -308,65 +302,9 @@
 		},
 		renderBackgroundImage: function(){
 			if(this.theme.backgroundImage != 'none' && this.d3map){
-				//if(this.d3map){
-				var self = this;
 				this.d3map.background(null, {
-					backgroundImage: self.theme.backgroundImage || defaultTheme.backgroundImage,
-					centerX: (self.zoom || defaultTheme.zoom).x,
-					centerY: (self.zoom || defaultTheme.zoom).y,
-					scale: (self.zoom || defaultTheme.zoom).scale
+					backgroundImage: this.theme.backgroundImage || defaultTheme.backgroundImage
 				});
-
-				//console.log('svg');
-				//console.log(svg);
-				/*
-				
-				this.$.container.style.backgroundImage = this.theme.backgroundImage;
-
-				var translatedPositionX = this.theme.backgroundPositionX || defaultTheme.backgroundPositionX;
-				var translatedPositionY = this.theme.backgroundPositionY || defaultTheme.backgroundPositionY;
-
-				var scale = this.zoom.scale / 100;
-				var width = this.$.container.offsetWidth;
-				var height2 = width * 0.43;
-				var height = this.$.container.offsetHeight;
-
-				//zoom
-				translatedPositionX = (( width  - (scale * width  )) / 2) - (translatedPositionX * scale) - (( this.zoom.x || 0 ) / 360 * scale * width        );
-				translatedPositionY = (( height - (scale * height2)) / 2) - (translatedPositionY * scale) + (( this.zoom.y || 0 ) / 360 * scale * (height - 24)) - (30.3 * scale) + (15.3 * height / height2) - 11;
-
-				//svg transform
-				if(this.d3map){
-					var g = this.d3map.svg[0][0].querySelector('g.datamaps-subunits');
-					function getScale(){
-						//var g = svg.select('g.datamaps-subunits')[0][0];
-						var s = g.transform.baseVal.getItem(0);
-						var sx = 0, sy = 0;
-						if (s.type == SVGTransform.SVG_TRANSFORM_SCALE){
-							sx = s.matrix.a;
-							//sy = s.matrix.d;
-						}
-						return sx;
-					}
-					function getTranslation(){
-						//var g = svg.select('g.datamaps-subunits')[0][0];
-						var t = g.transform.baseVal.getItem(1);
-						var tx = 0, ty = 0;
-						if (t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
-							tx = t.matrix.e;
-							ty = t.matrix.f;
-						}
-						return {x: tx, y:ty};
-					}
-					console.log(getScale());
-					scale *= getScale();
-					var translation = getTranslation();
-					translatedPositionX += translation.x;
-					translatedPositionY += translation.y;
-				}
-				
-				this.$.container.style.backgroundSize =  width * scale + 'px';
-				this.$.container.style.backgroundPosition = translatedPositionX + 'px ' + translatedPositionY + 'px';*/
 			}
 		}
 	});

@@ -45,10 +45,7 @@
       animationSpeed: 600
     },
     backgroundConfig: {
-		backgroundImage: null,
-		centerX: 0,
-		centerY: 0,
-		scale: 1
+		backgroundImage: null
     },
 	userMovementConfig: {
 		zoomEnabled: true,
@@ -239,16 +236,7 @@
     var self = this,
      svg = this.svg,
      position = null;
-	 
-	 var container = d3.select( self.options.element ).node();
-	 var w = container.clientWidth + 2;
-	 var h = container.clientHeight;
-	 
-	 var subunits = svg.select('g.datamaps-subunits');
-	if ( subunits.empty() ) {
-		subunits = self.addLayer('datamaps-subunits', null, true);
-	}
-	 
+
 	 var image;
 	 var layer = svg.select('g.datamaps-background');
 	 if(layer.empty()){
@@ -259,34 +247,19 @@
 	 }else{
 		 image = layer.select('image');
 	 }
-	 
-	//map renders differently than standard format, so adjust image
-	var backgroundPositionX = -2;
-	var backgroundPositionY = 39;
 
-	//500x825 = 40
-	//500x525 = 34
-	//500x225 = 28
-	//1000x1050 = 44
-	var aspectPositionX = -2;
-	var aspectPositionY = 0; //3;
+	var subunits = self.svg.select('g.datamaps-subunits');
+	var size = subunits.node().getBBox();
 
-	var height = w * 0.5;
-	var width = w;
+	var aspect = 0.5;
+	var diff = size.height - (size.width * aspect);
 
-	 var sx = options.scale, sy = options.scale;
-	 var cx = w / 2 + backgroundPositionX;
-	 var cy = h / 2 + backgroundPositionY;
-	 
 	image.attr('xlink:href', options.backgroundImage)
-	  .attr('transform','matrix(' + sx + ', 0, 0, ' + sy + ', ' + 
-		(cx - sx * (cx + options.centerX / 360 * width)) + ', ' + 
-		(cy - sy * (cy - options.centerY / 180 * height)) + ')')
-	  .attr('y', (h - height + backgroundPositionY + aspectPositionY) / 2 + 'px')
-	  .attr('x', (w - width + backgroundPositionX + aspectPositionX) / 2 + 'px')
-      .attr('height', height + 'px')
-	  .attr('width', width + 'px');
-	  
+	  .attr('y', (size.y + diff) + 'px')
+	  .attr('x', size.x + 'px')
+      .attr('height', (size.width * aspect) + 'px')
+	  .attr('width', size.width + 'px');
+
 	  //disable built in image dragging for firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
 	
@@ -707,17 +680,28 @@
   Datamap.prototype.transitionProjection = function() {
 	var self = this;
 	var options = self.options;
-	
+
 	var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
 	self.path = pathAndProjection.path;
 	self.projection = pathAndProjection.projection;
-	
+
 	var data = self.jsonData;
 	var subunits = self.svg.select('g.datamaps-subunits');
 	var geoData = topojson.feature( data, data.objects[ options.scope ] ).features;
 	var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
-	
-	geo.transition().duration(0).attr('d', self.path);
+
+	function endall(transition, callback) {
+		var n = 0;
+		transition
+			.each(function() { ++n; })
+			.each("end", function() { if (!--n) callback.apply(this, arguments); });
+	}
+
+	geo.transition().duration(0).attr('d', self.path).call(endall, function(){
+		var event = document.createEvent("Event");
+		event.initEvent("transform", true, true);
+		self.svg.node().dispatchEvent(event);
+	});
   }
   // actually draw the features(states & countries)
   Datamap.prototype.draw = function() {
@@ -828,13 +812,13 @@
       var transform = self.getSVGTransform();
 
       d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover')
-        .style('top', ( (position[1] + transform.y) * transform.scale + 30 ) + "px")
+        .style('top', ((position[1] + transform.y) * transform.scale + 30) + "px")
         .html(function() {
           var data = JSON.parse(element.attr('data-info'));
           //if ( !data ) return '';
           return options.popupTemplate(d, data);
         })
-        .style('left', ( (position[0]  + transform.x) * transform.scale ) + "px");
+        .style('left', ((position[0] + transform.x) * transform.scale) + "px");
     });
 
     d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
