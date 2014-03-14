@@ -822,7 +822,7 @@
           //if ( !data ) return '';
           return options.popupTemplate(d, data);
         })
-        .style('left', position[0] + ((transform.x) * transform.scale) + "px");
+        .style('left', ((position[0] + transform.x) * transform.scale) + "px");
     });
 
     d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
