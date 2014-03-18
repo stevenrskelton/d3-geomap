@@ -32,16 +32,20 @@
 
 	<polymer-element name="zoom-controller" attributes="zoom theme" noscript>
 		<template>
-			<h3>Zoom</h3>
 			<d3-geomap style="width:600px;height:630px;" zoom="{{zoom}}" theme="{{theme}}"></d3-geomap>
 
 			<table class="params">
+				<tr style="height:40px"><td colspan="5"><h3>Mouse Control<h3></td></tr>
+				<tr><td>Mouse Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{zoom.zoomIncrement|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{zoom.zoomIncrement|toPercent}}" onchange="force()"></td></tr>
+				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.zoom}}" onchange="toggleZoom(this)"></td></tr>
+				<tr><td>Mouse Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.pan}}" onchange="togglePan(this)"></td></tr>
+				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center">{{zoom.zoomScale}}</td></tr>
+				<tr><td>Mouse Pan X</td>		<td>{{zoom.panX}}</td><td style="font-weight: bold;">Mouse Pan Y</td><td colspan="2" style="padding-right:10px">{{zoom.panY}}</td></tr>
+				<tr style="height:80px;vertical-align:bottom;"><td colspan="5"><h3>Projection</h3></td></tr>
 				<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
 				<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
 				<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{zoom.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
-				<tr><td>Mouse Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{zoom.zoomScale|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{zoom.zoomScale|toPercent}}" onchange="force()"></td></tr>
-				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.zoom}}" onchange="toggleZoom(this)"></td></tr>
-				<tr><td>Mouse Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.pan}}" onchange="togglePan(this)"></td></tr>
+				<tr style="height:80px;vertical-align:bottom;"><td colspan="5"><h3>Theme</h3></td></tr>
 				<tr><td>backgroundImage</td>		<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
 			</table>
 		</template>
@@ -64,7 +68,7 @@
 			x: 17,
 			y: -2,
 			scale: 5,
-			zoomScale: 0.1,
+			zoomIncrement: 0.1,
 			zoom: true,
 			pan: true
 		},

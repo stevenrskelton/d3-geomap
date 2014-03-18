@@ -173,6 +173,28 @@
 							self.d3map.updateChoropleth(selectedToFill);
 						}
 					});
+					datamap.svg.node().addEventListener("transform",function(){
+						//read translation and apply to image
+						var g = datamap.svg.select('g.datamaps-subunits').node();
+						var transform = g.getAttribute('transform');
+
+						function parse(a){
+							var b={};
+							for (var i in a = a.match(/(\w+\((\-?\d+\.?\d*,?\s?)+\))+/g))
+							{
+								var c = a[i].match(/[\w\.\-]+/g);
+								b[c.shift()] = c;
+							}
+							return b;
+						}
+
+						var p = parse(transform);
+						var translate = p.translate||[0,0];
+						var scale = p.scale||[1];
+						self.zoom.zoomScale = scale[0] * 1;
+						self.zoom.panX = translate[0] * 1;
+						self.zoom.panY = translate[1] * 1;
+					},false);
 					self.renderBackgroundImage.call(self);
 				}
 			});
@@ -269,7 +291,7 @@
 			'zoom.x': 'zoomChanged',
 			'zoom.y': 'zoomChanged',
 			'zoom.scale': 'zoomChanged',
-			'zoom.zoomScale': 'mouseChanged',
+			'zoom.zoomIncrement': 'mouseChanged',
 			'zoom.zoom': 'mouseChanged',
 			'zoom.pan': 'mouseChanged'
 		},
@@ -277,14 +299,17 @@
 			x: 0,
 			y: 0,
 			scale: 1,
-			zoomScale: 0.1,
+			zoomIncrement: 0.1,
 			zoom: false,
-			pan: false
+			pan: false,
+			zoomScale: 1,
+			panX: 0,
+			panY: 0
 		},
 		mouseChanged: function(){
 			if(this.d3map){
 				this.d3map.userMovement(null, {
-					zoomScale: this.zoom.zoomScale || 0.1,
+					zoomIncrement: this.zoom.zoomIncrement || 0.1,
 					zoomEnabled: this.zoom.zoom || false,
 					panEnabled: this.zoom.pan || false
 				});

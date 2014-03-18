@@ -28,7 +28,7 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Sizing and Aspect Ratio](http://files.stevenskelton.ca/d3-geomap/examples/size.html)
 
-> [Zoom and Widths](http://files.stevenskelton.ca/d3-geomap/examples/zoom.html)
+> [Projections](http://files.stevenskelton.ca/d3-geomap/examples/projections.html)
 
 ## Usage
 
@@ -102,10 +102,13 @@ Attribute				| Type		| Default					| Description
 ---						| ---		| ---						| ---
 `x`	 					| *float*	| 0							| Horizontal offset from center in °, range [-180,180]
 `y`						| *float*	| 0							| Vertical offset from center in °, range [-90,90]
-`scale`					| *float*	| 100						| Percent to zoom, 100% = 1x
+`scale`					| *float*	| 1.0						| Scale 1x = 100%
 `zoom`					| *boolean*	| false						| Enable mouse zoom using scroll-wheel
-`zoomScale`				| *float*	| 0.1						| Percent to increment/deincrement on mouse zoom
+`zoomIncrement`			| *float*	| 0.1						| Percent to increment/deincrement on mouse zoom
+`zoomScale`				| *float*	| 1.0						| Scale due to zoom, 1x = 100%
 `pan`					| *boolean*	| false						| Enable mouse pan on drag
+`panX`					| *float*	| 0							| Horizontal offset from center, in pixels
+`panY`					| *float*	| 0							| Vertical offset from center, in pixels
 
 ## Backgrounds
 

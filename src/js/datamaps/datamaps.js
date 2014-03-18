@@ -48,7 +48,7 @@
 		backgroundImage: null
     },
 	userMovementConfig: {
-		zoomScale: 0.1,
+		zoomIncrement: 0.1,
 		zoomEnabled: true,
 		panEnabled: true
 	}
@@ -321,12 +321,30 @@
 		var cx = 20 / scale * Math.sign(current.scale - scale);
 		var cy = 20 / scale * Math.sign(current.scale - scale);
 
+		/*
+				//snap if already out of bounds
+		console.log(size.x + '\t' + size.y + ',\t' + size.width + '\t' + (size.width * aspect) + ',\t' + current.scale + '\t\t' + current.x + ',\t' + current.y)
+		
+		if(size.x > 0) x = 0;
+		if(size.y > 0) y = 0;
+		
+		if(size.x < w - size.width){
+			console.log('right');
+			x = size.x / 2
+		}
+		if(size.y < h - (size.width * aspect)){
+			y = ((size.width * aspect) - h ) / -2 * current.scale;
+			console.log('bottom ' + y + ' !');
+		}
+*/
+		
 		setTranslation(current.x + cx, current.y + cy);
 	 }
 	 function setTranslation(x, y){
 		if(Math.abs(x)==0 && Math.abs(y)==0) return;
 
 		var current = self.getSVGTransform();
+		var aspect = 0.5;
 
 		//limit to edges
 		var container = d3.select( self.options.element ).node();
@@ -341,17 +359,8 @@
 		if(size.y >= diffY && diffY <= 0) y = current.y;
 
 		if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
-		if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
-/*
-		//snap if already out of bounds
-		if(size.height - y < h){
-			console.log('bottom');
-			//y = h * (1 / current.scale - 1) / 2;;
-		}
-		if(size.width - x < w){
-			console.log('left');
-		}
-*/
+		if(h - size.y - (size.width * aspect) + diffY >= 0 && diffY >= 0) y = current.y;
+
 		if(x!=current.x || y!=current.y){
 			var g = svg.select('g.datamaps-subunits').node();
 			var b = g.transform.baseVal;
@@ -423,9 +432,9 @@
 			else change = -d3.event.detail;
 	
 			if (change > 0){
-				scale *= (1 + options.zoomScale);
+				scale *= (1 + options.zoomIncrement);
 			}else{
-				scale *= (1 - options.zoomScale);
+				scale *= (1 - options.zoomIncrement);
 			}
 			setScale(scale);
 			d3.event.stopPropagation();
