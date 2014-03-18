@@ -8,7 +8,7 @@
 	<script src="platform-0.2.0.js"></script>
 	<script src="polymer-0.2.0.js"></script>
 	<script src="d3.v3.min.js"></script>
-	<link rel="import" href="../src/d3-datamaps.html">
+	<link rel="import" href="../src/d3-geomap.html">
   </head>
   <body unresolved>
 
@@ -35,7 +35,7 @@
 	</polymer-element>
 
 	<template id="example" bind>
-		<d3-datamaps style="width:900px;" selected="{{selected}}" multiselect></d3-datamaps>
+		<d3-geomap style="width:900px;" selected="{{selected}}" multiselect></d3-geomap>
 
 		<strong>Selected:</strong> <map-to-kv map="{{selected}}"></map-to-kv>
 	</template>
