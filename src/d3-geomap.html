@@ -1,11 +1,11 @@
 <!--
- https://github.com/stevenrskelton/d3-datamaps
+ https://github.com/stevenrskelton/d3-geomap
 -->
 
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-datamaps" attributes="selected data hover clicked map theme multiselect zoom hoverTemplate rootDirectory">
+<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect zoom hoverTemplate rootDirectory">
   <template>
 	<style>
 		:host { display: block; }
@@ -61,7 +61,7 @@
 		}else return null;
 	}
 
-	Polymer('d3-datamaps', {
+	Polymer('d3-geomap', {
 		rootDirectory: '../src/',
 		d3map: null,
 		hover: null,

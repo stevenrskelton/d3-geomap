@@ -8,10 +8,10 @@
 	<script src="platform-0.2.0.js"></script>
 	<script src="polymer-0.2.0.js"></script>
 	<script src="d3.v3.min.js"></script>
-	<link rel="import" href="../src/d3-datamaps.html">
+	<link rel="import" href="../src/d3-geomap.html">
 
 	<style>
-		d3-datamaps { display:inline-block;border:1px solid black; }
+		d3-geomap { display:inline-block;border:1px solid black; }
 		.params { display: inline-block; vertical-align: top; }
 		.params tr td:nth-of-type(1) { font-weight: bold; width: 50px; }
 		.params tr td:nth-of-type(2) { text-align: right; }
@@ -30,7 +30,7 @@
 
 	<template id="example" bind>
 		<h3>Zoom</h3>
-		<d3-datamaps style="width:500px;height:525px;" zoom="{{zoom}}" theme="{{theme}}"></d3-datamaps>
+		<d3-geomap style="width:500px;height:525px;" zoom="{{zoom}}" theme="{{theme}}"></d3-geomap>
 
 		<table class="params">
 			<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>		<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>

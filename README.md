@@ -1,4 +1,4 @@
-&lt;d3-datamaps&gt;
+&lt;d3-geomap&gt;
 =============
 
 Polymer Web Component for geographic topology visualization.
@@ -14,21 +14,21 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Live Demos
  
-> [World Countries Map](http://files.stevenskelton.ca/d3-datamaps/examples/world.html)
+> [World Countries Map](http://files.stevenskelton.ca/d3-geomap/examples/world.html)
 
-> [USA State Map](http://files.stevenskelton.ca/d3-datamaps/examples/usa.html)
+> [USA State Map](http://files.stevenskelton.ca/d3-geomap/examples/usa.html)
 
-> [Backgrounds](http://files.stevenskelton.ca/d3-datamaps/examples/backgrounds.html)
+> [Backgrounds](http://files.stevenskelton.ca/d3-geomap/examples/backgrounds.html)
 
-> [Mouse Control](http://files.stevenskelton.ca/d3-datamaps/examples/mouse.html)
+> [Mouse Control](http://files.stevenskelton.ca/d3-geomap/examples/mouse.html)
 
-> [Multi-Select](http://files.stevenskelton.ca/d3-datamaps/examples/multiselect.html)
+> [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
 
-> [Themes and Styling](http://files.stevenskelton.ca/d3-datamaps/examples/themes.html)
+> [Themes and Styling](http://files.stevenskelton.ca/d3-geomap/examples/themes.html)
 
-> [Sizing and Aspect Ratio](http://files.stevenskelton.ca/d3-datamaps/examples/size.html)
+> [Sizing and Aspect Ratio](http://files.stevenskelton.ca/d3-geomap/examples/size.html)
 
-> [Zoom and Widths](http://files.stevenskelton.ca/d3-datamaps/examples/zoom.html)
+> [Zoom and Widths](http://files.stevenskelton.ca/d3-geomap/examples/zoom.html)
 
 ## Usage
 
@@ -43,13 +43,13 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 2. Import Custom Element:
 
 	```html
-	<link rel="import" href="src/d3-datamaps.html">
+	<link rel="import" href="src/d3-geomap.html">
 	```
 
 3. Start using it!
 
 	```html
-	<d3-datamaps></d3-datamaps>
+	<d3-geomap></d3-geomap>
 	```
 
 ## Options
@@ -132,7 +132,7 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 
 ## History
 
-For detailed changelog, check [Releases](https://github.com/stevenrskelton/d3-datamaps/releases).
+For detailed changelog, check [Releases](https://github.com/stevenrskelton/d3-geomap/releases).
 
 ## License
 
