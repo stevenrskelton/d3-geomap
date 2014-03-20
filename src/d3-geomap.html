@@ -10,7 +10,7 @@
 	<style>
 		:host { display: block; }
 	</style>
-	<div id="container" style="position:relative;"></div>
+	<div id="container" style="position:relative;height:inherit;"></div>
   </template>
   <script>
 
@@ -60,6 +60,23 @@
 			}
 		}else return null;
 	}
+	function setSize(node){
+		//fill parent element
+		if(node.clientWidth>0){
+		console.log(node);
+			var height = node.style.height;
+			if(!height){
+				if(node.map=='world') height = node.clientWidth * 0.43;
+				else if(node.map=='usa') height = node.clientWidth * 0.465;
+			}
+			node.$.container.style.height = height + 'px';
+			if(node.d3map && node.d3map.svg){
+				var svg = node.d3map.svg.node();
+				svg.setAttribute('width', node.clientWidth);
+				svg.setAttribute('height', height);
+			}
+		}
+	}
 
 	Polymer('d3-geomap', {
 		rootDirectory: '../src/',
@@ -83,15 +100,7 @@
 		attached: function(){
 			var self = this;
 
-			//fill parent element
-			if(this.clientWidth>0){
-				var height = this.clientHeight;
-				if(height < 64){
-					if(self.map=='world') height = this.clientWidth * 0.43;
-					else if(self.map=='usa') height = this.clientWidth * 0.465;
-				}
-				this.$.container.style.height = height + 'px';
-			}
+			setSize(this);
 
 			//zoom
 			var projection = reformatProjection(this.zoom, self.map);
@@ -195,6 +204,10 @@
 						self.zoom.panX = translate[0] * 1;
 						self.zoom.panY = translate[1] * 1;
 					},false);
+					window.addEventListener("resize",function(){
+						setSize(self);
+						self.d3map.transitionProjection();
+					});
 					self.renderBackgroundImage.call(self);
 				}
 			});

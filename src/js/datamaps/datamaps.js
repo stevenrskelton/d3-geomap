@@ -672,8 +672,8 @@
     this.options.geographyConfig = defaults(options.geographyConfig, defaultOptions.geographyConfig);
     this.options.bubblesConfig = defaults(options.bubblesConfig, defaultOptions.bubblesConfig);
     this.options.arcConfig = defaults(options.arcConfig, defaultOptions.arcConfig);
-	this.options.backgroundConfig = defaults(options.backgroundConfig, defaultOptions.backgroundConfig);
-	this.options.userMovementConfig = defaults(options.userMovementConfig, defaultOptions.userMovementConfig);
+    this.options.backgroundConfig = defaults(options.backgroundConfig, defaultOptions.backgroundConfig);
+    this.options.userMovementConfig = defaults(options.userMovementConfig, defaultOptions.userMovementConfig);
 
     //add the SVG container
     if ( d3.select( this.options.element ).select('svg').length > 0 ) {
@@ -685,8 +685,8 @@
     this.addPlugin('legend', addLegend);
     this.addPlugin('arc', handleArcs);
     this.addPlugin('labels', handleLabels);
-	this.addPlugin('userMovement', handleUserMovement);
-	this.addPlugin('background', handleBackground);
+    this.addPlugin('userMovement', handleUserMovement);
+    this.addPlugin('background', handleBackground);
 
     //append style block with basic hoverover styles
     if ( ! this.options.disableDefaultStyles ) {

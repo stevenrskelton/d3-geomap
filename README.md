@@ -20,15 +20,16 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Backgrounds](http://files.stevenskelton.ca/d3-geomap/examples/backgrounds.html)
 
-> [Mouse Control](http://files.stevenskelton.ca/d3-geomap/examples/mouse.html)
+> [Mouse and Touch Control](http://files.stevenskelton.ca/d3-geomap/examples/mouse-touch.html)
 
 > [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
 
+> [Projections](http://files.stevenskelton.ca/d3-geomap/examples/projections.html)
+
+> [Responsiveness and Sizing](http://files.stevenskelton.ca/d3-geomap/examples/responsive-size.html)
+
 > [Themes and Styling](http://files.stevenskelton.ca/d3-geomap/examples/themes.html)
 
-> [Sizing and Aspect Ratio](http://files.stevenskelton.ca/d3-geomap/examples/size.html)
-
-> [Projections](http://files.stevenskelton.ca/d3-geomap/examples/projections.html)
 
 ## Usage
 

@@ -12,9 +12,12 @@
   </head>
   <body unresolved>
 
-	<h2>Zoom and Size</h2>
+	<h2>Responsiveness and Size</h2>
 	Map should fill parent element, respecting width and height.  Map should expose zoom functionality.
-	<h3>TODO: Responsive to size changes</h3>
+
+	<h3>Dynamic (30%) Width</h3>
+	<d3-geomap style="display:inline-block;width:30%;" map="world"></d3-geomap>
+	<d3-geomap style="display:inline-block;width:30%;" map="usa"></d3-geomap>
 
 	<p />
 
@@ -24,7 +27,7 @@
 
 	<p />
 
-	<h3>Fixed Width and Height</h3>
+	<h3>Fixed Width and 100px Height</h3>
 	<d3-geomap style="display:inline-block;width:500px;height:100px;" map="world"></d3-geomap>
 	<d3-geomap style="display:inline-block;width:500px;height:100px;" map="usa"></d3-geomap>
 
