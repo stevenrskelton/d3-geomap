@@ -122,13 +122,14 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 
 ## Todo
 
-- fix out of bound errors with mouse controlled pan, scroll-wheel zoom
+- fix out of bound errors with pointer controlled pan, scroll-wheel zoom
+- better mobile/touch support for pan, zoom
 - hover template using Template
 - better built-in background interface
 - better transitions between zoom changes
 - disabled regions
 - different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
-- test responsiveness of bound data attributes
+- test 2-way binding of all attributes
 - expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
 - maybe: different maps (provinces/states, US districts, etc)

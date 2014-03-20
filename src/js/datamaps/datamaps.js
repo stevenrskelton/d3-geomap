@@ -262,7 +262,7 @@
 	}
 	renderBackground();
 
-	  //disable built in image dragging for firefox
+	//disable built in image dragging for firefox
 	image.on('dragstart', function(e){ d3.event.preventDefault(); })
 	
 	svg.node().addEventListener("transform",function(){
@@ -391,37 +391,49 @@
 
 	if(options.panEnabled){
 		var oldCursor;
-		svg.on('mousedown', function ( datum ) {
+		function mousedown(){
 			if(d3.event.which == 1){
 				position = d3.mouse(this);
 				var transform = self.getSVGTransform();
 				if(cleanExit) oldCursor = svg.node().style.cursor;
 				cleanExit = false;
 				svg.style('cursor','move');
-				svg.on('mousemove', null);
-				svg.on('mousemove', function(e) {
+
+				function mousemove(){
 					var newPosition = d3.mouse(this);
 					//scale to keep movements porportional to mouse movements
 					var x = (newPosition[0] - (position[0]||0)) / transform.scale;
 					var y = (newPosition[1] - (position[1]||0)) / transform.scale;
 					setTranslation(transform.x + x, transform.y + y);
-				});
-				svg.on('mouseup', function() {
+				}
+				svg.on('mousemove', null);
+				svg.on('mousemove', mousemove);
+				svg.on('touchmove', null);
+				svg.on('touchmove', mousemove);
+
+				function mouseup() {
 					svg.style('cursor',oldCursor);
 					oldCursor = null;
 					cleanExit = true;
 					svg.on('mousemove', null);
-				});
+				}
+				svg.on('mouseup', mouseup);
+				svg.on('touchend', mouseup);
 			}
-		});
-		svg.on('mouseout', function(){
+		}
+		svg.on('mousedown', mousedown);
+		svg.on('touchstart', mousedown);
+
+		function mouseout(){
 			svg.style('cursor',oldCursor);
 			oldCursor = null;
 			cleanExit = true;
 			svg.on('mousemove', null);
-		});
+		}
+		svg.on('mouseout', mouseout);
 	}else{
 		svg.on('mousedown', null);
+		svg.on('touchstart', null);
 	}
 	if(options.zoomEnabled){
 		function mousewheel( datum ) {
