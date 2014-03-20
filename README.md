@@ -3,6 +3,8 @@
 
 Polymer Web Component for geographic topology visualization.
 
+![Screenshot](https://raw.githubusercontent.com/stevenrskelton/d3-geomap/master/examples/d3-geomap.jpg "Screenshot")
+
 This is a web component wrapper to another SVG map visualization library [DataMaps](http://datamaps.github.io/) by Mark DiMarco.
 It uses the popular [D3 Data-Driven Documents](http://d3js.org/) to handle low level HTML and SVG rendering.
 
