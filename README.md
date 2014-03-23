@@ -38,8 +38,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 1. Import Web Components' polyfill, and a D3 library:
 
 	```html
-	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.0/platform.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.0/polymer.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.1/platform.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.1/polymer.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
 	```
 
@@ -66,9 +66,10 @@ Attribute			| Type			| Default		| Description
 `multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
 `selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color.  Also supports an `array` if region ids where `defaultSelectedFill` color is assumed
-`zoom`	 			| *object*		| _default_		| Center of map and size, see __Zoom__
+`projection`		| *object*		| _default_		| Center of map and size, see __Projection__
 `rootDirectory`		| *string*		| ../src/		| Hack to get relative directory for topology maps from where web component is included
-
+`pan`				| *boolean*		| `false`		| Enable mouse/touch pan on drag
+`zoom`				| *boolean*		| `false`		| Enable mouse scroll-wheel/touch pinch zoom
 
 Event				| Value			| Description
 ---					| ---			| ---
@@ -97,7 +98,7 @@ Attribute				| Type		| Default					| Description
 `cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
 `backgroundImage`		| *image*	| none						| See the W3C Spec http://www.w3.org/TR/css3-background/#the-background-image
 
-## Zoom
+## Projection
 
 The map can be centered and scaled using the `zoom` object, which has the following properties:
 
@@ -106,10 +107,8 @@ Attribute				| Type		| Default					| Description
 `x`	 					| *float*	| 0							| Horizontal offset from center in °, range [-180,180]
 `y`						| *float*	| 0							| Vertical offset from center in °, range [-90,90]
 `scale`					| *float*	| 1.0						| Scale 1x = 100%
-`zoom`					| *boolean*	| false						| Enable mouse zoom using scroll-wheel
 `zoomIncrement`			| *float*	| 0.1						| Percent to increment/deincrement on mouse zoom
 `zoomScale`				| *float*	| 1.0						| Scale due to zoom, 1x = 100%
-`pan`					| *boolean*	| false						| Enable mouse pan on drag
 `panX`					| *float*	| 0							| Horizontal offset from center, in pixels
 `panY`					| *float*	| 0							| Vertical offset from center, in pixels
 
@@ -127,15 +126,16 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 - fix out of bound errors with pointer controlled pan, scroll-wheel zoom
 - better mobile/touch support for pan, zoom
 - hover template using Template
-- better built-in background interface
-- better transitions between zoom changes
 - disabled regions
 - different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
-- test 2-way binding of all attributes
 - expose more DataMaps functionality (bubbles, arcs)
 - D3 and DataMaps dependencies using bower
 - maybe: different maps (provinces/states, US districts, etc)
-- __Internet Explorer is a work in progress__
+
+## Bugs
+- using both pointer zoom and projection offsets will misplace popup labels
+- some regions lose color window resize when map has dynamic width
+- IE 11 on-mouseout is broken (Datamaps library bug)
 
 ## History
 

@@ -5,8 +5,8 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="platform-0.2.0.js"></script>
-	<script src="polymer-0.2.0.js"></script>
+	<script src="platform.js"></script>
+	<script src="polymer.js"></script>
 	<script src="d3.v3.min.js"></script>
 	<link rel="import" href="../src/d3-geomap.html">
 
@@ -19,6 +19,7 @@
 		.params tr td:nth-of-type(4) { text-align: right; }
 		.params tr td:nth-of-type(5) { text-align: right; width: 100px; }
 		.params input[type=text] { text-align: right; width: 50px; }
+		.params td { vertical-align: top }
 	</style>
   </head>
   <body unresolved>
@@ -30,23 +31,28 @@
 
 	<p />
 
-	<polymer-element name="zoom-controller" attributes="zoom theme" noscript>
+	<polymer-element name="zoom-controller" attributes="projection theme zoom pan" noscript>
 		<template>
-			<d3-geomap style="width:600px;height:630px;" zoom="{{zoom}}" theme="{{theme}}"></d3-geomap>
+			<d3-geomap style="width:600px;height:630px;" projection="{{projection}}" theme="{{theme}}" zoom="{{zoom}}" pan="{{pan}}"></d3-geomap>
 
 			<table class="params">
-				<tr style="height:40px"><td colspan="5"><h3>Mouse Control<h3></td></tr>
-				<tr><td>Mouse Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{zoom.zoomIncrement|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{zoom.zoomIncrement|toPercent}}" onchange="force()"></td></tr>
-				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.zoom}}" onchange="toggleZoom(this)"></td></tr>
-				<tr><td>Mouse Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom.pan}}" onchange="togglePan(this)"></td></tr>
-				<tr><td>Mouse Zoom</td>				<td colspan="4" style="text-align:center">{{zoom.zoomScale}}</td></tr>
-				<tr><td>Mouse Pan X</td>		<td>{{zoom.panX}}</td><td style="font-weight: bold;">Mouse Pan Y</td><td colspan="2" style="padding-right:10px">{{zoom.panY}}</td></tr>
-				<tr style="height:80px;vertical-align:bottom;"><td colspan="5"><h3>Projection</h3></td></tr>
-				<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{zoom.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{zoom.x}}"></td></tr>
-				<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{zoom.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{zoom.y}}"></td></tr>
-				<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{zoom.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{zoom.scale}}"></td></tr>
-				<tr style="height:80px;vertical-align:bottom;"><td colspan="5"><h3>Theme</h3></td></tr>
-				<tr><td>backgroundImage</td>		<td colspan="4"><input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"></td></tr>
+				<tr style="height:40px"><td colspan="5"><h3>Pointer Control<h3></td></tr>
+				<tr><td>Pointer Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td></tr>
+				<tr><td>Pointer Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" onchange="toggleZoom(this)"></td></tr>
+				<tr><td>Pointer Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" onchange="togglePan(this)"></td></tr>
+				<tr><td>Pointer Zoom</td>				<td colspan="4" style="text-align:center">{{projection.zoomScale}}</td></tr>
+				<tr><td>Pointer Pan X</td>		<td>{{projection.panX}}</td><td style="font-weight: bold;">Pointer Pan Y</td><td colspan="2" style="padding-right:10px">{{projection.panY}}</td></tr>
+				<tr style="height:60px;vertical-align:bottom;"><td colspan="5"><h3>Projection</h3></td></tr>
+				<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{projection.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{projection.x}}"></td></tr>
+				<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{projection.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{projection.y}}"></td></tr>
+				<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{projection.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{projection.scale}}"></td></tr>
+				<tr style="height:60px;vertical-align:bottom;"><td colspan="5"><h3>Theme</h3></td></tr>
+				<tr><td>backgroundImage</td>		<td colspan="4" style="text-align:left">
+					<input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"><br>
+					<input type="radio" name="bg" value="../src/SRTM30_Plus/srtm30plus.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
+					<input type="radio" name="bg" value="../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'}}">SRTM30+ (high resolution, 4.2MB)<br>
+					<input type="radio" name="bg" value="../src/Equirectangular_projection_SW.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/Equirectangular_projection_SW.jpg'}}">Photo Realistic (595KB)<br>
+				</td></tr>
 			</table>
 		</template>
 		<script>
@@ -56,7 +62,7 @@
 	</polymer-element>
 
 	<template id="example" bind>
-		<zoom-controller zoom="{{zoom}}" theme="{{theme}}"></zoom-controller>
+		<zoom-controller projection="{{projection}}" theme="{{theme}}" zoom="{{zoom}}" pan="{{pan}}"></zoom-controller>
 	</template>
 
 	<p />
@@ -64,28 +70,32 @@
 <script>
 
 	var model = {
-		zoom: {
+		zoom: true,
+		pan: true,
+		projection: {
 			x: 17,
 			y: -2,
 			scale: 5,
 			zoomIncrement: 0.1,
-			zoom: true,
-			pan: true
 		},
 		theme: {
 			defaultFill: 'transparent',
 			borderWidth: 1,
 			borderColor: '#ddd',
-			backgroundImage: '../src/SRTM30_Plus/srtm30plus.jpg'
-			//backgroundImage: '../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg',
+			backgroundImage: '../src/Equirectangular_projection_SW.jpg'
+			//backgroundImage:'../src/SRTM30_Plus/srtm30plus.jpg'
+			//backgroundImage: '../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'
 		}
 	}
 
 	function toggleZoom(checkbox){
-		model.zoom.zoom = checkbox.checked;
+		model.zoom = checkbox.checked;
 	}
 	function togglePan(checkbox){
-		model.zoom.pan = checkbox.checked;
+		model.pan = checkbox.checked;
+	}
+	function changeBG(radio){
+		model.theme.backgroundImage = radio.value;
 	}
 
 	window.addEventListener('polymer-ready', function(){

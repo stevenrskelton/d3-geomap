@@ -45,13 +45,13 @@
       animationSpeed: 600
     },
     backgroundConfig: {
-		backgroundImage: null
+      backgroundImage: null
     },
-	userMovementConfig: {
-		zoomIncrement: 0.1,
-		zoomEnabled: true,
-		panEnabled: true
-	}
+    userMovementConfig: {
+      zoomIncrement: 0.1,
+      zoomEnabled: false,
+      panEnabled: false
+    }
   };
 
   function addContainer( element ) {
@@ -94,7 +94,7 @@
     }
   }
 
-  function drawSubunits( data ) {
+  function drawSubunits( geoData ) {
     var fillData = this.options.fills,
         colorCodeData = this.options.data || {},
         geoConfig = this.options.geographyConfig;
@@ -105,14 +105,8 @@
       subunits = this.addLayer('datamaps-subunits', null, true);
     }
 
-    var geoData = topojson.feature( data, data.objects[ this.options.scope ] ).features;
-    if ( geoConfig.hideAntarctica ) {
-      geoData = geoData.filter(function(feature) {
-        return feature.id !== "ATA";
-      });
-    }
-
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
+
     geo.enter()
       .append('path')
       .attr('d', this.path)
@@ -182,10 +176,7 @@
             }
           }
           $this.on('mousemove', null);
-          //FIXED: d3.selectAll('.datamaps-hoverover').style('display', 'none');
-          self.options.element.querySelector('.datamaps-hoverover').style.display = 'none';
-          //ADDED
-          if(options.popupOffHover) options.popupOffHover();
+          d3.select(self.options.element).selectAll('.datamaps-hoverover').style('display', 'none');
         });
     }
     
@@ -230,235 +221,6 @@
       .html(html);
   }
 
-  /** plugin to render background image */
-  function handleBackground (layer, data, options) {
-
-    var self = this,
-     svg = this.svg;
-
-	var image;
-	var layer = svg.select('g.datamaps-background');
-	if(layer.empty()){
-		layer = svg.insert('g', ':first-child');
-		layer.attr('class','datamaps-background')
-		image = layer.insert('image', ':first-child');
-		image.attr('preserveAspectRatio','xMinYMin');
-	}else{
-		image = layer.select('image');
-	}
-	var subunits = self.svg.select('g.datamaps-subunits');
-	
-	function renderBackground(){
-		var size = subunits.node().getBBox();
-
-		var aspect = 0.5;
-		var diff = size.height - (size.width * aspect);
-
-		image.attr('xlink:href', options.backgroundImage)
-		.attr('y', (size.y + diff) + 'px')
-		.attr('x', size.x + 'px')
-		.attr('height', (size.width * aspect) + 'px')
-		.attr('width', size.width + 'px');
-	}
-	renderBackground();
-
-	//disable built in image dragging for firefox
-	image.on('dragstart', function(e){ d3.event.preventDefault(); })
-	
-	svg.node().addEventListener("transform",function(){
-		//read translation and apply to image
-		var g = svg.select('g.datamaps-subunits').node();
-		var transform = g.getAttribute('transform');
-		layer.attr('transform',transform);
-	},false);
-	svg.node().addEventListener("topochanged", renderBackground);
-  }
-  
-  /** plugin to allow pan and zoom */
-  function handleUserMovement (layer, data, options) {
-
-    var self = this,
-     svg = this.svg,
-     position = null;
-
-	 function setScale(scale){
-		var current = self.getSVGTransform();
-		if(scale == current.scale) return;
-
-		//limit to applied scale 1 (map may be projected)
-		if(scale < current.scale){
-			var container = d3.select( self.options.element ).node();
-			var w = container.clientWidth;
-			var h = container.clientHeight;
-			var size = svg.node().getBBox();
-
-			var incr = 0.005;
-			while( size.width * scale / current.scale < container.clientWidth
-				|| size.height * scale / current.scale < container.clientHeight){
-				scale += incr;
-			}
-			if(scale >= current.scale) return;
-		}
- 
-		var g = svg.select('g.datamaps-subunits').node();
-		var b = g.transform.baseVal;
-		var count = b.numberOfItems;
-		var t = null;
-		for(var i=0;i<count;i++){
-			var bi = b.getItem(i);
-			if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE){
-				t = bi;
-				break;
-			}
-		}
-		if(!t){
-			t = svg.node().createSVGTransform();
-			b.appendItem(t);
-		}
-		t.setScale(scale, scale);
-
-		//also need to re-center
-		var cx = 20 / scale * Math.sign(current.scale - scale);
-		var cy = 20 / scale * Math.sign(current.scale - scale);
-
-		/*
-				//snap if already out of bounds
-		console.log(size.x + '\t' + size.y + ',\t' + size.width + '\t' + (size.width * aspect) + ',\t' + current.scale + '\t\t' + current.x + ',\t' + current.y)
-		
-		if(size.x > 0) x = 0;
-		if(size.y > 0) y = 0;
-		
-		if(size.x < w - size.width){
-			console.log('right');
-			x = size.x / 2
-		}
-		if(size.y < h - (size.width * aspect)){
-			y = ((size.width * aspect) - h ) / -2 * current.scale;
-			console.log('bottom ' + y + ' !');
-		}
-*/
-		
-		setTranslation(current.x + cx, current.y + cy);
-	 }
-	 function setTranslation(x, y){
-		if(Math.abs(x)==0 && Math.abs(y)==0) return;
-
-		var current = self.getSVGTransform();
-		var aspect = 0.5;
-
-		//limit to edges
-		var container = d3.select( self.options.element ).node();
-		var w = container.clientWidth;
-		var h = container.clientHeight;
-		var size = svg.node().getBBox();
-
-		var diffX = current.x - x;
-		var diffY = current.y - y;
-
-		if(size.x >= diffX && diffX <= 0) x = current.x;
-		if(size.y >= diffY && diffY <= 0) y = current.y;
-
-		if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
-		if(h - size.y - (size.width * aspect) + diffY >= 0 && diffY >= 0) y = current.y;
-
-		if(x!=current.x || y!=current.y){
-			var g = svg.select('g.datamaps-subunits').node();
-			var b = g.transform.baseVal;
-			var count = b.numberOfItems;
-			var t = null;
-			for(var i=0;i<count;i++){
-				var bi = b.getItem(i);
-				if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
-					t = bi;
-					break;
-				}
-			}
-			if(!t){
-				t = svg.node().createSVGTransform();
-				b.appendItem(t);
-			}
-			t.setTranslate(x, y);
-		}
- 
-		//raise an event
-		// other plugins might need to sync translation
-		var event = document.createEvent("Event");
-		event.initEvent("transform", true, true);
-		svg.node().dispatchEvent(event);
-	 }
-
-	 var cleanExit = true;
-
-	if(options.panEnabled){
-		var oldCursor;
-		function mousedown(){
-			if(d3.event.which == 1){
-				position = d3.mouse(this);
-				var transform = self.getSVGTransform();
-				if(cleanExit) oldCursor = svg.node().style.cursor;
-				cleanExit = false;
-				svg.style('cursor','move');
-
-				function mousemove(){
-					var newPosition = d3.mouse(this);
-					//scale to keep movements porportional to mouse movements
-					var x = (newPosition[0] - (position[0]||0)) / transform.scale;
-					var y = (newPosition[1] - (position[1]||0)) / transform.scale;
-					setTranslation(transform.x + x, transform.y + y);
-				}
-				svg.on('mousemove', null);
-				svg.on('mousemove', mousemove);
-				svg.on('touchmove', null);
-				svg.on('touchmove', mousemove);
-
-				function mouseup() {
-					svg.style('cursor',oldCursor);
-					oldCursor = null;
-					cleanExit = true;
-					svg.on('mousemove', null);
-				}
-				svg.on('mouseup', mouseup);
-				svg.on('touchend', mouseup);
-			}
-		}
-		svg.on('mousedown', mousedown);
-		svg.on('touchstart', mousedown);
-
-		function mouseout(){
-			svg.style('cursor',oldCursor);
-			oldCursor = null;
-			cleanExit = true;
-			svg.on('mousemove', null);
-		}
-		svg.on('mouseout', mouseout);
-	}else{
-		svg.on('mousedown', null);
-		svg.on('touchstart', null);
-	}
-	if(options.zoomEnabled){
-		function mousewheel( datum ) {
-			var scale = self.getSVGTransform().scale;
-			var change;
-			
-			if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
-			else change = -d3.event.detail;
-	
-			if (change > 0){
-				scale *= (1 + options.zoomIncrement);
-			}else{
-				scale *= (1 - options.zoomIncrement);
-			}
-			setScale(scale);
-			d3.event.stopPropagation();
-		};
-		svg.on('mousewheel', mousewheel);
-		svg.on('DOMMouseScroll', mousewheel);
-	}else{
-		svg.on('mousewheel', null);
-		svg.on('DOMMouseScroll', null);
-	}
-  }
-  
   function handleArcs (layer, data, options) {
     var self = this,
         svg = this.svg;
@@ -649,6 +411,235 @@
 
   }
 
+  /** plugin to render background image */
+  function handleBackground (layer, data, options) {
+
+    var self = this,
+     svg = this.svg;
+
+    var image;
+    var layer = svg.select('g.datamaps-background');
+    if(layer.empty()){
+      layer = svg.insert('g', ':first-child');
+      layer.attr('class','datamaps-background')
+      image = layer.insert('image', ':first-child');
+      image.attr('preserveAspectRatio','xMinYMin');
+    }else{
+      image = layer.select('image');
+    }
+    var subunits = self.svg.select('g.datamaps-subunits');
+
+    function renderBackground(){
+      var size = subunits.node().getBBox();
+
+      var aspect = 0.5;
+      var diff = size.height - (size.width * aspect);
+
+      image.attr('xlink:href', options.backgroundImage)
+        .attr('y', (size.y + diff) + 'px')
+        .attr('x', size.x + 'px')
+        .attr('height', (size.width * aspect) + 'px')
+        .attr('width', size.width + 'px');
+    }
+    renderBackground();
+
+    //disable built in image dragging for firefox
+    image.on('dragstart', function(e){ d3.event.preventDefault(); })
+
+    svg.node().addEventListener("transform",function(){
+      //read translation and apply to image
+      var g = svg.select('g.datamaps-subunits').node();
+      var transform = g.getAttribute('transform');
+      layer.attr('transform',transform);
+    },false);
+    svg.node().addEventListener("topologychange", renderBackground);
+  }
+
+  /** plugin to allow pan and zoom */
+  function handleUserMovement (layer, data, options) {
+
+    var self = this,
+     svg = this.svg,
+     position = null;
+
+    function setScale(scale){
+      var current = self.getSVGTransform();
+      if(scale == current.scale) return;
+
+      //limit to applied scale 1 (map may be projected)
+      if(scale < current.scale){
+        var container = d3.select( self.options.element ).node();
+        var w = container.clientWidth;
+        var h = container.clientHeight;
+        var size = svg.node().getBBox();
+
+        var incr = 0.005;
+        while( size.width * scale / current.scale < container.clientWidth
+            || size.height * scale / current.scale < container.clientHeight){
+          scale += incr;
+        }
+        if(scale >= current.scale) return;
+      }
+
+      var g = svg.select('g.datamaps-subunits').node();
+      var b = g.transform.baseVal;
+      var count = b.numberOfItems;
+      var t = null;
+      for(var i=0;i<count;i++){
+        var bi = b.getItem(i);
+        if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE){
+          t = bi;
+          break;
+        }
+      }
+      if(!t){
+        t = svg.node().createSVGTransform();
+        b.appendItem(t);
+      }
+      t.setScale(scale, scale);
+
+      //also need to re-center
+      var cx = 20 / scale * Math.sign(current.scale - scale);
+      var cy = 20 / scale * Math.sign(current.scale - scale);
+
+      /*
+      //snap if already out of bounds
+      console.log(size.x + '\t' + size.y + ',\t' + size.width + '\t' + (size.width * aspect) + ',\t' + current.scale + '\t\t' + current.x + ',\t' + current.y)
+
+      if(size.x > 0) x = 0;
+      if(size.y > 0) y = 0;
+
+      if(size.x < w - size.width){
+        console.log('right');
+        x = size.x / 2
+      }
+      if(size.y < h - (size.width * aspect)){
+        y = ((size.width * aspect) - h ) / -2 * current.scale;
+        console.log('bottom ' + y + ' !');
+      }
+*/
+
+      setTranslation(current.x + cx, current.y + cy);
+    }
+    function setTranslation(x, y){
+      if(Math.abs(x)==0 && Math.abs(y)==0) return;
+
+      var current = self.getSVGTransform();
+      var aspect = 0.5;
+
+      //limit to edges
+      var container = d3.select( self.options.element ).node();
+      var w = container.clientWidth;
+      var h = container.clientHeight;
+      var size = svg.node().getBBox();
+
+      var diffX = current.x - x;
+      var diffY = current.y - y;
+
+      if(size.x >= diffX && diffX <= 0) x = current.x;
+      if(size.y >= diffY && diffY <= 0) y = current.y;
+
+      if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
+      if(h - size.y - (size.width * aspect) + diffY >= 0 && diffY >= 0) y = current.y;
+
+      if(x!=current.x || y!=current.y){
+        var g = svg.select('g.datamaps-subunits').node();
+        var b = g.transform.baseVal;
+        var count = b.numberOfItems;
+        var t = null;
+        for(var i=0;i<count;i++){
+          var bi = b.getItem(i);
+          if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+            t = bi;
+            break;
+          }
+        }
+        if(!t){
+          t = svg.node().createSVGTransform();
+          b.appendItem(t);
+        }
+        t.setTranslate(x, y);
+      }
+
+      //raise an event
+      // other plugins might need to sync translation
+      var event = document.createEvent("Event");
+      event.initEvent("transform", true, true);
+      svg.node().dispatchEvent(event);
+    }
+
+    var cleanExit = true;
+
+    if(options.panEnabled){
+      var oldCursor;
+      function mousedown(){
+        if(d3.event.which == 1){
+          position = d3.mouse(this);
+          var transform = self.getSVGTransform();
+          if(cleanExit) oldCursor = svg.node().style.cursor;
+          cleanExit = false;
+          svg.style('cursor','move');
+
+          function mousemove(){
+            var newPosition = d3.mouse(this);
+            //scale to keep movements porportional to mouse movements
+            var x = (newPosition[0] - (position[0]||0)) / transform.scale;
+            var y = (newPosition[1] - (position[1]||0)) / transform.scale;
+            setTranslation(transform.x + x, transform.y + y);
+          }
+          svg.on('mousemove', null);
+          svg.on('mousemove', mousemove);
+          svg.on('touchmove', null);
+          svg.on('touchmove', mousemove);
+
+          function mouseup() {
+            svg.style('cursor',oldCursor);
+            oldCursor = null;
+            cleanExit = true;
+            svg.on('mousemove', null);
+          }
+          svg.on('mouseup', mouseup);
+          svg.on('touchend', mouseup);
+        }
+      }
+      svg.on('mousedown', mousedown);
+      svg.on('touchstart', mousedown);
+
+      function mouseout(){
+        svg.style('cursor',oldCursor);
+        oldCursor = null;
+        cleanExit = true;
+        svg.on('mousemove', null);
+      }
+      svg.on('mouseout', mouseout);
+    }else{
+      svg.on('mousedown', null);
+      svg.on('touchstart', null);
+    }
+    if(options.zoomEnabled){
+      function mousewheel( datum ) {
+        var scale = self.getSVGTransform().scale;
+        var change;
+
+        if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
+        else change = -d3.event.detail;
+
+        if (change > 0){
+          scale *= (1 + options.zoomIncrement);
+        }else{
+          scale *= (1 - options.zoomIncrement);
+        }
+        setScale(scale);
+        d3.event.stopPropagation();
+      };
+      svg.on('mousewheel', mousewheel);
+      svg.on('DOMMouseScroll', mousewheel);
+    }else{
+      svg.on('mousewheel', null);
+      svg.on('DOMMouseScroll', null);
+    }
+  }
+
   if(!Math.sign){
     Math.sign = function sign(x){
       if( +x === x ) { // check if a number was given
@@ -707,32 +698,7 @@
 
     return this.draw();
   }
-  Datamap.prototype.transitionProjection = function() {
-	var self = this;
-	var options = self.options;
 
-	var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
-	self.path = pathAndProjection.path;
-	self.projection = pathAndProjection.projection;
-
-	var data = self.jsonData;
-	var subunits = self.svg.select('g.datamaps-subunits');
-	var geoData = topojson.feature( data, data.objects[ options.scope ] ).features;
-	var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
-
-	function endall(transition, callback) {
-		var n = 0;
-		transition
-			.each(function() { ++n; })
-			.each("end", function() { if (!--n) callback.apply(this, arguments); });
-	}
-
-	geo.transition().duration(0).attr('d', self.path).call(endall, function(){
-		var event = document.createEvent("Event");
-		event.initEvent("topochanged", true, true);
-		self.svg.node().dispatchEvent(event);
-	});
-  }
   // actually draw the features(states & countries)
   Datamap.prototype.draw = function() {
     //save off in a closure
@@ -749,19 +715,29 @@
     if ( options.geographyConfig.dataUrl ) {
       d3.json( options.geographyConfig.dataUrl, function(error, results) {
         if ( error ) throw new Error(error);
-		self.jsonData = results;
-        draw( self.jsonData );
+        self.customTopo = results;
+        draw( results );
       });
     }
     else {
-		self.jsonData = this[options.scope + 'Topo'];
-      draw( self.jsonData );
+      draw( this[options.scope + 'Topo'] );
     }
 
     return this;
 
+      function createGeoData(data){
+        var geoData = topojson.feature( data, data.objects[ self.options.scope ] ).features;
+        if ( self.options.geographyConfig.hideAntarctica ) {
+          geoData = geoData.filter(function(feature) {
+            return feature.id !== "ATA";
+          });
+        }
+        self.geoData = geoData;
+        return geoData;
+      }
+
       function draw (data) {
-        drawSubunits.call(self, data);
+        drawSubunits.call(self, createGeoData(data));
         handleGeographyConfig.call(self);
 
         if ( self.options.geographyConfig.popupOnHover || self.options.bubblesConfig.popupOnHover) {
@@ -775,6 +751,32 @@
         self.options.done(self);
       }
   };
+  // redraw current topology using new projection & options
+  Datamap.prototype.redraw = function() {
+    var self = this;
+    var options = self.options;
+
+    var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
+    self.path = pathAndProjection.path;
+    self.projection = pathAndProjection.projection;
+
+    var subunits = self.svg.select('g.datamaps-subunits');
+    var geo = subunits.selectAll('path.datamaps-subunit').data( self.geoData );
+
+    //helper function to raise event after all transitions complete
+    function endall(transition, callback) {
+      var n = 0;
+      transition
+        .each(function() { ++n; })
+        .each("end", function() { if (!--n) callback.apply(this, arguments); });
+    }
+
+    geo.transition().duration(0).attr('d', self.path).call(endall, function(){
+      var event = document.createEvent("Event");
+      event.initEvent("topologychange", true, true);
+      self.svg.node().dispatchEvent(event);
+    });
+  }
   /**************************************
                 TopoJSON
   ***************************************/
@@ -852,7 +854,7 @@
 
     d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
   };
-  
+
   Datamap.prototype.getSVGTransform = function(){
     var g = this.svg.select('g.datamaps-subunits').node();
     var b = g.transform.baseVal;
