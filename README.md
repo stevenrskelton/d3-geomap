@@ -132,7 +132,6 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 
 ## Bugs
 - using both pointer zoom and projection offsets will misplace popup labels
-- some regions lose color on window resize when map has dynamic width
 - IE 11 on-mouseout is broken (Datamaps library bug)
 - Zooming out will not center if areas outside of map become visible
 - mobile/touch support for pan, zoom is not good

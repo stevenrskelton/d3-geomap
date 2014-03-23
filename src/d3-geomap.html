@@ -34,14 +34,14 @@
 					var scale = element.offsetWidth;
 					if(projection.scale) scale = scale * projection.scale;
 
-					projection = d3.geo.albersUsa()
+					_projection = d3.geo.albersUsa()
 						.scale(scale)
 						.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
 
 					var path = d3.geo.path()
-						.projection(projection);
+						.projection(_projection);
 
-					return {path: path, projection: projection};
+					return {path: path, projection: _projection};
 				}
 			} else if ( map === 'world' ) {
 				return function(element) {
@@ -207,6 +207,7 @@
 						self.hover = null;
 					});
 					self.renderBackgroundImage.call(self);
+					if(self.map=='usa') self.d3map.labels();
 				}
 			});
 			self.mouseChanged();

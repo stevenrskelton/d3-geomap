@@ -107,7 +107,7 @@
 
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
 
-    geo.enter()
+    return geo.enter()
       .append('path')
       .attr('d', this.path)
       .attr('class', function(d) {
@@ -285,6 +285,17 @@
   function handleLabels ( layer, options ) {
     var self = this;
     options = options || {};
+
+    if(!this.svg.selectAll(".datamaps-subunit").attr("data-foo")){
+      this.svg.node().addEventListener("topologychange", function(){
+        var n = layer.node();
+        while (n.firstChild) {
+          n.removeChild(n.firstChild);
+        }
+        handleLabels.apply(self, [layer, options]);
+      });
+    }
+
     var labelStartCoodinates = this.projection([-67.707617, 42.722131]);
     this.svg.selectAll(".datamaps-subunit")
       .attr("data-foo", function(d) {
@@ -448,7 +459,7 @@
 
     svg.node().addEventListener("transform",function(){
       //read translation and apply to image
-      var g = svg.select('g.datamaps-subunits').node();
+      var g = subunits.node();
       var transform = g.getAttribute('transform');
       layer.attr('transform',transform);
     },false);
@@ -737,7 +748,7 @@
       }
 
       function draw (data) {
-        drawSubunits.call(self, createGeoData(data));
+        self.subunits = drawSubunits.call(self, createGeoData(data));
         handleGeographyConfig.call(self);
 
         if ( self.options.geographyConfig.popupOnHover || self.options.bubblesConfig.popupOnHover) {
@@ -760,8 +771,7 @@
     self.path = pathAndProjection.path;
     self.projection = pathAndProjection.projection;
 
-    var subunits = self.svg.select('g.datamaps-subunits');
-    var geo = subunits.selectAll('path.datamaps-subunit').data( self.geoData );
+    var geo = self.subunits.data( self.geoData );
 
     //helper function to raise event after all transitions complete
     function endall(transition, callback) {
