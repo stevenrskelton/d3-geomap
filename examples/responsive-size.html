@@ -9,27 +9,87 @@
 	<script src="polymer.js"></script>
 	<script src="d3.v3.min.js"></script>
 	<link rel="import" href="../src/d3-geomap.html">
+	<style>
+		input { text-align: right; }
+	</style>
   </head>
   <body unresolved>
 
 	<h2>Responsiveness and Size</h2>
-	Map should fill parent element, respecting width and height.  Map should expose zoom functionality.
+	Map should fill parent element, respecting specified width and height.<br>
+	<code>cover</code> will scale as large as possible so that the area is completely covered by the map. Some parts of the map may not be in view, so it is recommended to enable <code>pan</code>.
 
-	<h3>Dynamic (30%) Width</h3>
+	<p>
+<!--
+	<h3>Dynamic Width (30%)</h3>
 	<d3-geomap style="display:inline-block;width:30%;" map="world"></d3-geomap>
 	<d3-geomap style="display:inline-block;width:30%;" map="usa"></d3-geomap>
 
 	<p />
 
-	<h3>2:1 Aspect Height determined by Width</h3>
+	<h3>Fixed Width (500px)</h3>
 	<d3-geomap style="display:inline-block;width:500px;" map="world"></d3-geomap>
 	<d3-geomap style="display:inline-block;width:500px;" map="usa"></d3-geomap>
 
 	<p />
 
-	<h3>Fixed Width and 100px Height</h3>
+	<h3>Fixed Height (250px)</h3>
+	<d3-geomap style="display:inline-block;height:250px;" map="world"></d3-geomap>
+	<d3-geomap style="display:inline-block;height:250px;" map="usa"></d3-geomap>
+
+	<p />
+
+	<h3>Fixed Width (500px) and Height (100px)</h3>
 	<d3-geomap style="display:inline-block;width:500px;height:100px;" map="world"></d3-geomap>
 	<d3-geomap style="display:inline-block;width:500px;height:100px;" map="usa"></d3-geomap>
 
+	<p />
+
+	<h3>Fixed Width (500px) and Height (500px)</h3>
+
+	<d3-geomap style="display:inline-block;width:500px;height:500px;border:1px solid black;" map="usa"></d3-geomap>
+-->
+	<polymer-element name="x-example" noscript>
+		<template>
+			<div style="display:inline-block;width:{{containerWidth}};height:{{containerHeight}};border:2px dotted navy;">
+				<d3-geomap style="width:{{width}};height:{{height}};border:2px dashed green;" map="world" cover="{{cover}}" pan="{{pan}}" projection="{{projection}}"></d3-geomap>
+			</div>
+			<div style="display:inline-block;vertical-align:top;margin:3px;">
+				<table style="border:2px dotted navy;">
+					<tr><td colspan="2"><strong>Container</strong></td></tr>
+					<tr style="color:navy"><td>Width</td><td><input type="text" value="{{containerWidth}}" style="border:1px solid navy"></td></tr>
+					<tr style="color:navy"><td>Height</td><td><input type="text" value="{{containerHeight}}" style="border:1px solid navy"></td></tr>
+				</table>
+				<table style="border:2px dashed green;margin:3px;">
+					<tr><td colspan="2"><strong>d3-geomap</strong></td></tr>
+					<tr style="color:green"><td>Width</td><td><input type="text" value="{{width}}" style="border:1px solid green"></td></tr>
+					<tr style="color:green"><td>Height</td><td><input type="text" value="{{height}}" style="border:1px solid green"></td></tr>
+				</table>
+				<input type="checkbox" on-click="toggleCover" checked?="{{cover}}"><code>cover</code><br>
+				<input type="checkbox" on-click="togglePan" checked?="{{pan}}"><code>pan</code>
+				<p>
+				<input type="button" on-click="{{wFixed}}" value="Fixed Width"><input type="button" on-click="{{wDynamic}}" value="Dynamic Width">
+			</table>
+		</template>
+	<script>
+	Polymer('x-example', {
+		containerWidth: '800px',
+		containerHeight: '500px',
+		height: '100%',
+		width: '100%',
+		cover: true,
+		pan: true,
+		toggleCover: function(){
+			this.cover = !this.cover;
+		},
+		togglePan: function(){
+			this.pan = !this.pan;
+		},
+		wFixed: function(){ this.containerWidth = '800px'; },
+		wDynamic: function(){ this.containerWidth = '75%'; }
+	});
+	</script>
+	</polymer-element>
+	<x-example></x-example>
   </body>
 </html>

@@ -87,9 +87,10 @@
     return {path: path, projection: projection};
   }
 
-  function addStyleBlock() {
-    if ( d3.select('.datamaps-style-block').empty() ) {
-      d3.select('head').attr('class', 'datamaps-style-block').append('style')
+  function addStyleBlock(element) {
+	var container = d3.select(element)
+    if ( container.select('.datamaps-style-block').empty() ) {
+      container.attr('class', 'datamaps-style-block').append('style')
       .html('.datamap path {stroke: #FFFFFF; stroke-width: 1px;} .datamaps-legend dt, .datamaps-legend dd { float: left; margin: 0 3px 0 0;} .datamaps-legend dd {width: 20px; margin-right: 6px; border-radius: 3px;} .datamaps-legend {padding-bottom: 20px; z-index: 1001; position: absolute; left: 4px; font-size: 12px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;} .datamaps-hoverover {display: none; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; } .hoverinfo {padding: 4px; border-radius: 1px; background-color: #FFF; box-shadow: 1px 1px 5px #CCC; font-size: 12px; border: 1px solid #CCC; } .hoverinfo hr {border:1px dotted #CCC; }');
     }
   }
@@ -551,7 +552,7 @@
       if(size.y >= diffY && diffY <= 0) y = current.y;
 
       if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
-      if(h - size.y - (size.width * aspect) + diffY >= 0 && diffY >= 0) y = current.y;
+      if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
 
       if(x!=current.x || y!=current.y){
         var g = svg.select('g.datamaps-subunits').node();
@@ -598,9 +599,7 @@
             var y = (newPosition[1] - (position[1]||0)) / transform.scale;
             setTranslation(transform.x + x, transform.y + y);
           }
-          svg.on('mousemove', null);
           svg.on('mousemove', mousemove);
-          svg.on('touchmove', null);
           svg.on('touchmove', mousemove);
 
           function mouseup() {
@@ -700,11 +699,10 @@
     this.addPlugin('arc', handleArcs);
     this.addPlugin('labels', handleLabels);
     this.addPlugin('userMovement', handleUserMovement);
-    this.addPlugin('background', handleBackground);
 
     //append style block with basic hoverover styles
     if ( ! this.options.disableDefaultStyles ) {
-      addStyleBlock();
+      addStyleBlock(this.options.element);
     }
 
     return this.draw();
@@ -759,6 +757,7 @@
         }
 
         //fire off finished callback
+        self.addPlugin('background', handleBackground);
         self.options.done(self);
       }
   };
@@ -766,26 +765,27 @@
   Datamap.prototype.redraw = function() {
     var self = this;
     var options = self.options;
+    if(self.subunits){
+      var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
+      self.path = pathAndProjection.path;
+      self.projection = pathAndProjection.projection;
 
-    var pathAndProjection = options.setProjection.apply(self, [options.element, options] );
-    self.path = pathAndProjection.path;
-    self.projection = pathAndProjection.projection;
+      var geo = self.subunits.data( self.geoData );
 
-    var geo = self.subunits.data( self.geoData );
+      //helper function to raise event after all transitions complete
+      function endall(transition, callback) {
+        var n = 0;
+        transition
+          .each(function() { ++n; })
+          .each("end", function() { if (!--n) callback.apply(this, arguments); });
+      }
 
-    //helper function to raise event after all transitions complete
-    function endall(transition, callback) {
-      var n = 0;
-      transition
-        .each(function() { ++n; })
-        .each("end", function() { if (!--n) callback.apply(this, arguments); });
+      geo.transition().duration(0).attr('d', self.path).call(endall, function(){
+        var event = document.createEvent("Event");
+        event.initEvent("topologychange", true, true);
+        self.svg.node().dispatchEvent(event);
+      });
     }
-
-    geo.transition().duration(0).attr('d', self.path).call(endall, function(){
-      var event = document.createEvent("Event");
-      event.initEvent("topologychange", true, true);
-      self.svg.node().dispatchEvent(event);
-    });
   }
   /**************************************
                 TopoJSON

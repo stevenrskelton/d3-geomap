@@ -5,7 +5,7 @@
 <script src="js/topojson/topojson.v1.min.js"></script>
 <script src="js/datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate rootDirectory">
+<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate rootDirectory cover">
   <template>
 	<style>
 		:host { display: block; }
@@ -61,20 +61,31 @@
 		}else return null;
 	}
 	function setSize(node){
+		var height, width;
 		//fill parent element
 		if(node.clientWidth>0){
-			var height = node.style.height;
+			height = node.style.height;
+			width = node.clientWidth;
 			if(!height){
-				if(node.map=='world') height = node.clientWidth * 0.43;
-				else if(node.map=='usa') height = node.clientWidth * 0.465;
+				if(node.map=='world') height = width * 0.43;
+				else if(node.map=='usa') height = width * 0.465;
+				node.$.container.style.height = height + 'px';
+			}else{
+				node.$.container.style.height = height;
 			}
-			node.$.container.style.height = height + 'px';
-			if(node.d3map && node.d3map.svg){
-				var svg = node.d3map.svg.node();
-				svg.setAttribute('width', node.clientWidth);
-				svg.setAttribute('height', height);
-			}
+		}else if(node.clientHeight>0){
+			height = node.clientHeight;
+			if(node.map=='world') width = Math.floor(height / 0.43);
+			else if(node.map=='usa') width = Math.floor(height / 0.465);
+			node.$.container.style.width = width + 'px';
 		}
+		if(node.d3map && node.d3map.svg){
+			var svg = node.d3map.svg.node();
+			svg.setAttribute('width', width);
+			svg.setAttribute('height', height);
+		}
+		//(500 *2 - 800*0.43) / 500
+		return (node.clientHeight * 2 - node.clientWidth*0.43) / node.clientHeight;
 	}
 
 	Polymer('d3-geomap', {
@@ -84,6 +95,8 @@
 		data: null,
 		map: 'world',
 		multiselect: false,
+		cover: false,
+		selected: {},
 		theme: {
 			defaultFill: defaultTheme.defaultFill,
 			defaultSelectedFill: defaultTheme.defaultSelectedFill,
@@ -99,7 +112,8 @@
 		attached: function(){
 			var self = this;
 
-			setSize(this);
+			var flexScale = setSize(this);
+			if(this.cover && flexScale > 1) this.projection.scale *= flexScale;
 
 			var projection = reformatProjection(this.projection, self.map);
 
@@ -339,7 +353,7 @@
 			}
 		},
 		renderBackgroundImage: function(){
-			if(this.theme.backgroundImage && this.d3map){
+			if(this.theme.backgroundImage && this.d3map && this.d3map.background){
 				this.d3map.background(null, {
 					backgroundImage: this.theme.backgroundImage || defaultTheme.backgroundImage
 				});
