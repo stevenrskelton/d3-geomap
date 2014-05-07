@@ -16,6 +16,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Live Demos
  
+Technical
+ 
 > [World Countries Map](http://files.stevenskelton.ca/d3-geomap/examples/world.html)
 
 > [USA State Map](http://files.stevenskelton.ca/d3-geomap/examples/usa.html)
@@ -32,6 +34,11 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Themes and Styling](http://files.stevenskelton.ca/d3-geomap/examples/themes.html)
 
+---
+
+Samples
+
+> [Ebola Outbreaks](http://files.stevenskelton.ca/d3-geomap/examples/ebola.html)
 
 ## Usage
 

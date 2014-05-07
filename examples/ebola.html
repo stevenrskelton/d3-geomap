@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>D3 SVG Geographic Map</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="platform.js"></script>
+	<script src="polymer.js"></script>
+	<script src="d3.v3.min.js"></script>
+	<link rel="import" href="../src/d3-geomap.html">
+	<link rel="import" href="../../sortable-table/src/sortable-table.html">
+	<style>
+		d3-geomap { display:inline-block; float:left; margin-right: 10px; }
+	</style>
+  </head>
+  <body unresolved>
+
+	<h1>Major Ebola Outbreaks</h1>
+	<h2>Confirmed cases and years</h2>
+
+	<p />
+
+	<polymer-element name="data-transform" attributes="hoverIn hoverOut">
+		<script>
+			Polymer('data-transform', {
+				hoverInChanged: function(i,f){
+					if(f){
+						this.hoverOut = data.filter(function(row){ return row.cc == f.geography.id; });
+					}else this.hoverOut = []
+				}
+			})
+		</script>
+	</polymer-element>
+
+	<template id="example" bind> 
+		<d3-geomap style="width:600px;height:630px;" projection="{{projection}}" theme="{{theme}}" selected="{{selected}}" hover="{{hover}}" data="{{mapData}}" hoverTemplate="{{hoverTemplate}}"></d3-geomap>
+		<sortable-table columns="{{columns}}" data="{{data}}" page="{{page}}" pageSize="15" footerTemplate="pagingFooter" sortColumn="year" sortDescending="true" selected="{{tableSelected}}" multiSelect></sortable-table>
+		<data-transform hoverIn="{{hover}}" hoverOut="{{tableSelected}}"></data-transform>
+	</template>
+
+	<template id="pagingFooter">
+	TODO: make this work!
+	</template>
+
+<script>
+
+	  var data = [
+        { year: 2014, cc: 'GIN', country: 'Guinea', species: 'Zaire', cases: 231, deaths: 155 },
+        { year: 2014, cc: 'LBR', country: 'Liberia', species: 'Zaire', cases: 13, deaths: 11 },
+        { year: 2012, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Bundibugyo', cases: 57, deaths: 29 },
+        { year: 2012, cc: 'UGA', country: 'Uganda', species: 'Sudan', cases: 7, deaths: 4 },
+        { year: 2012, cc: 'UGA', country: 'Uganda', species: 'Sudan', cases: 24, deaths: 17 },
+        { year: 2011, cc: 'UGA', country: 'Uganda', species: 'Sudan', cases: 1, deaths: 1 },
+        { year: 2008, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Zaire', cases: 32, deaths: 14 },
+        { year: 2007, cc: 'UGA', country: 'Uganda', species: 'Bundibugyo', cases: 149, deaths: 37 },
+        { year: 2007, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Zaire', cases: 264, deaths: 187 },
+        { year: 2005, cc: 'COG', country: 'Congo', species: 'Zaire', cases: 12, deaths: 10 },
+        { year: 2004, cc: 'SDN', country: 'Sudan', species: 'Sudan', cases: 17, deaths: 7 },
+        { year: 2003, cc: 'COG', country: 'Congo', species: 'Zaire', cases: 35, deaths: 29 },
+        { year: 2003, cc: 'COG', country: 'Congo', species: 'Zaire', cases: 143, deaths: 128 },
+        { year: 2001, cc: 'COG', country: 'Congo', species: 'Zaire', cases: 59, deaths: 44 },
+        { year: 2001, cc: 'GAB', country: 'Gabon', species: 'Zaire', cases: 65, deaths: 53 },
+        { year: 2000, cc: 'UGA', country: 'Uganda', species: 'Sudan', cases: 425, deaths: 224 },
+        { year: 1996, cc: 'ZAF', country: 'South Africa (ex-Gabon)', species: 'Zaire', cases: 1, deaths: 1 },
+        { year: 1996, cc: 'GAB', country: 'Gabon', species: 'Zaire', cases: 60, deaths: 45 },
+        { year: 1996, cc: 'GAB', country: 'Gabon', species: 'Zaire', cases: 31, deaths: 21 },
+        { year: 1995, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Zaire', cases: 315, deaths: 254 },
+        { year: 1994, cc: 'CIV', country: 'Cote d\'Ivoire', species: 'Taï Forest', cases: 1, deaths: 0 },
+        { year: 1994, cc: 'GAB', country: 'Gabon', species: 'Zaire', cases: 52, deaths: 31 },
+        { year: 1979, cc: 'SDN', country: 'Sudan', species: 'Sudan', cases: 34, deaths: 22 },
+        { year: 1977, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Zaire', cases: 1, deaths: 1 },
+        { year: 1976, cc: 'SDN', country: 'Sudan', species: 'Sudan', cases: 284, deaths: 151 },
+        { year: 1976, cc: 'COD', country: 'Democratic Republic of Congo', species: 'Zaire', cases: 318, deaths: 280 }
+	  ];
+	  
+	var columns = [
+		{ name:'year', title:'Year'},
+		{ name:'country', title:'Country' },
+		{ name:'species', title:'Ebolavirus species' },
+		{ name:'cases', title:'Cases' },
+		{ name:'deaths', title:'Deaths' },
+		{ name:'fatality', title:'Case fatality', formula: function(row){ return Math.round(row.deaths / row.cases * 100) + '%'; } }
+	];
+
+	var model = {
+		projection: {
+			x: 15.5,
+			y: -5,
+			scale: 5.5
+		},
+		theme: {
+			highlightFillColor: '#fcc',
+			highlightBorderColor: '#ecc',
+			defaultSelectedFill: '#ccc',
+			defaultFill: '#ddd',
+			borderColor: '#fff'
+		},
+		columns: columns,
+		data: data,
+		mapData: {},
+		selected: data.map(function(x){ return x.cc; }),
+		page: 1,
+		tableSelected: [],
+		hoverTemplate: function(geography, data) { //this function should just return a string
+			var d = '';
+			if(data) d = '<br>' + data.map(function(row){ return row.year; }).reduce(function(previousValue, currentValue, index, array){
+				return currentValue + ',' + previousValue;
+			});
+			return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong>' + d + '</div>';
+		}
+	}
+	data.forEach(function(element, index, array) {
+		if(model.mapData[element.cc]){
+			model.mapData[element.cc].push({ year: element.year, species: element.species, cases: element.cases, deaths: element.deaths })
+		}else model.mapData[element.cc] = [{ year: element.year, species: element.species, cases: element.cases, deaths: element.deaths }]
+	});
+	window.addEventListener('polymer-ready', function(){
+		document.getElementById('example').model = model;
+	});
+</script>
+
+  </body>
+</html>
