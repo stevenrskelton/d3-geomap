@@ -7,9 +7,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="platform.js"></script>
 	<script src="polymer.js"></script>
-	<script src="d3.v3.min.js"></script>
+	<script src="d3.min.js"></script>
 	<link rel="import" href="../src/d3-geomap.html">
 	<link rel="import" href="../../sortable-table/src/sortable-table.html">
+	<link rel="import" href="../../country-flag/src/country-flag.html">
 	<style>
 		d3-geomap { display:inline-block; float:left; margin-right: 10px; }
 	</style>
@@ -37,6 +38,17 @@
 		<d3-geomap style="width:600px;height:630px;" projection="{{projection}}" theme="{{theme}}" selected="{{selected}}" hover="{{hover}}" data="{{mapData}}" hoverTemplate="{{hoverTemplate}}"></d3-geomap>
 		<sortable-table columns="{{columns}}" data="{{data}}" page="{{page}}" pageSize="15" footerTemplate="pagingFooter" sortColumn="year" sortDescending="true" selected="{{tableSelected}}" multiSelect></sortable-table>
 		<data-transform hoverIn="{{hover}}" hoverOut="{{tableSelected}}"></data-transform>
+	</template>
+	
+	<template id="alignLeft">
+		<td style="text-align:left">
+			{{value}}
+		</td>
+	</template>
+	<template id="country">
+		<td style="text-align:left">
+			<country-flag country="{{row.cc}}"></country-flag>{{value}}
+		</td>
 	</template>
 
 	<template id="pagingFooter">
@@ -76,8 +88,8 @@
 	  
 	var columns = [
 		{ name:'year', title:'Year'},
-		{ name:'country', title:'Country' },
-		{ name:'species', title:'Ebolavirus species' },
+		{ name:'country', title:'Country', cellTemplate: 'country' },
+		{ name:'species', title:'Ebolavirus species', cellTemplate: 'alignLeft' },
 		{ name:'cases', title:'Cases' },
 		{ name:'deaths', title:'Deaths' },
 		{ name:'fatality', title:'Case fatality', formula: function(row){ return Math.round(row.deaths / row.cases * 100) + '%'; } }
