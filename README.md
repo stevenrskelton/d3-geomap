@@ -45,8 +45,8 @@ Samples
 1. Import Web Components' polyfill, and a D3 library:
 
 	```html
-	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.4/platform.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.2.4/polymer.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.3.0/platform.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.3.0/polymer.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
 	```
 
