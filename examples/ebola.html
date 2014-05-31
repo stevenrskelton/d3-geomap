@@ -10,7 +10,7 @@
 	<script src="d3.min.js"></script>
 	<link rel="import" href="../src/d3-geomap.html">
 	<link rel="import" href="../../sortable-table/src/sortable-table.html">
-	<link rel="import" href="../../country-flag/src/country-flag.html">
+	<link rel="import" href="../../flag-icon/src/flag-icon.html">
 	<style>
 		d3-geomap { display:inline-block; float:left; margin-right: 10px; }
 	</style>
@@ -67,7 +67,7 @@
 	</template>
 	<template id="country">
 		<td style="text-align:left">
-			<country-flag iso="{{row.iso}}"></country-flag>{{value}}
+			<flag-icon iso="{{row.iso}}"></flag-icon>{{value}}
 		</td>
 	</template>
 
