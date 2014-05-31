@@ -53,7 +53,7 @@ Samples
 2. Import Web Components' polyfill:
 
 	```html
-	<script src="//cdnjs.cloudflare.com/ajax/libs/polymer/0.3.1/platform.js"></script>
+	<script src="bower_components/platform/platform.js"></script>
 	```
 
 3. Import Custom Element:
