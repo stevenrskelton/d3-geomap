@@ -2,7 +2,7 @@
  https://github.com/stevenrskelton/d3-geomap
 -->
 
-<script src="../bower_components/topojson/topojson.js"></script>
+<script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
 
 <polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate rootDirectory cover">
@@ -89,7 +89,7 @@
 	}
 
 	Polymer('d3-geomap', {
-		rootDirectory: '../src/',
+		rootDirectory: '../',
 		d3map: null,
 		hover: null,
 		data: null,
