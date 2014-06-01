@@ -35,28 +35,65 @@
 
 			<table class="params">
 				<tr style="height:40px"><td colspan="5"><h3>Pointer Control<h3></td></tr>
-				<tr><td>Pointer Zoom Increment</td><td>1%</td><td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td><td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td></tr>
-				<tr><td>Pointer Zoom</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" onchange="toggleZoom(this)"></td></tr>
-				<tr><td>Pointer Pan</td>				<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" onchange="togglePan(this)"></td></tr>
-				<tr><td>Pointer Zoom</td>				<td colspan="4" style="text-align:center">{{projection.zoomScale}}</td></tr>
-				<tr><td>Pointer Pan X</td>		<td>{{projection.panX}}</td><td style="font-weight: bold;">Pointer Pan Y</td><td colspan="2" style="padding-right:10px">{{projection.panY}}</td></tr>
-				<tr style="height:60px;vertical-align:bottom;"><td colspan="5"><h3>Projection</h3></td></tr>
-				<tr><td>X</td>		<td>-180°</td>	<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{projection.x}}"></td>	<td>180°</td>	<td><input type="text" value="{{projection.x}}"></td></tr>
-				<tr><td>Y</td>		<td>-90°</td>	<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{projection.y}}"></td>		<td>90°</td>	<td><input type="text" value="{{projection.y}}"></td></tr>
-				<tr><td>Scale</td>	<td>1x</td>		<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{projection.scale}}"></td>	<td>15x</td>	<td><input type="text" value="{{projection.scale}}"></td></tr>
-				<tr style="height:60px;vertical-align:bottom;"><td colspan="5"><h3>Theme</h3></td></tr>
-				<tr><td>backgroundImage</td>		<td colspan="4" style="text-align:left">
-					<input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"><br>
-					<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
-					<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'}}">SRTM30+ (high resolution, 4.2MB)<br>
-					<input type="radio" name="bg" value="../Equirectangular_projection_SW.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/Equirectangular_projection_SW.jpg'}}">Photo Realistic (595KB)<br>
-				</td></tr>
+				<tr>
+					<td>Pointer Zoom Increment</td>
+					<td>1%</td>
+					<td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td>
+					<td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td>
+				</tr>
+				<tr>
+					<td>Pointer Zoom</td>
+					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" onchange="toggleZoom(this)"></td>
+				</tr>
+				<tr>
+					<td>Pointer Pan</td>
+					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" onchange="togglePan(this)"></td>
+				</tr>
+				<tr>
+					<td>Pointer Zoom</td>
+					<td colspan="4" style="text-align:center">{{projection.zoomScale}}</td>
+				</tr>
+				<tr>
+					<td>Pointer Pan X</td>
+					<td>{{projection.panX}}</td><td style="font-weight: bold;">Pointer Pan Y</td>
+					<td colspan="2" style="padding-right:10px">{{projection.panY}}</td>
+				</tr>
+				<tr style="height:60px;vertical-align:bottom;">
+					<td colspan="5"><h3>Projection</h3></td>
+				</tr>
+				<tr>
+					<td>X</td>
+					<td>-180°</td>
+					<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{projection.x}}"></td>
+					<td>180°</td>
+					<td><input type="text" value="{{projection.x}}"></td>
+				</tr>
+				<tr>
+					<td>Y</td>
+					<td>-90°</td>
+					<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{projection.y}}"></td>
+					<td>90°</td>	<td><input type="text" value="{{projection.y}}"></td>
+				</tr>
+				<tr>
+					<td>Scale</td>	<td>1x</td>
+					<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{projection.scale}}"></td>
+					<td>15x</td>
+					<td><input type="text" value="{{projection.scale}}"></td>
+				</tr>
+				<tr style="height:60px;vertical-align:bottom;">
+					<td colspan="5"><h3>Theme</h3></td>
+				</tr>
+				<tr>
+					<td>backgroundImage</td>
+					<td colspan="4" style="text-align:left">
+						<input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"><br>
+						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
+						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'}}">SRTM30+ (high resolution, 4.2MB)<br>
+						<input type="radio" name="bg" value="../Equirectangular_projection_SW.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../src/Equirectangular_projection_SW.jpg'}}">Photo Realistic (595KB)<br>
+					</td>
+				</tr>
 			</table>
 		</template>
-		<script>
-			PolymerExpressions.prototype.toPercent = function(value) { return value * 100; }
-			PolymerExpressions.prototype.toPercent.toModel = function(value) { return value / 100; }
-		</script>
 	</polymer-element>
 
 	<template id="example" bind>
@@ -97,6 +134,8 @@
 	}
 
 	window.addEventListener('polymer-ready', function(){
+		PolymerExpressions.prototype.toPercent = function(value) { return value * 100; }
+		PolymerExpressions.prototype.toPercent.toModel = function(value) { return value / 100; }
 		document.getElementById('example').model = model;
 	});
 </script>
