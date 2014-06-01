@@ -149,6 +149,7 @@ The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4
 - maybe: different maps (provinces/states, US districts, etc)
 
 ## Bugs
+- root directory resource loading needs to be explicit
 - using both pointer zoom and projection offsets will misplace popup labels
 - IE 11 on-mouseout is broken (Datamaps library bug)
 - Zooming out will not center if areas outside of map become visible
