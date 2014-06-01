@@ -96,7 +96,7 @@ while the USA state map uses 2 letter [ANSI standard INCITS 38:2009](http://en.w
 
 ## Root Directory
 
-Due to the way the code loads the external JSON map information, it needs to know where the `d3-geomap` directory is.  By default, the `rootDirectory` is set to *../bower_components/d3-geomap/*, which assumes the loading
+Due to the way the code loads the external JSON map information, it needs to know where the `d3-geomap` directory is.  By default, the `rootDirectory` is set to `../bower_components/d3-geomap/`, which assumes the loading
 page is in a sub-directory.  Many people will likely need to set this to `bower_components/d3-geomap/`, or something similiar.  Hopefully in the future this will be unnecessary.
 
 ## Themes
