@@ -1,6 +1,6 @@
 {
   "name": "d3-geomap",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "homepage": "https://github.com/stevenrskelton/d3-geomap",
   "description": "Polymer Web Component for geographic topology visualization",
   "main": "d3-geomap.html",

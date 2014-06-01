@@ -2,7 +2,7 @@
  https://github.com/stevenrskelton/d3-geomap
 -->
 
-<script src="../polymer/polymer.js"></script>
+<link rel="import" href="../polymer/polymer.html">
 <script src="../d3/d3.min.js"></script>
 <script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
@@ -91,7 +91,7 @@
 	}
 
 	Polymer('d3-geomap', {
-		rootDirectory: '../',
+		rootDirectory: '../bower_components/d3-geomap/',
 		d3map: null,
 		hover: null,
 		data: null,

@@ -46,7 +46,7 @@ Samples
 
 	```json
 	"dependencies": {
-		"d3-geomap": "d3-geomap#~0.2.1"
+		"d3-geomap": "d3-geomap#~0.2.2"
 	}
 	```
 
@@ -80,7 +80,7 @@ Attribute			| Type			| Default		| Description
 `theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
 `selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color.  Also supports an `array` if region ids where `defaultSelectedFill` color is assumed
 `projection`		| *object*		| _default_		| Center of map and size, see __Projection__
-`rootDirectory`		| *string*		| ../src/		| Hack to get relative directory for topology maps from where web component is included
+`rootDirectory`		| *string*		| ../bower_components/d3-geomap/		| Hack to get relative directory for topology maps from where web component is included
 `pan`				| *boolean*		| `false`		| Enable mouse/touch pan on drag
 `zoom`				| *boolean*		| `false`		| Enable mouse scroll-wheel/touch pinch zoom
 
@@ -93,6 +93,11 @@ Event				| Value			| Description
 Region IDs are used to uniquely identify regions, and are the keys to both the `data` and `selected` object maps.
 The world country map uses 3 letter [ISO 3166-1 alpha-3](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) country codes,
 while the USA state map uses 2 letter [ANSI standard INCITS 38:2009](http://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations) codes.
+
+## Root Directory
+
+Due to the way the code loads the external JSON map information, it needs to know where the `d3-geomap` directory is.  By default, the `rootDirectory` is set to *../bower_components/d3-geomap/*, which assumes the loading
+page is in a sub-directory.  Many people will likely need to set this to `bower_components/d3-geomap/`, or something similiar.  Hopefully in the future this will be unnecessary.
 
 ## Themes
 
