@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
+	<link rel="import" href="../../flag-icon/flag-icon.html">
   </head>
   <body unresolved>
 
@@ -18,18 +19,9 @@
 	<polymer-element name="map-to-kv" attributes="map" noscript>
 		<template>
 			<template repeat="{{s in map | mapToKVArray}}">
-				{{s.key}}
+				<span style="padding-right: 10px;"><flag-icon iso="{{s.key}}"></flag-icon> {{s.key}}</span>
 			</template>
 		</template>
-		<script>
-			PolymerExpressions.prototype.mapToKVArray = function(map) {
-				var arr = [];
-				for (var key in map) {
-					arr.push({key: key, value:map[key]});
-				}
-				return arr;
-			};
-		</script>
 	</polymer-element>
 
 	<template id="example" bind>
@@ -48,6 +40,13 @@
 
 	window.addEventListener('polymer-ready', function(){
 		document.getElementById('example').model = model;
+		PolymerExpressions.prototype.mapToKVArray = function(map) {
+			var arr = [];
+			for (var key in map) {
+				arr.push({key: key, value:map[key]});
+			}
+			return arr;
+		};
 	});
 </script>
 
