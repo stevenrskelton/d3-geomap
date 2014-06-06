@@ -7,7 +7,7 @@
 <script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate rootDirectory cover">
+<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate cover">
   <template>
 	<style>
 		:host { display: block; }
@@ -91,7 +91,6 @@
 	}
 
 	Polymer('d3-geomap', {
-		rootDirectory: '../bower_components/d3-geomap/',
 		d3map: null,
 		hover: null,
 		data: null,
@@ -132,7 +131,7 @@
 				data: self.data || {},
 				setProjection: projection,
 				geographyConfig: {
-					dataUrl: self.rootDirectory + '/datamaps/' + self.map + '.topo.json', //if not null, datamaps will fetch the map JSON (currently only supports topojson)
+					dataUrl: self.resolvePath('datamaps/' + self.map + '.topo.json'),
 					hideAntarctica: false,
 					borderWidth: self.theme.borderWidth || defaultTheme.borderWidth,
 					borderColor: self.theme.borderColor || defaultTheme.borderColor,
