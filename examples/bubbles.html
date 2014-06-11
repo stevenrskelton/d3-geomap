@@ -1,40 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
 	<title>D3 SVG Geographic Map</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
-	<link rel="import" href="index-links.html">
-</head>
-<body unresolved>
+  </head>
+  <body unresolved>
 
 	<h2>USA Map</h2>
 	United States of America state map with dynamic region colouring, highlighting, user hover and click events, and custom data.
 
+	<p />
+  
 	<template id="example" bind>
-		<d3-geomap style="width:85%;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" data="{{data}}" hovertemplate="stateHoverTemplate" map="usa">
-			<template id="stateHoverTemplate">
-				<div style="
-					opacity:0.9;
-					padding: 4px;
-					border-radius: 1px;
-					background-color: #FFF;
-					box-shadow: 1px 1px 5px #CCC;
-					font-size: 12px;
-					border: 1px solid #CCC;
-					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-				">
-					<strong>{{hover.name}}</strong> {{hover.data.statehood}}<br>
-					{{hover.data.preceding}}
-				</div>
-			</template>
-		</d3-geomap>
+		<d3-geomap style="width:1000px;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" data="{{data}}" hoverTemplate="{{hoverTemplate}}" map="usa"></d3-geomap>
 	</template>
 
-	<p>
+	<p />
 
 	<div style="text-align:center">
 		<input type="button" onclick="model.selected = null" value="Clear">
@@ -46,19 +31,418 @@
 		<input type="button" onclick="changeSelection(this)" style="background-color:#B96F6F" value="1876-1890" data="s6">
 		<input type="button" onclick="changeSelection(this)" style="background-color:#4A9586" value="1896-1912" data="s7">
 		<input type="button" onclick="changeSelection(this)" style="background-color:#5EAE9E" value="1959" data="s8">
-		<br>
-		<div style="height:25px;">
-			<template id="info" bind if="{{hover}}">
-				User Hover: <strong>{{hover.id}}</strong> - {{hover.name}}, {{hover.data.statehood}} ({{hover.data.preceding}})
-			</template>
-			<br>
-			<template id="clicks" bind if="{{geography}}">
-				User Click: <strong>{{geography.id}}</strong> - {{geography.properties.name}}, {{data.statehood}} ({{data.preceding}})
-			</template>
-		</div>
+		<br />
+		<template id="info" bind if="{{hover}}">
+			User Hover: <strong>{{hover.geography.id}}</strong> - {{hover.geography.properties.name}}, {{hover.data.statehood}} ({{hover.data.preceding}})
+		</template>
+		<br/>
+		<template id="clicks" bind if="{{geography}}">
+			User Click: <strong>{{geography.id}}</strong> - {{geography.properties.name}}, {{data.statehood}} ({{data.preceding}})
+		</template>
 	</div>
 
-	<script>
+	
+	<!--begin table -->
+<br>
+
+<table class="tableData">
+        <thead>
+        <tr>
+        <td>Year</td>
+
+        <td>Country</td>
+
+        <td>Ebolavirus species</td>
+
+        <td>Cases</td>
+
+        <td>Deaths</td>
+
+        <td>Case fatality</td>
+
+
+        </tr>
+		</thead>
+		<tbody>			
+        <tr>
+        <td class="RightAlign">2012</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Bundibugyo </td>
+
+        <td class="RightAlign">57</td>
+
+        <td class="RightAlign">29</td>
+
+        <td class="RightAlign">51%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2012</td>
+
+        <td>Uganda</td>
+
+        <td> Sudan</td>
+
+        <td class="RightAlign">7</td>
+
+        <td class="RightAlign">4</td>
+
+        <td class="RightAlign">57%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2012</td>
+
+        <td>Uganda</td>
+
+        <td> Sudan</td>
+
+        <td class="RightAlign">24</td>
+
+        <td class="RightAlign">17</td>
+
+        <td class="RightAlign">71%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2011</td>
+
+        <td>Uganda</td>
+
+        <td>Sudan</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">100%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2008</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">32</td>
+
+        <td class="RightAlign">14</td>
+
+        <td class="RightAlign">44%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2007</td>
+
+        <td>Uganda</td>
+
+        <td>Bundibugyo</td>
+
+        <td class="RightAlign">149</td>
+
+        <td class="RightAlign">37</td>
+
+        <td class="RightAlign">25%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2007</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">264</td>
+
+        <td class="RightAlign">187</td>
+
+        <td class="RightAlign">71%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2005</td>
+
+        <td>Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">12</td>
+
+        <td class="RightAlign">10</td>
+
+        <td class="RightAlign">83%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2004</td>
+
+        <td>Sudan</td>
+
+        <td>Sudan</td>
+
+        <td class="RightAlign">17</td>
+
+        <td class="RightAlign">7</td>
+
+        <td class="RightAlign">41%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign" rowspan="2">2003 
+(Nov-Dec)</td>
+
+        <td rowspan="2">Congo</td>
+
+        <td rowspan="2">Zaire</td>
+
+        <td class="RightAlign" rowspan="2">35</td>
+
+        <td class="RightAlign" rowspan="2">29</td>
+
+        <td class="RightAlign" rowspan="2">83%</td>
+
+
+        </tr>
+        <tr>
+
+        </tr>
+        <tr>
+        <td class="RightAlign" rowspan="2">2003 
+(Jan-Apr)</td>
+
+        <td rowspan="2">Congo</td>
+
+        <td rowspan="2">Zaire</td>
+
+        <td class="RightAlign" rowspan="2">143</td>
+
+        <td class="RightAlign" rowspan="2">128</td>
+
+        <td class="RightAlign" rowspan="2">90%</td>
+
+
+        </tr>
+        <tr>
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2001-2002</td>
+
+        <td>Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">59</td>
+
+        <td class="RightAlign">44</td>
+
+        <td class="RightAlign">75%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2001-2002</td>
+
+        <td>Gabon</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">65</td>
+
+        <td class="RightAlign">53</td>
+
+        <td class="RightAlign">82%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">2000</td>
+
+        <td>Uganda</td>
+
+        <td>Sudan</td>
+
+        <td class="RightAlign">425</td>
+
+        <td class="RightAlign">224</td>
+
+        <td class="RightAlign">53%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1996</td>
+
+        <td>South Africa (ex-Gabon)</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">100%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign" rowspan="2">1996
+(Jul-Dec)</td>
+
+        <td rowspan="2">Gabon</td>
+
+        <td rowspan="2">Zaire</td>
+
+        <td class="RightAlign" rowspan="2">60</td>
+
+        <td class="RightAlign" rowspan="2">45</td>
+
+        <td class="RightAlign" rowspan="2">75%</td>
+
+
+        </tr>
+        <tr>
+
+        </tr>
+        <tr>
+        <td class="RightAlign" rowspan="2">1996 
+(Jan-Apr)</td>
+
+        <td rowspan="2">Gabon</td>
+
+        <td rowspan="2">Zaire</td>
+
+        <td class="RightAlign" rowspan="2">31</td>
+
+        <td class="RightAlign" rowspan="2">21</td>
+
+        <td class="RightAlign" rowspan="2">68%</td>
+
+
+        </tr>
+        <tr>
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1995</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">315</td>
+
+        <td class="RightAlign">254</td>
+
+        <td class="RightAlign">81%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1994</td>
+
+        <td>Cote d'Ivoire</td>
+
+        <td>Taï Forest </td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">0</td>
+
+        <td class="RightAlign">0%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1994</td>
+
+        <td>Gabon</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">52</td>
+
+        <td class="RightAlign">31</td>
+
+        <td class="RightAlign">60%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1979</td>
+
+        <td>Sudan</td>
+
+        <td>Sudan</td>
+
+        <td class="RightAlign">34</td>
+
+        <td class="RightAlign">22</td>
+
+        <td class="RightAlign">65%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1977</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">1</td>
+
+        <td class="RightAlign">100%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1976</td>
+
+        <td>Sudan</td>
+
+        <td>Sudan</td>
+
+        <td class="RightAlign">284</td>
+
+        <td class="RightAlign">151</td>
+
+        <td class="RightAlign">53%</td>
+
+
+        </tr>
+        <tr>
+        <td class="RightAlign">1976</td>
+
+        <td>Democratic Republic of Congo</td>
+
+        <td>Zaire</td>
+
+        <td class="RightAlign">318</td>
+
+        <td class="RightAlign">280</td>
+
+        <td class="RightAlign">88%</td>
+
+
+        </tr>
+</tbody>
+</table>
+<script>
 	var data = {
 		DE: { statehood : 'December 7, 1787', preceding: 'Lower Counties on Delaware, i.e., the lower counties of Pennsylvania, then a sovereign State in Confederation' },
 		PA: { statehood : 'December 12, 1787', preceding: 'Province of Pennsylvania, then sovereign state in Confederation.' },
@@ -162,7 +546,12 @@
 
 	var model = {
 		data: data,
-		selected: null
+		selected: null,
+		hoverTemplate: function(geography, data) { //this function should just return a string
+			var d = '';
+			if(data && data.statehood) d = ' ' + data.statehood;
+			return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong>' + d + '</div>';
+		}
 	}
 
 	window.addEventListener('polymer-ready', function(){
@@ -176,7 +565,7 @@
 			},1000);
 		});
 	});
-	</script>
-	<index-links page="usa.html"></index-links>
-</body>
+</script>
+
+  </body>
 </html>

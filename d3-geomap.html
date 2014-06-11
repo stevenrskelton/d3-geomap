@@ -7,12 +7,64 @@
 <script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hoverTemplate cover">
+<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hovertemplate cover">
   <template>
 	<style>
 		:host { display: block; }
+		.datamap path {
+			stroke: #FFFFFF;
+			stroke-width: 1px;
+		}
+		.datamaps-legend dt, .datamaps-legend dd {
+			float: left; margin: 0 3px 0 0;
+		}
+		.datamaps-legend dd {
+			width: 20px;
+			margin-right: 6px;
+			border-radius: 3px;
+		}
+		.datamaps-legend {
+			padding-bottom: 20px;
+			z-index: 1001;
+			position: absolute;
+			left: 4px;
+			font-size: 12px;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		.datamaps-hoverover {
+			/*display: none;*/
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		.hoverinfo {
+			padding: 4px;
+			border-radius: 1px;
+			background-color: #FFF;
+			box-shadow: 1px 1px 5px #CCC;
+			font-size: 12px;
+			border: 1px solid #CCC;
+		}
+		.hoverinfo hr {
+			border:1px dotted #CCC;
+		}
 	</style>
-	<div id="container" style="position:relative;height:inherit;overflow:hidden;"></div>
+
+	<div id="container" style="position:relative;height:inherit;overflow:hidden;">
+		<div id="hoverDiv" style="z-index: 1001; position: absolute;" hidden?="{{!hover}}">
+			<template ref="{{hovertemplate}}" if="{{forceRefresh}}" bind>
+				<div style="
+					padding: 4px;
+					border-radius: 1px;
+					background-color: #FFF;
+					box-shadow: 1px 1px 5px #CCC;
+					font-size: 12px;
+					border: 1px solid #CCC;
+					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				">
+					<strong>{{hover.name}}</strong>
+				</div>
+			</template>
+		</div>
+	</div>
   </template>
   <script>
 
@@ -98,6 +150,7 @@
 		multiselect: false,
 		cover: false,
 		selected: {},
+		hovertemplate: null,
 		theme: {
 			defaultFill: defaultTheme.defaultFill,
 			defaultSelectedFill: defaultTheme.defaultSelectedFill,
@@ -112,6 +165,8 @@
 		},
 		attached: function(){
 			var self = this;
+
+			this.forceRefresh++;
 
 			var flexScale = setSize(this);
 			if(this.cover && flexScale > 1) this.projection.scale *= flexScale;
@@ -135,13 +190,10 @@
 					hideAntarctica: false,
 					borderWidth: self.theme.borderWidth || defaultTheme.borderWidth,
 					borderColor: self.theme.borderColor || defaultTheme.borderColor,
-					popupTemplate: function(geography, data) { //this function should just return a string
-						if(!self.hover || self.hover.geography.id != geography.id) self.hover = { geography: geography, data: data };
-						if(self.hoverTemplate){
-							 return self.hoverTemplate(geography, data);
-						}else{
-							return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong></div>';
-						}
+					popupTemplate: function(element, top, left) { //this function should just return a string
+						if(!self.hover || self.hover.id != element.id) self.hover = element;
+						self.$.hoverDiv.style.top = top + 'px';
+						self.$.hoverDiv.style.left = left + 'px';
 					},
 					popupOnHover: true, //disable the popup while hovering
 					highlightOnHover: true,
@@ -358,6 +410,29 @@
 				this.d3map.background(null, {
 					backgroundImage: this.theme.backgroundImage || defaultTheme.backgroundImage
 				});
+			}
+		},
+		hovertemplateChanged: function(a, t){
+			this.addTemplateIfNotInDocument(t);
+			this.forceRefresh++;
+		},
+		importedTemplates: [],
+		forceRefresh: 0,
+		addTemplateIfNotInDocument: function(templateId){
+			/* copy template from content into shadow dom */
+			if(templateId && !this.shadowRoot.getElementById(templateId)){
+				var t = this.querySelector('#'+templateId);
+				if(t){
+					this.importedTemplates.push(t);
+					this.shadowRoot.appendChild(t);
+				}else{
+					//TODO: in some cases on refresh, template isn't in ownerDocument.
+					//So store them in an importedTemplates array :(
+					var shadowRoot = this.shadowRoot;
+					this.importedTemplates.forEach(function(it){
+						shadowRoot.appendChild(it);
+					});
+				}
 			}
 		}
 	});

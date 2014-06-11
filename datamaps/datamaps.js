@@ -87,14 +87,6 @@
     return {path: path, projection: projection};
   }
 
-  function addStyleBlock(element) {
-	var container = d3.select(element)
-    if ( container.select('.datamaps-style-block').empty() ) {
-      container.attr('class', 'datamaps-style-block').append('style')
-      .html('.datamap path {stroke: #FFFFFF; stroke-width: 1px;} .datamaps-legend dt, .datamaps-legend dd { float: left; margin: 0 3px 0 0;} .datamaps-legend dd {width: 20px; margin-right: 6px; border-radius: 3px;} .datamaps-legend {padding-bottom: 20px; z-index: 1001; position: absolute; left: 4px; font-size: 12px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;} .datamaps-hoverover {display: none; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; } .hoverinfo {padding: 4px; border-radius: 1px; background-color: #FFF; box-shadow: 1px 1px 5px #CCC; font-size: 12px; border: 1px solid #CCC; } .hoverinfo hr {border:1px dotted #CCC; }');
-    }
-  }
-
   function drawSubunits( geoData ) {
     var fillData = this.options.fills,
         colorCodeData = this.options.data || {},
@@ -177,7 +169,6 @@
             }
           }
           $this.on('mousemove', null);
-          d3.select(self.options.element).selectAll('.datamaps-hoverover').style('display', 'none');
         });
     }
     
@@ -407,8 +398,6 @@
               $this.style(attr, previousAttributes[attr]);
             }
           }
-
-          d3.selectAll('.datamaps-hoverover').style('display', 'none');
         })
         .transition().duration(400)
           .attr('r', function ( datum ) {
@@ -700,11 +689,6 @@
     this.addPlugin('labels', handleLabels);
     this.addPlugin('userMovement', handleUserMovement);
 
-    //append style block with basic hoverover styles
-    if ( ! this.options.disableDefaultStyles ) {
-      addStyleBlock(this.options.element);
-    }
-
     return this.draw();
   }
 
@@ -852,17 +836,13 @@
     element.on('mousemove', function() {
       var position = d3.mouse(this);
       var transform = self.getSVGTransform();
-      d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover')
-        .style('top', ((position[1] + transform.y) * transform.scale + 30) + "px")
-        .html(function() {
-          var data = JSON.parse(element.attr('data-info'));
-          //if ( !data ) return '';
-          return options.popupTemplate(d, data);
-        })
-        .style('left', ((position[0] + transform.x) * transform.scale) + "px");
+      var id = element.data()[0].id;
+      var name = element.data()[0].properties.name
+      var data = JSON.parse(element.attr('data-info'));
+      var top = ((position[1] + transform.y) * transform.scale + 30);
+      var left = ((position[0] + transform.x) * transform.scale);
+      options.popupTemplate({ id:id, name:name, data:data }, top, left);
     });
-
-    d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
   };
 
   Datamap.prototype.getSVGTransform = function(){

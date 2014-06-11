@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
 	<title>D3 SVG Geographic Map</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
-  </head>
-  <body unresolved>
+	<link rel="import" href="index-links.html">
+	<link rel="import" href="../../flag-icon/flag-icon.html">
+</head>
+<body unresolved>
 
 	<h2>World Map</h2>
 	World countries map with dynamic region colouring, highlighting, and user hover and click events.
@@ -16,7 +18,22 @@
 	<p></p>
 
 	<template id="example" bind>
-		<d3-geomap style="width:85%;margin:0 auto;" selected="{{selected}}" hover="{{hover}}"></d3-geomap>
+		<d3-geomap style="width:85%;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" hovertemplate="hoverTemplate">
+			<template id="hoverTemplate">
+				<div style="
+					opacity:0.9;
+					padding: 4px;
+					border-radius: 1px;
+					background-color: #FFF;
+					box-shadow: 1px 1px 5px #CCC;
+					font-size: 12px;
+					border: 1px solid #CCC;
+					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				">
+					<flag-icon iso="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong>
+				</div>
+			</template>
+		</d3-geomap>
 	</template>
 
 	<p></p>
@@ -31,17 +48,19 @@
 		<input type="button" onclick="changeSelection(this)" style="background-color:#B96F6F" value="ASEAN Countries" data="asean">
 		<input type="button" onclick="changeSelection(this)" style="background-color:#4A9586" value="G8 Countries" data="g8">
 		<input type="button" onclick="changeSelection(this)" style="background-color:#5EAE9E" value="G20 Countries" data="g20">
-		<br />
-		<template id="info" bind if="{{hover}}">
-			User Hover: <strong>{{hover.geography.id}}</strong> - {{hover.geography.properties.name}}
-		</template>
-		<br/>
-		<template id="clicks" bind if="{{geography}}">
-			User Click: <strong>{{geography.id}}</strong> - {{geography.properties.name}}
-		</template>
+		<br>
+		<div style="height:25px;">
+			<template id="info" bind if="{{hover}}">
+				User Hover: <strong><flag-icon iso="{{hover.id}}"></flag-icon> {{hover.name}}</strong> ({{hover.id}})
+			</template>
+			<br>
+			<template id="clicks" bind if="{{geography}}">
+				User Click: <strong><flag-icon iso="{{geography.id}}"></flag-icon> {{geography.properties.name}}</strong> ({{geography.id}})
+			</template>
+		</div>
 	</div>
 
-<script>
+	<script>
 	var nato = [
 		'ALB','BEL','BGR','CAN','HRV','CZE','DNK',
 		'EST','FRA','DEU','GRC','HUN','ISL','ITA',
@@ -133,7 +152,7 @@
 			},1000);
 		});
 	});
-</script>
-
-  </body>
+	</script>
+	<index-links page="world.html"></index-links>
+</body>
 </html>

@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
 	<title>D3 SVG Geographic Map</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
+	<link rel="import" href="index-links.html">
 	<style>
 		input { text-align: right; }
 	</style>
-  </head>
-  <body unresolved>
+</head>
+<body unresolved>
 
 	<h2>Responsiveness and Size</h2>
 	Map should fill parent element, respecting specified width and height.<br>
@@ -69,25 +70,26 @@
 				<input type="button" on-click="{{wFixed}}" value="Fixed Width"><input type="button" on-click="{{wDynamic}}" value="Dynamic Width">
 			</table>
 		</template>
-	<script>
-	Polymer('x-example', {
-		containerWidth: '800px',
-		containerHeight: '500px',
-		height: '100%',
-		width: '100%',
-		cover: true,
-		pan: true,
-		toggleCover: function(){
-			this.cover = !this.cover;
-		},
-		togglePan: function(){
-			this.pan = !this.pan;
-		},
-		wFixed: function(){ this.containerWidth = '800px'; },
-		wDynamic: function(){ this.containerWidth = '75%'; }
-	});
-	</script>
+		<script>
+		Polymer('x-example', {
+			containerWidth: '800px',
+			containerHeight: '500px',
+			height: '100%',
+			width: '100%',
+			cover: true,
+			pan: true,
+			toggleCover: function(){
+				this.cover = !this.cover;
+			},
+			togglePan: function(){
+				this.pan = !this.pan;
+			},
+			wFixed: function(){ this.containerWidth = '800px'; },
+			wDynamic: function(){ this.containerWidth = '75%'; }
+		});
+		</script>
 	</polymer-element>
 	<x-example></x-example>
-  </body>
+	<index-links page="responsive-size.html"></index-links>
+</body>
 </html>

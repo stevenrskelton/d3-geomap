@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
 	<title>D3 SVG Geographic Map</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
+	<link rel="import" href="index-links.html">
 	<style>
 		p > div {
 			font-style: italic;
@@ -16,13 +17,13 @@
 			display: inline-block;
 		}
 	</style>
-  </head>
-  <body unresolved>
+</head>
+<body unresolved>
 
 	<h2>Themes</h2>
 	Default background, land, highlight, and border colors should be exposed.
 
-	<p />
+	<p>
 
 	<template id="example1" bind>
 		<div>
@@ -52,9 +53,9 @@
 		</div>
 	</template>
 
-	<p />
+	<p>
 
-<script>
+	<script>
 	window.addEventListener('polymer-ready', function(){
 
 		document.getElementById('example1').model = {};
@@ -92,7 +93,7 @@
 		};
 
 	});
-</script>
-
-  </body>
+	</script>
+	<index-links page="themes.html"></index-links>
+</body>
 </html>

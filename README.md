@@ -44,7 +44,7 @@ Samples
 
 1. Add the library using the Javascript package manager [Bower](http://bower.io/):
 
-	```bower install --save d3-geomap``
+	```bower install --save d3-geomap```
 
 2. Import Web Components' polyfill:
 
@@ -61,7 +61,9 @@ Samples
 4. Start using it!
 
 	```html
-	<d3-geomap></d3-geomap>
+	<d3-geomap>
+		<!-- add templates here -->
+	</d3-geomap>
 	```
 
 ## Options
@@ -70,14 +72,14 @@ Attribute			| Type			| Default		| Description
 ---					| ---			| ---			| ---
 `data`				| *object*		| `null`		| keys are region id, values are arbitrary data to be associated with region
 `hover`				| *object*		| `null`		| Region hovered over by user pointer
-`hoverTemplate`		| *function*	| `null`		| Function with `geometry` and `data` parameters, returns HTML `string` to display in region hover-over
 `map`				| *string*		| world			| Acceptable values are `world` and `usa`, will render world and USA maps respectivily.
 `multiselect`		| *boolean*		| `false`		| If true, `selected` is automatically populated by user clicks
-`theme`				| *object*		| _default_		| CSS styles to apply to map, see __Themes__
+`theme`				| *object*		| _default_		| CSS styles to apply to map, _see_ [Themes](#themes)
 `selected`	 		| *object*		| `null`		| keys are region id, values are a CSS color.  Also supports an `array` if region ids where `defaultSelectedFill` color is assumed
-`projection`		| *object*		| _default_		| Center of map and size, see __Projection__
+`projection`		| *object*		| _default_		| Center of map and size, _see_ [Projection](#projection)
 `pan`				| *boolean*		| `false`		| Enable mouse/touch pan on drag
 `zoom`				| *boolean*		| `false`		| Enable mouse scroll-wheel/touch pinch zoom
+`hovertemplate`		| *function*	| `null`		| _See_ [hovertemplate](#hovertemplate)
 
 Event				| Value			| Description
 ---					| ---			| ---
@@ -103,8 +105,8 @@ Attribute				| Type		| Default					| Description
 `highlightFillColor`	| *color*	| #FC8D59					| Fill for highlighted/hover region
 `highlightBorderColor`	| *color*	| rgba (250, 15, 160, 0.2)	| Border color for highlighted/hover region
 `highlightBorderWidth`	| *int*		| 2							| Border width (px) for highlighted/hover region
-`cursor`				| *cursor*	| pointer					| See the W3C Spec http://www.w3.org/wiki/CSS/Properties/cursor
-`backgroundImage`		| *image*	| none						| See the W3C Spec http://www.w3.org/TR/css3-background/#the-background-image
+`cursor`				| *cursor*	| pointer					| _See the W3C Spec_ [http://www.w3.org/wiki/CSS/Properties/cursor](http://www.w3.org/wiki/CSS/Properties/cursor)
+`backgroundImage`		| *image*	| none						| _See the W3C Spec_ [http://www.w3.org/TR/css3-background/#the-background-image](http://www.w3.org/TR/css3-background/#the-background-image)
 
 ## Projection
 
@@ -129,18 +131,36 @@ The __world__ topology is a standard [Equirectangular projection](http://en.wiki
 
 The __usa__ topology is an [Albers USA projection](http://bl.ocks.org/mbostock/4090848).
 
+### Templates
+
+All templates must be nested inside the `<d3-geomap>` tag to be accessible to the polymer element.
+
+Any filter used (eg: `sum` in a following example) must be a member of `PolymerExpressions.prototype`.
+See the [Polymer Filters](#polymer-filters) section for more details.
+
+As always, only a very limited subset of Javascript is allowed within `{{ }}` expressions.
+See the [Polymer documentation](http://www.polymer-project.org/docs/polymer/expressions.html) on Expression syntax.
+
+#### hoverTemplate
+
+Renderer for what shows when a region is hovered over.
+
+Template Variable		|	Description
+---						|	---
+`{{hover.id}}`			|	[RegionID](#region-ids) of region
+`{{hover.name}}`		|	Name of region
+`{{hover.data}}`		|	Custom user data assigned to region (_empty by_default_)
+
 ## Todo
 
-- hover template using Template
 - disabled regions
 - different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
 - expose more DataMaps functionality (bubbles, arcs)
-- D3 and DataMaps dependencies using bower
 - maybe: different maps (provinces/states, US districts, etc)
 
 ## Bugs
+- __Internet Explorer is completely broken until it supports templates__
 - using both pointer zoom and projection offsets will misplace popup labels
-- IE 11 on-mouseout is broken (Datamaps library bug)
 - Zooming out will not center if areas outside of map become visible
 - mobile/touch support for pan, zoom is not good
 
