@@ -26,7 +26,7 @@
 			Polymer('data-transform', {
 				hoverInChanged: function(i,f){
 					if(f){
-						this.hoverOut = data.filter(function(row){ return row.iso == f.id; });
+						this.hoverOut = data.filter(function(row){ return row.key == f.id; });
 					}else this.hoverOut = []
 				/*},
 				selectedFieldChanged: function(i,f){
@@ -34,19 +34,19 @@
 						var s = {};
 						data.forEach(function(row){
 							if(row.species == 'Zaire'){
-								s[row.iso] = '#23819C';
+								s[row.key] = '#23819C';
 							}else if(row.species == 'Sudan'){
-								s[row.iso] = '#06DCFB';
+								s[row.key] = '#06DCFB';
 							}else if(row.species == 'Bundibugyo'){
-								s[row.iso] = '#01F33E';
+								s[row.key] = '#01F33E';
 							}else if(row.species == 'Taï Forest'){
-								s[row.iso] = '#B6BA18';
+								s[row.key] = '#B6BA18';
 							}
 						});
 						console.log(s);
 						this.selected = s;
 					}else if(i=='species'){
-						this.selected = data.map(function(x){ return x.iso; });
+						this.selected = data.map(function(x){ return x.key; });
 					}*/
 				}
 			})
@@ -66,7 +66,7 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon iso="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
+					<flag-icon key="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
 				</div>
 			</template>
 		</d3-geomap>
@@ -79,7 +79,7 @@
 
 			<template id="country">
 				<td style="text-align:left">
-					<flag-icon iso="{{row.iso}}"></flag-icon>{{value}}
+					<flag-icon key="{{row.iso}}"></flag-icon>{{value}}
 				</td>
 			</template>
 		</sortable-table>

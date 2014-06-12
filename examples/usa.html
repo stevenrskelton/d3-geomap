@@ -8,6 +8,7 @@
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
 	<link rel="import" href="index-links.html">
+	<link rel="import" href="../../flag-icon/flag-icon.html">
 </head>
 <body unresolved>
 
@@ -27,8 +28,13 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<strong>{{hover.name}}</strong> {{hover.data.statehood}}<br>
-					{{hover.data.preceding}}
+					<table><tr>
+						<td style="padding:3px 8px 3px 3px;"><flag-icon key="{{hover.id}}" usstate svg width="64px"></flag-icon></td>
+						<td style="max-width:250px;">
+							<strong>{{hover.name}}</strong> {{hover.data.statehood}}<br>
+							{{hover.data.preceding}}
+						</td>
+					</tr></table>
 				</div>
 			</template>
 		</d3-geomap>

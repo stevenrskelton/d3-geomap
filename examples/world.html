@@ -15,7 +15,7 @@
 	<h2>World Map</h2>
 	World countries map with dynamic region colouring, highlighting, and user hover and click events.
 
-	<p></p>
+	<p>
 
 	<template id="example" bind>
 		<d3-geomap style="width:85%;margin:0 auto;" selected="{{selected}}" hover="{{hover}}" hovertemplate="hoverTemplate">
@@ -30,13 +30,13 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon iso="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong>
+					<flag-icon key="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong>
 				</div>
 			</template>
 		</d3-geomap>
 	</template>
 
-	<p></p>
+	<p>
 
 	<div style="text-align:center">
 		<input type="button" onclick="model.selected = null" value="Clear">
@@ -51,11 +51,11 @@
 		<br>
 		<div style="height:25px;">
 			<template id="info" bind if="{{hover}}">
-				User Hover: <strong><flag-icon iso="{{hover.id}}"></flag-icon> {{hover.name}}</strong> ({{hover.id}})
+				User Hover: <strong><flag-icon key="{{hover.id}}"></flag-icon> {{hover.name}}</strong> ({{hover.id}})
 			</template>
 			<br>
 			<template id="clicks" bind if="{{geography}}">
-				User Click: <strong><flag-icon iso="{{geography.id}}"></flag-icon> {{geography.properties.name}}</strong> ({{geography.id}})
+				User Click: <strong><flag-icon key="{{geography.id}}"></flag-icon> {{geography.properties.name}}</strong> ({{geography.id}})
 			</template>
 		</div>
 	</div>

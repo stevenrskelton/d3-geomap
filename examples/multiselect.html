@@ -20,7 +20,7 @@
 	<polymer-element name="map-to-kv" attributes="map" noscript>
 		<template>
 			<template repeat="{{s in map | mapToKVArray}}">
-				<span style="padding-right: 10px;"><flag-icon iso="{{s.key}}"></flag-icon> {{s.key}}</span>
+				<span style="padding-right: 10px;"><flag-icon key="{{s.key}}"></flag-icon> {{s.key}}</span>
 			</template>
 		</template>
 	</polymer-element>
