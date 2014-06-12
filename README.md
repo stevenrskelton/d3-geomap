@@ -40,6 +40,8 @@ Samples
 
 > [Ebola Outbreaks](http://files.stevenskelton.ca/d3-geomap/examples/ebola.html)
 
+> [CIA World Factbook](http://files.stevenskelton.ca/d3-geomap/examples/cia.html)
+
 ## Usage
 
 1. Add the library using the Javascript package manager [Bower](http://bower.io/):
