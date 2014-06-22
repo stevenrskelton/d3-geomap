@@ -19,12 +19,14 @@
 
 	<h1>CIA World Factbook</h1>
 	<template id="example" bind>
-		<select value="{{dataset}}" onchange="change(this)">
-			<option></option>
-			<option value="gdp">GDP (PPP)</option>
-			<option value="currentaccountbalance">Current Account Balance</option>
-			<option value="budgetsurplus">Budget Surplus %</option>
-		</select>
+		<div style="text-align:center;margin-top:-3em;">
+			Select a dataset: <select value="{{dataset}}" onchange="change(this)">
+				<option></option>
+				<option value="gdp">GDP (PPP)</option>
+				<option value="currentaccountbalance">Current Account Balance</option>
+				<option value="budgetsurplus">Budget Surplus %</option>
+			</select>
+		</div>
 		<br>
 		<d3-geomap style="width:85%;margin:0 7%;background-color:#444;" selected="{{selected}}" data="{{data}}" hovertemplate="hoverTemplate">
 			<template id="hoverTemplate">
@@ -97,8 +99,8 @@
 		});
 		positive.forEach(function(currentValue,index,array){
 			var country = findCountry(currentValue.country);
-			if(country.length>0){
-				var region = country[0].data.alpha3;
+			if(country){
+				var region = country.data.alpha3;
 				selected[region] = colourScaleBlue(currentValue.raw, positiveMax);
 			}
 		});
@@ -110,8 +112,8 @@
 		});
 		negative.forEach(function(currentValue,index,array){
 			var country = findCountry(currentValue.country);
-			if(country.length>0){
-				var region = country[0].data.alpha3;
+			if(country){
+				var region = country.data.alpha3;
 				selected[region] = colourScaleRed(Math.abs(currentValue.raw), negativeMax);
 			}
 		});
@@ -121,8 +123,8 @@
 	function mergeWFB(detail, key){
 		detail.forEach(function(currentValue,index,array){
 			var country = findCountry(currentValue.country);
-			if(country.length>0){
-				var region = country[0].data.alpha3;
+			if(country){
+				var region = country.data.alpha3;
 				if(region){
 					if(!model.data[region]) model.data[region] = {};
 					model.data[region][key] = currentValue;
