@@ -7,7 +7,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="../../platform/platform.js"></script>
 	<link rel="import" href="../d3-geomap.html">
-	<link rel="import" href="../../sortable-table/sortable-table.html">
 	<link rel="import" href="../../flag-icon/flag-icon.html">
 	<link rel="import" href="../../transform-to-json/transform-to-json.html">
 	<link rel="import" href="index-links.html">
@@ -40,7 +39,7 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon key="{{hover.id}}" svg width="32px" style="vertical-align:middle;display:inline-block;margin-right:10px;"></flag-icon><strong style="font-size:larger;border-bottom:1px solid #333;padding-right:20px;">{{hover.name}}</strong>
+					<flag-icon key="{{hover.id}}" svg width="32" style="vertical-align:middle;margin-right:10px;"></flag-icon><strong style="font-size:larger;border-bottom:1px solid #333;padding-right:20px;">{{hover.name}}</strong>
 					<table>
 						<template bind if="{{hover.data.gdp.index}}">
 							<tr>

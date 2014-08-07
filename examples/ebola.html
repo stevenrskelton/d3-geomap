@@ -66,7 +66,7 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon key="{{hover.id}}"></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
+					<flag-icon key="{{hover.id}}" style="padding-right:2px;"></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
 				</div>
 			</template>
 		</d3-geomap>
@@ -79,7 +79,7 @@
 
 			<template id="country">
 				<td style="text-align:left">
-					<flag-icon key="{{row.iso}}"></flag-icon>{{value}}
+					<flag-icon key="{{row.iso}}" style="padding-right:2px;"></flag-icon>{{value}}
 				</td>
 			</template>
 		</sortable-table>
