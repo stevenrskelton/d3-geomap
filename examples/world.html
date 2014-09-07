@@ -30,7 +30,7 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon key="{{hover.id}}"></flag-icon><strong style="padding:2px;">{{hover.name}}</strong>
+					<flag-icon key="{{hover.id}}" img></flag-icon><strong style="padding:2px;">{{hover.name}}</strong>
 				</div>
 			</template>
 		</d3-geomap>
@@ -51,11 +51,11 @@
 		<br>
 		<div style="height:25px;">
 			<template id="info" bind if="{{hover}}">
-				User Hover: <strong><flag-icon key="{{hover.id}}"></flag-icon> {{hover.name}}</strong> ({{hover.id}})
+				User Hover: <strong><flag-icon key="{{hover.id}}" img></flag-icon> {{hover.name}}</strong> ({{hover.id}})
 			</template>
 			<br>
 			<template id="clicks" bind if="{{geography}}">
-				User Click: <strong><flag-icon key="{{geography.id}}"></flag-icon> {{geography.properties.name}}</strong> ({{geography.id}})
+				User Click: <strong><flag-icon key="{{geography.id}}" img></flag-icon> {{geography.properties.name}}</strong> ({{geography.id}})
 			</template>
 		</div>
 	</div>

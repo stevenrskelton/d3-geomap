@@ -1,6 +1,6 @@
 {
   "name": "d3-geomap",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "homepage": "https://github.com/stevenrskelton/d3-geomap",
   "description": "Polymer Web Component for geographic topology visualization",
   "main": "d3-geomap.html",
@@ -27,8 +27,8 @@
     "map"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#>=0.3.4",
+    "polymer": "Polymer/polymer#>=0.4.0",
     "d3": "d3#>=3.4.11",
-    "topojson": "topojson#>=1.6.15"
+    "topojson": "topojson#>=1.6.18"
   }
 }
