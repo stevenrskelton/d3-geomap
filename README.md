@@ -15,9 +15,7 @@ a web component encapsulation too restrictive, and those uses are outside the sc
 Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Live Demos
- 
-Technical
- 
+
 > [World Countries Map](http://files.stevenskelton.ca/d3-geomap/examples/world.html)
 
 > [USA State Map](http://files.stevenskelton.ca/d3-geomap/examples/usa.html)
@@ -28,19 +26,10 @@ Technical
 
 > [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
 
-> [Projections](http://files.stevenskelton.ca/d3-geomap/examples/projections.html)
-
 > [Responsiveness and Sizing](http://files.stevenskelton.ca/d3-geomap/examples/responsive-size.html)
 
 > [Themes and Styling](http://files.stevenskelton.ca/d3-geomap/examples/themes.html)
 
----
-
-Samples
-
-> [Ebola Outbreaks](http://files.stevenskelton.ca/d3-geomap/examples/ebola.html)
-
-> [CIA World Factbook](http://files.stevenskelton.ca/d3-geomap/examples/cia.html)
 
 ## Usage
 
@@ -162,7 +151,6 @@ Template Variable		|	Description
 
 ## Bugs
 - __Internet Explorer is completely broken until it supports templates__
-- using both pointer zoom and projection offsets will misplace popup labels
 - Zooming out will not center if areas outside of map become visible
 - mobile/touch support for pan, zoom is not good
 
