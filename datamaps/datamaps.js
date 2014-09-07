@@ -1,9 +1,14 @@
 (function() {
   var svg;
+
+  //save off default references
+  var d3 = window.d3, topojson = window.topojson;
+  
   var defaultOptions = {
     scope: 'world',
     setProjection: setProjection,
     projection: 'equirectangular',
+    dataType: 'json',
     done: function() {},
     fills: {
       defaultFill: '#ABDDA4'
@@ -21,6 +26,9 @@
         highlightFillColor: '#FC8D59',
         highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
         highlightBorderWidth: 2
+    },
+    projectionConfig: {
+      rotation: [97, 0]
     },
     bubblesConfig: {
         borderWidth: 2,
@@ -47,38 +55,61 @@
     backgroundConfig: {
       backgroundImage: null
     },
-    userMovementConfig: {
-      zoomIncrement: 0.1,
-      zoomEnabled: false,
-      panEnabled: false
+    pointerConfig: {
+      pan: true,
+      panBounds: true,
+      zoom: true,
+      zoomIncrement: 0.1
     }
   };
 
-  function addContainer( element ) {
+  function addContainer( element, height, width ) {
     this.svg = d3.select( element ).append('svg')
-      .attr('width', element.offsetWidth)
+      .attr('width', width || element.offsetWidth)
       .attr('class', 'datamap')
-      .attr('height', element.offsetHeight);
+      .attr('height', height || element.offsetHeight)
+      .style('overflow', 'hidden'); // IE10+ doesn't respect height/width when map is zoomed in
 
     return this.svg;
   }
 
   // setProjection takes the svg element and options
   function setProjection( element, options ) {
+    var width = options.width || element.offsetWidth;
+    var height = options.height || element.offsetHeight;
     var projection, path;
+    var svg = this.svg;
+    
     if ( options && typeof options.scope === 'undefined') {
       options.scope = 'world';
     }
 
     if ( options.scope === 'usa' ) {
       projection = d3.geo.albersUsa()
-        .scale(element.offsetWidth)
-        .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+        .scale(width)
+        .translate([width / 2, height / 2]);
     }
     else if ( options.scope === 'world' ) {
       projection = d3.geo[options.projection]()
-        .scale((element.offsetWidth + 1) / 2 / Math.PI)
-        .translate([element.offsetWidth / 2, element.offsetHeight / (options.projection === "mercator" ? 1.45 : 1.8)]);
+        .scale((width + 1) / 2 / Math.PI)
+        .translate([width / 2, height / (options.projection === "mercator" ? 1.45 : 1.8)]);
+    }
+
+    if ( options.projection === 'orthographic' ) {
+
+      svg.append("defs").append("path")
+        .datum({type: "Sphere"})
+        .attr("id", "sphere")
+        .attr("d", path);
+
+      svg.append("use")
+          .attr("class", "stroke")
+          .attr("xlink:href", "#sphere");
+
+      svg.append("use")
+          .attr("class", "fill")
+          .attr("xlink:href", "#sphere");
+      projection.scale(250).clipAngle(90).rotate(options.projectionConfig.rotation)
     }
 
     path = d3.geo.path()
@@ -87,7 +118,14 @@
     return {path: path, projection: projection};
   }
 
-  function drawSubunits( geoData ) {
+  function addStyleBlock() {
+    if ( d3.select('.datamaps-style-block').empty() ) {
+      d3.select('head').append('style').attr('class', 'datamaps-style-block')
+      .html('.datamap path.datamaps-graticule { fill: none; stroke: #777; stroke-width: 0.5px; stroke-opacity: .5; pointer-events: none; } .datamap .labels {pointer-events: none;} .datamap path {stroke: #FFFFFF; stroke-width: 1px;} .datamaps-legend dt, .datamaps-legend dd { float: left; margin: 0 3px 0 0;} .datamaps-legend dd {width: 20px; margin-right: 6px; border-radius: 3px;} .datamaps-legend {padding-bottom: 20px; z-index: 1001; position: absolute; left: 4px; font-size: 12px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;} .datamaps-hoverover {display: none; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; } .hoverinfo {padding: 4px; border-radius: 1px; background-color: #FFF; box-shadow: 1px 1px 5px #CCC; font-size: 12px; border: 1px solid #CCC; } .hoverinfo hr {border:1px dotted #CCC; }');
+    }
+  }
+
+  function drawSubunits( data ) {
     var fillData = this.options.fills,
         colorCodeData = this.options.data || {},
         geoConfig = this.options.geographyConfig;
@@ -97,6 +135,14 @@
     if ( subunits.empty() ) {
       subunits = this.addLayer('datamaps-subunits', null, true);
     }
+
+    var geoData = topojson.feature( data, data.objects[ this.options.scope ] ).features;
+    if ( geoConfig.hideAntarctica ) {
+      geoData = geoData.filter(function(feature) {
+        return feature.id !== "ATA";
+      });
+    }
+    this.geoData = geoData;
 
     var geo = subunits.selectAll('path.datamaps-subunit').data( geoData );
 
@@ -149,7 +195,7 @@
               .attr('data-previousAttributes', JSON.stringify(previousAttributes));
 
             //as per discussion on https://github.com/markmarkoh/datamaps/issues/19
-            if ( ! /MSIE/.test(navigator.userAgent) ) {
+            if ( ! /((MSIE)|(Trident))/.test ) {
              moveToFront.call(this);
             }
           }
@@ -169,6 +215,7 @@
             }
           }
           $this.on('mousemove', null);
+          d3.select(self.options.element).selectAll('.datamaps-hoverover').style('display', 'none');
         });
     }
     
@@ -211,6 +258,14 @@
     var hoverover = d3.select( this.options.element ).append('div')
       .attr('class', 'datamaps-legend')
       .html(html);
+  }
+
+    function addGraticule ( layer, options ) {
+      var graticule = d3.geo.graticule();
+      this.svg.insert("path", '.datamaps-subunits')
+        .datum(graticule)
+        .attr("class", "datamaps-graticule")
+        .attr("d", this.path); 
   }
 
   function handleArcs (layer, data, options) {
@@ -277,17 +332,6 @@
   function handleLabels ( layer, options ) {
     var self = this;
     options = options || {};
-
-    if(!this.svg.selectAll(".datamaps-subunit").attr("data-foo")){
-      this.svg.node().addEventListener("topologychange", function(){
-        var n = layer.node();
-        while (n.firstChild) {
-          n.removeChild(n.firstChild);
-        }
-        handleLabels.apply(self, [layer, options]);
-      });
-    }
-
     var labelStartCoodinates = this.projection([-67.707617, 42.722131]);
     this.svg.selectAll(".datamaps-subunit")
       .attr("data-foo", function(d) {
@@ -346,20 +390,38 @@
         .append('svg:circle')
         .attr('class', 'datamaps-bubble')
         .attr('cx', function ( datum ) {
-          var latLng = self.latLngToXY(datum.latitude, datum.longitude);
+          var latLng;
+          if ( datumHasCoords(datum) ) {
+            latLng = self.latLngToXY(datum.latitude, datum.longitude);
+          }
+          else if ( datum.centered ) {
+            latLng = self.path.centroid(svg.select('path.' + datum.centered).data()[0]);
+          }
           if ( latLng ) return latLng[0];
         })
         .attr('cy', function ( datum ) {
-          var latLng = self.latLngToXY(datum.latitude, datum.longitude);
-          if ( latLng ) return latLng[1];
+          var latLng;
+          if ( datumHasCoords(datum) ) {
+            latLng = self.latLngToXY(datum.latitude, datum.longitude);
+          }
+          else if ( datum.centered ) {
+            latLng = self.path.centroid(svg.select('path.' + datum.centered).data()[0]);
+          }
+          if ( latLng ) return latLng[1];;
         })
         .attr('r', 0) //for animation purposes
         .attr('data-info', function(d) {
           return JSON.stringify(d);
         })
-        .style('stroke', options.borderColor)
-        .style('stroke-width', options.borderWidth)
-        .style('fill-opacity', options.fillOpacity)
+        .style('stroke', function ( datum ) {
+          return typeof datum.borderColor !== 'undefined' ? datum.borderColor : options.borderColor;
+        })
+        .style('stroke-width', function ( datum ) {
+          return typeof datum.borderWidth !== 'undefined' ? datum.borderWidth : options.borderWidth;
+        })
+        .style('fill-opacity', function ( datum ) {
+          return typeof datum.fillOpacity !== 'undefined' ? datum.fillOpacity : options.fillOpacity;
+        })
         .style('fill', function ( datum ) {
           var fillColor = fillData[ datum.fillKey ];
           return fillColor || fillData.defaultFill;
@@ -398,6 +460,8 @@
               $this.style(attr, previousAttributes[attr]);
             }
           }
+
+          d3.selectAll('.datamaps-hoverover').style('display', 'none');
         })
         .transition().duration(400)
           .attr('r', function ( datum ) {
@@ -410,10 +474,180 @@
         .attr("r", 0)
         .remove();
 
+    function datumHasCoords (datum) {
+      return typeof datum !== 'undefined' && typeof datum.latitude !== 'undefined' && typeof datum.longitude !== 'undefined';
+    }
+
+  }
+
+function handlePointer (layer, data, options) {
+
+    var self = this,
+     svg = this.svg,
+     position = null;
+
+    var cleanExit = true;
+
+    if(options.pan){
+      var oldCursor;
+      function mousedown(){
+        if(d3.event.which == 1){
+          position = d3.mouse(this);
+          var transform = getSVGTransform(self.svg);
+          if(cleanExit) oldCursor = svg.node().style.cursor;
+          cleanExit = false;
+          svg.style('cursor','move');
+
+          function pointermove(){
+            var newPosition = d3.mouse(this);
+            //scale to keep movements proportional to mouse movements
+            var x = (newPosition[0] - (position[0]||0)) / transform.scale;
+            var y = (newPosition[1] - (position[1]||0)) / transform.scale;
+            setSVGTranslation(svg, transform.x + x, transform.y + y, options.panBounds);
+          }
+          svg.on('mousemove', pointermove);
+          svg.on('touchmove', pointermove);
+          svg.on('pointermove', pointermove);
+
+          //disable built in image dragging for firefox
+          svg.on('dragstart', function(e){ d3.event.preventDefault(); })
+
+          function pointerup() {
+            svg.style('cursor',oldCursor);
+            oldCursor = null;
+            cleanExit = true;
+            svg.on('mousemove', null);
+            svg.on('touchmove', null);
+            svg.on('pointermove', null);
+          }
+          svg.on('mouseup', pointerup);
+          svg.on('touchend', pointerup);
+          svg.on('pointerup', pointerup);
+        }
+      }
+      svg.on('mousedown', mousedown);
+      svg.on('touchstart', mousedown);
+      svg.on('pointerdown', mousedown);
+
+      function pointerout(){
+        svg.style('cursor',oldCursor);
+        oldCursor = null;
+        cleanExit = true;
+        svg.on('mousemove', null);
+        svg.on('touchmove', null);
+        svg.on('pointermove', null);
+      }
+      svg.on('mouseout', pointerout);
+      svg.on('pointerout', pointerout);
+    }
+
+    if(options.zoom){
+      function mousewheel( datum ) {
+        var change = (d3.event.type == 'mousewheel') ? d3.event.wheelDelta : -d3.event.detail;
+        if (change > 0){
+          setSVGScale(self.svg, 1 + options.zoomIncrement);
+        }else{
+          setSVGScale(self.svg, 1 - options.zoomIncrement);
+        }
+        d3.event.stopPropagation();
+      };
+      svg.on('mousewheel', mousewheel);
+      svg.on('DOMMouseScroll', mousewheel);
+    }
+  }
+
+  function getSVGTransform(svg){
+    var b = svg.select('g.datamaps-subunits').node().transform.baseVal;
+    var count = b.numberOfItems;
+    var sx = 1, x = 0, y = 0;
+    for(var i=0;i<count;i++){
+      var t = b.getItem(i);
+      if (t.type == SVGTransform.SVG_TRANSFORM_SCALE){
+        sx = t.matrix.a;
+      }else if(t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+        x = t.matrix.e;
+        y = t.matrix.f;
+      }
+    }
+    return { scale: sx, x: x, y: y};
+  }
+  function setSVGScale(svg, scale){
+    var currentScale = getSVGTransform(svg);
+    //need to re-center
+    var container = svg.node().parentElement;
+    var c = 0.5 * (scale - 1) / scale / currentScale.scale;
+    var x = currentScale.x - container.clientWidth * c;
+    var y = currentScale.y - container.clientHeight * c;
+
+    svg.selectAll('g').each(function(){
+      var g = this;
+      var b = g.transform.baseVal;
+      var count = b.numberOfItems;
+      var t = null, s = null;
+      for(var i=0;i<count;i++){
+        var bi = b.getItem(i);
+        if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE) s = bi;
+        if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) t = bi;
+      }
+      if(!s){
+        s = g.parentElement.createSVGTransform();
+        b.appendItem(s);
+      }
+      s.setScale(currentScale.scale * scale, currentScale.scale * scale);
+      if(!t){
+        t = g.parentElement.createSVGTransform();
+        b.appendItem(t);
+      }
+      t.setTranslate(x, y);
+    });
+  }
+  function setSVGTranslation(svg, x, y, bounded){
+    if(Math.abs(x)==0 && Math.abs(y)==0) return;
+
+    var current = getSVGTransform(svg);
+
+    //limit to edges
+    if(bounded){
+      var container = svg.node().parentElement;
+      var w = container.clientWidth;
+      var h = container.clientHeight;
+      var size = svg.node().getBBox();
+      var diffX = current.x - x;
+      var diffY = current.y - y;
+
+      if(size.x >= diffX && diffX <= 0) x = current.x;
+      if(size.y >= diffY && diffY <= 0) y = current.y;
+      if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
+      if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
+    }
+
+    if(x!=current.x || y!=current.y){
+      svg.selectAll('g').each(function() {
+        var g = this;
+        var b = g.transform.baseVal;
+        var count = b.numberOfItems;
+        var t = null, s = null;
+        for(var i=0;i<count;i++){
+          var bi = b.getItem(i);
+          if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE) s = bi;
+          if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) t = bi;
+        }
+        if(!s){
+          s = g.parentElement.createSVGTransform();
+          b.appendItem(s);
+          s.setScale(1,1);
+        }
+        if(!t){
+          t = g.parentElement.createSVGTransform();
+          b.appendItem(t);
+        }
+        t.setTranslate(x, y);
+      });
+    }
   }
 
   /** plugin to render background image */
-  function handleBackground (layer, data, options) {
+  function handleBackground(layer, data, options) {
 
     var self = this,
      svg = this.svg;
@@ -456,198 +690,6 @@
     svg.node().addEventListener("topologychange", renderBackground);
   }
 
-  /** plugin to allow pan and zoom */
-  function handleUserMovement (layer, data, options) {
-
-    var self = this,
-     svg = this.svg,
-     position = null;
-
-    function setScale(scale){
-      var current = self.getSVGTransform();
-      if(scale == current.scale) return;
-
-      //limit to applied scale 1 (map may be projected)
-      if(scale < current.scale){
-        var container = d3.select( self.options.element ).node();
-        var w = container.clientWidth;
-        var h = container.clientHeight;
-        var size = svg.node().getBBox();
-
-        var incr = 0.005;
-        while( size.width * scale / current.scale < container.clientWidth
-            || size.height * scale / current.scale < container.clientHeight){
-          scale += incr;
-        }
-        if(scale >= current.scale) return;
-      }
-
-      var g = svg.select('g.datamaps-subunits').node();
-      var b = g.transform.baseVal;
-      var count = b.numberOfItems;
-      var t = null;
-      for(var i=0;i<count;i++){
-        var bi = b.getItem(i);
-        if (bi.type == SVGTransform.SVG_TRANSFORM_SCALE){
-          t = bi;
-          break;
-        }
-      }
-      if(!t){
-        t = svg.node().createSVGTransform();
-        b.appendItem(t);
-      }
-      t.setScale(scale, scale);
-
-      //also need to re-center
-      var cx = 20 / scale * Math.sign(current.scale - scale);
-      var cy = 20 / scale * Math.sign(current.scale - scale);
-
-      /*
-      //snap if already out of bounds
-      console.log(size.x + '\t' + size.y + ',\t' + size.width + '\t' + (size.width * aspect) + ',\t' + current.scale + '\t\t' + current.x + ',\t' + current.y)
-
-      if(size.x > 0) x = 0;
-      if(size.y > 0) y = 0;
-
-      if(size.x < w - size.width){
-        console.log('right');
-        x = size.x / 2
-      }
-      if(size.y < h - (size.width * aspect)){
-        y = ((size.width * aspect) - h ) / -2 * current.scale;
-        console.log('bottom ' + y + ' !');
-      }
-*/
-
-      setTranslation(current.x + cx, current.y + cy);
-    }
-    function setTranslation(x, y){
-      if(Math.abs(x)==0 && Math.abs(y)==0) return;
-
-      var current = self.getSVGTransform();
-      var aspect = 0.5;
-
-      //limit to edges
-      var container = d3.select( self.options.element ).node();
-      var w = container.clientWidth;
-      var h = container.clientHeight;
-      var size = svg.node().getBBox();
-
-      var diffX = current.x - x;
-      var diffY = current.y - y;
-
-      if(size.x >= diffX && diffX <= 0) x = current.x;
-      if(size.y >= diffY && diffY <= 0) y = current.y;
-
-      if(w - size.x - size.width + diffX >= 0 && diffX >= 0) x = current.x;
-      if(h - size.y - size.height + diffY >= 0 && diffY >= 0) y = current.y;
-
-      if(x!=current.x || y!=current.y){
-        var g = svg.select('g.datamaps-subunits').node();
-        var b = g.transform.baseVal;
-        var count = b.numberOfItems;
-        var t = null;
-        for(var i=0;i<count;i++){
-          var bi = b.getItem(i);
-          if (bi.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
-            t = bi;
-            break;
-          }
-        }
-        if(!t){
-          t = svg.node().createSVGTransform();
-          b.appendItem(t);
-        }
-        t.setTranslate(x, y);
-      }
-
-      //raise an event
-      // other plugins might need to sync translation
-      var event = document.createEvent("Event");
-      event.initEvent("transform", true, true);
-      svg.node().dispatchEvent(event);
-    }
-
-    var cleanExit = true;
-
-    if(options.panEnabled){
-      var oldCursor;
-      function mousedown(){
-        if(d3.event.which == 1){
-          position = d3.mouse(this);
-          var transform = self.getSVGTransform();
-          if(cleanExit) oldCursor = svg.node().style.cursor;
-          cleanExit = false;
-          svg.style('cursor','move');
-
-          function mousemove(){
-            var newPosition = d3.mouse(this);
-            //scale to keep movements porportional to mouse movements
-            var x = (newPosition[0] - (position[0]||0)) / transform.scale;
-            var y = (newPosition[1] - (position[1]||0)) / transform.scale;
-            setTranslation(transform.x + x, transform.y + y);
-          }
-          svg.on('mousemove', mousemove);
-          svg.on('touchmove', mousemove);
-
-          function mouseup() {
-            svg.style('cursor',oldCursor);
-            oldCursor = null;
-            cleanExit = true;
-            svg.on('mousemove', null);
-          }
-          svg.on('mouseup', mouseup);
-          svg.on('touchend', mouseup);
-        }
-      }
-      svg.on('mousedown', mousedown);
-      svg.on('touchstart', mousedown);
-
-      function mouseout(){
-        svg.style('cursor',oldCursor);
-        oldCursor = null;
-        cleanExit = true;
-        svg.on('mousemove', null);
-      }
-      svg.on('mouseout', mouseout);
-    }else{
-      svg.on('mousedown', null);
-      svg.on('touchstart', null);
-    }
-    if(options.zoomEnabled){
-      function mousewheel( datum ) {
-        var scale = self.getSVGTransform().scale;
-        var change;
-
-        if(d3.event.type == 'mousewheel') change = d3.event.wheelDelta;
-        else change = -d3.event.detail;
-
-        if (change > 0){
-          scale *= (1 + options.zoomIncrement);
-        }else{
-          scale *= (1 - options.zoomIncrement);
-        }
-        setScale(scale);
-        d3.event.stopPropagation();
-      };
-      svg.on('mousewheel', mousewheel);
-      svg.on('DOMMouseScroll', mousewheel);
-    }else{
-      svg.on('mousewheel', null);
-      svg.on('DOMMouseScroll', null);
-    }
-  }
-
-  if(!Math.sign){
-    Math.sign = function sign(x){
-      if( +x === x ) { // check if a number was given
-        return (x === 0) ? x : (x > 0) ? 1 : -1;
-      }
-      return NaN;
-    }
-  }
-
   //stolen from underscore.js
   function defaults(obj) {
     Array.prototype.slice.call(arguments, 1).forEach(function(source) {
@@ -672,14 +714,15 @@
     //set options for global use
     this.options = defaults(options, defaultOptions);
     this.options.geographyConfig = defaults(options.geographyConfig, defaultOptions.geographyConfig);
+    this.options.projectionConfig = defaults(options.projectionConfig, defaultOptions.projectionConfig);
     this.options.bubblesConfig = defaults(options.bubblesConfig, defaultOptions.bubblesConfig);
     this.options.arcConfig = defaults(options.arcConfig, defaultOptions.arcConfig);
     this.options.backgroundConfig = defaults(options.backgroundConfig, defaultOptions.backgroundConfig);
-    this.options.userMovementConfig = defaults(options.userMovementConfig, defaultOptions.userMovementConfig);
+    this.options.pointerConfig = defaults(options.pointerConfig, defaultOptions.pointerConfig);
 
     //add the SVG container
     if ( d3.select( this.options.element ).select('svg').length > 0 ) {
-      addContainer.call(this, this.options.element );
+      addContainer.call(this, this.options.element, this.options.height, this.options.width );
     }
 
     /* Add core plugins to this instance */
@@ -687,7 +730,13 @@
     this.addPlugin('legend', addLegend);
     this.addPlugin('arc', handleArcs);
     this.addPlugin('labels', handleLabels);
-    this.addPlugin('userMovement', handleUserMovement);
+    this.addPlugin('graticule', addGraticule);
+    this.addPlugin('pointer', handlePointer);
+
+    //append style block with basic hoverover styles
+    if ( ! this.options.disableDefaultStyles ) {
+      addStyleBlock();
+    }
 
     return this.draw();
   }
@@ -713,24 +762,28 @@
       });
     }
     else {
-      draw( this[options.scope + 'Topo'] );
+      draw( this[options.scope + 'Topo'] || options.geographyConfig.dataJson);
     }
 
     return this;
 
-      function createGeoData(data){
-        var geoData = topojson.feature( data, data.objects[ self.options.scope ] ).features;
-        if ( self.options.geographyConfig.hideAntarctica ) {
-          geoData = geoData.filter(function(feature) {
-            return feature.id !== "ATA";
+      function draw (data) {
+        // if fetching remote data, draw the map first then call `updateChoropleth`
+        if ( self.options.dataUrl ) {
+          //allow for csv or json data types
+          d3[self.options.dataType](self.options.dataUrl, function(data) {
+            //in the case of csv, transform data to object
+            if ( self.options.dataType === 'csv' && (data && data.slice) ) {
+              var tmpData = {};
+              for(var i = 0; i < data.length; i++) {
+                tmpData[data[i].id] = data[i];
+              } 
+              data = tmpData;
+            }
+            Datamaps.prototype.updateChoropleth.call(self, data);
           });
         }
-        self.geoData = geoData;
-        return geoData;
-      }
-
-      function draw (data) {
-        self.subunits = drawSubunits.call(self, createGeoData(data));
+        self.subunits = drawSubunits.call(self, data);
         handleGeographyConfig.call(self);
 
         if ( self.options.geographyConfig.popupOnHover || self.options.bubblesConfig.popupOnHover) {
@@ -835,7 +888,8 @@
     element.on('mousemove', null);
     element.on('mousemove', function() {
       var position = d3.mouse(this);
-      var transform = self.getSVGTransform();
+      //replaced code that renders a DIV with a call to template
+      var transform = getSVGTransform(self.svg);
       var id = element.data()[0].id;
       var name = element.data()[0].properties.name
       var data = JSON.parse(element.attr('data-info'));
@@ -843,24 +897,9 @@
       var left = ((position[0] + transform.x) * transform.scale);
       options.popupTemplate({ id:id, name:name, data:data }, top, left);
     });
-  };
 
-  Datamap.prototype.getSVGTransform = function(){
-    var g = this.svg.select('g.datamaps-subunits').node();
-    var b = g.transform.baseVal;
-    var count = b.numberOfItems;
-    var sx = 1, x = 0, y = 0;
-    for(var i=0;i<count;i++){
-      var t = b.getItem(i);
-      if (t.type == SVGTransform.SVG_TRANSFORM_SCALE){
-        sx = t.matrix.a;
-      }else if(t.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
-        x = t.matrix.e;
-        y = t.matrix.f;
-      }
-    }
-    return { scale: sx, x: x, y: y};
-  }
+    d3.select(self.svg[0][0].parentNode).select('.datamaps-hoverover').style('display', 'block');
+  };
 
   Datamap.prototype.addPlugin = function( name, pluginFn ) {
     var self = this;
@@ -898,7 +937,7 @@
 
   // expose library
   if ( typeof define === "function" && define.amd ) {
-    define( "datamaps", [], function () { return Datamap; } );
+    define( "datamaps", function(require) { d3 = require('d3'); topojson = require('topojson'); return Datamap; } );
   }
   else {
     window.Datamap = window.Datamaps = Datamap;

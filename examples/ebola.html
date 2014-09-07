@@ -10,8 +10,16 @@
 	<link rel="import" href="../../sortable-table/sortable-table.html">
 	<link rel="import" href="../../flag-icon/flag-icon.html">
 	<link rel="import" href="index-links.html">
-	<style>
-		d3-geomap { display:inline-block; float:left; margin-right: 10px; }
+	<style shim-shadowdom>
+		d3-geomap {
+			margin-right: 10px;
+			vertical-align: top;
+			display: inline-block;
+		}
+		sortable-table {
+			width: 50%;
+			display: inline-block !important;
+		}
 	</style>
 </head>
 <body unresolved>
@@ -54,7 +62,15 @@
 	</polymer-element>
 
 	<template id="example" bind> 
-		<d3-geomap style="width:600px;height:630px;" projection="{{projection}}" theme="{{theme}}" selected="{{selected}}" hover="{{hover}}" data="{{mapData}}" hovertemplate="hoverEbolaTemplate">
+		<d3-geomap
+			projection="{{projection}}"
+			theme="{{theme}}"
+			selected="{{selected}}"
+			hover="{{hover}}"
+			data="{{mapData}}"
+			hovertemplate="hoverEbolaTemplate"
+			style="height: 630px; width: 600px;"
+		>
 			<template id="hoverEbolaTemplate">
 				<div style="
 					opacity:0.9;
@@ -66,11 +82,22 @@
 					border: 1px solid #CCC;
 					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 				">
-					<flag-icon key="{{hover.id}}" style="padding-right:2px;"></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
+					<flag-icon key="{{hover.id}}" style="padding-right:2px;" img></flag-icon><strong>{{hover.name}}</strong><br>{{hover.data | foldData}}
 				</div>
 			</template>
 		</d3-geomap>
-		<sortable-table columns="{{columns}}" data="{{data}}" page="{{pge}}" pageSize="15" footerTemplate="defaultPaging" sortColumn="{{selectedField}}" sortDescending="true" selected="{{tableSelected}}" multiSelect>
+		<sortable-table
+			columns="{{columns}}"
+			data="{{data}}"
+			page="{{page}}"
+			pageSize="15"
+			footerTemplate="defaultPaging"
+			sortColumn="{{selectedField}}"
+			sortDescending="true"
+			selected="{{tableSelected}}"
+			multiSelect
+			defaultStyle
+		>
 			<template id="alignLeft">
 				<td style="text-align:left">
 					{{value}}
@@ -79,7 +106,7 @@
 
 			<template id="country">
 				<td style="text-align:left">
-					<flag-icon key="{{row.iso}}" style="padding-right:2px;"></flag-icon>{{value}}
+					<flag-icon key="{{row.iso}}" style="padding-right:2px;" img></flag-icon>{{value}}
 				</td>
 			</template>
 		</sortable-table>

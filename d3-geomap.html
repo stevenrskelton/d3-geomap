@@ -388,10 +388,10 @@
 		},
 		mouseChanged: function(){
 			if(this.d3map){
-				this.d3map.userMovement(null, {
+				this.d3map.pointer(null, {
 					zoomIncrement: this.projection.zoomIncrement || 0.1,
-					zoomEnabled: this.zoom,
-					panEnabled: this.pan
+					zoom: this.zoom,
+					pan: this.pan
 				});
 			}
 		},
