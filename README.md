@@ -22,6 +22,8 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Backgrounds](http://files.stevenskelton.ca/d3-geomap/examples/backgrounds.html)
 
+> [Marks](http://files.stevenskelton.ca/d3-geomap/examples/marks.html)
+
 > [Mouse and Touch Control](http://files.stevenskelton.ca/d3-geomap/examples/mouse-touch.html)
 
 > [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
