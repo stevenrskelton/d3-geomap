@@ -9,7 +9,7 @@ https://github.com/stevenrskelton/d3-geomap
 <script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hovertemplate cover">
+<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hovertemplate cover marks">
   <template>
 	<style>
 		:host { display: block; }
@@ -149,6 +149,11 @@ https://github.com/stevenrskelton/d3-geomap
 		hover: null,
 		data: null,
 		map: 'world',
+		/**
+		 * Array marks to put on the map. Format: [{long: -75, lat: 43, image: 'myimage.png'}, ...]
+		 * @type {Array}
+		 */
+		marks: [],
 		multiselect: false,
 		cover: false,
 		selected: {},
@@ -204,6 +209,22 @@ https://github.com/stevenrskelton/d3-geomap
 					highlightBorderWidth: self.theme.highlightBorderWidth || defaultTheme.highlighBorderWidth
 				},
 				done: function(datamap) {
+					
+					//adding marks
+					datamap.svg.selectAll(".mark")
+						.data(self.marks)
+						.enter()
+						.append("image")
+						.attr('class','mark')
+						//.attr("r",4)
+						.attr('width', 20)
+						.attr('height', 20)
+						.attr("xlink:href", function(d) {
+							//use this royalty free icon when image is not defined
+							return d.image || 'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/location-24-20.png'
+						})
+						.attr("transform", function(d) {console.log(d); return "translate(" + datamap.projection([d.long,d.lat]) + ")";});
+					
 					var subunits = datamap.svg.selectAll('.datamaps-subunit');
 					subunits.on('click', function(geography) {
 						self.itemClicked(geography);
