@@ -191,8 +191,9 @@
               .style('fill', options.highlightFillColor)
               .style('stroke', options.highlightBorderColor)
               .style('stroke-width', options.highlightBorderWidth)
-              .style('fill-opacity', options.highlightFillOpacity)
-              .attr('data-previousAttributes', JSON.stringify(previousAttributes));
+              .style('fill-opacity', options.highlightFillOpacity);
+            if(!$this.attr('data-previousAttributes'))
+              $this.attr('data-previousAttributes', JSON.stringify(previousAttributes));
 
             //as per discussion on https://github.com/markmarkoh/datamaps/issues/19
             if ( ! /((MSIE)|(Trident))/.test ) {
@@ -213,6 +214,7 @@
             for ( var attr in previousAttributes ) {
               $this.style(attr, previousAttributes[attr]);
             }
+            $this.attr('data-previousAttributes',null);
           }
           $this.on('mousemove', null);
           d3.select(self.options.element).selectAll('.datamaps-hoverover').style('display', 'none');
@@ -874,6 +876,18 @@ function handlePointer (layer, data, options) {
         if ( subunitData === Object(subunitData) ) {
           this.options.data[subunit] = defaults(subunitData, this.options.data[subunit] || {});
           var geo = this.svg.select('.' + subunit).attr('data-info', JSON.stringify(this.options.data[subunit]));
+          var $this = this.svg.select('.' + subunit);
+          var previousAttributes = JSON.parse($this.node().getAttribute('data-previousAttributes'));
+          if(!previousAttributes){
+            var previousAttributes = {
+              'fill':  $this.style('fill'),
+              'stroke': $this.style('stroke'),
+              'stroke-width': $this.style('stroke-width'),
+              'fill-opacity': $this.style('fill-opacity')
+            };
+          }
+          previousAttributes.fill = color;
+          this.svg.select('.' + subunit).attr('data-previousAttributes',JSON.stringify(previousAttributes));
         }
         svg
           .selectAll('.' + subunit)
