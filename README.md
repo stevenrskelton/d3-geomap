@@ -30,7 +30,7 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Responsiveness and Sizing](http://files.stevenskelton.ca/d3-geomap/examples/responsive-size.html)
 
-> [Themes and Styling](http://files.stevenskelton.ca/d3-geomap/examples/themes.html)
+> [CSS Styling](http://files.stevenskelton.ca/d3-geomap/examples/css.html)
 
 
 ## Usage
