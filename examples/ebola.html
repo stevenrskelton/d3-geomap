@@ -5,11 +5,11 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="../../platform/platform.js"></script>
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="../d3-geomap.html">
 	<link rel="import" href="../../sortable-table/sortable-table.html">
 	<link rel="import" href="../../flag-icon/flag-icon.html">
-	<link rel="import" href="index-links.html">
+	<link rel="import" href="project-docs.html">
 	<style shim-shadowdom>
 		d3-geomap {
 			margin-right: 10px;
@@ -22,7 +22,7 @@
 		}
 	</style>
 </head>
-<body unresolved>
+<body is="project-docs" unresolved>
 
 	<h1>Major Ebola Outbreaks</h1>
 	<h2>Confirmed cases and years</h2>
@@ -61,7 +61,8 @@
 		</script>
 	</polymer-element>
 
-	<template id="example" bind> 
+	<template id="example" bind>
+		<link type="text/css" rel="stylesheet" href="../../sortable-table/css/bootstrap.css" shim-shadowdom>
 		<d3-geomap
 			projection="{{projection}}"
 			theme="{{theme}}"
@@ -87,16 +88,16 @@
 			</template>
 		</d3-geomap>
 		<sortable-table
+			class="bootstrap"
 			columns="{{columns}}"
 			data="{{data}}"
 			page="{{page}}"
 			pageSize="15"
-			footerTemplate="defaultPaging"
+			footerTemplate="defaultPager"
 			sortColumn="{{selectedField}}"
 			sortDescending="true"
 			selected="{{tableSelected}}"
 			multiSelect
-			defaultStyle
 		>
 			<template id="alignLeft">
 				<td style="text-align:left">
@@ -190,6 +191,5 @@
 		document.getElementById('example').model = model;
 	});
 	</script>
-	<index-links page="ebola.html"></index-links>
 </body>
 </html>

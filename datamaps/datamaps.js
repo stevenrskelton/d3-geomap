@@ -490,61 +490,59 @@ function handlePointer (layer, data, options) {
 
     var cleanExit = true;
 
-    if(options.pan){
-      var oldCursor;
-      function mousedown(){
-        if(d3.event.which == 1){
-          position = d3.mouse(this);
-          var transform = getSVGTransform(self.svg);
-          if(cleanExit) oldCursor = svg.node().style.cursor;
-          cleanExit = false;
-          svg.style('cursor','move');
+    var oldCursor;
+    function mousedown(){
+      if(options.pan && d3.event.which == 1){
+        position = d3.mouse(this);
+        var transform = getSVGTransform(self.svg);
+        if(cleanExit) oldCursor = svg.node().style.cursor;
+        cleanExit = false;
+        svg.style('cursor','move');
 
-          function pointermove(){
-            var newPosition = d3.mouse(this);
-            //scale to keep movements proportional to mouse movements
-            var x = (newPosition[0] - (position[0]||0)) / transform.scale;
-            var y = (newPosition[1] - (position[1]||0)) / transform.scale;
-            setSVGTranslation(svg, transform.x + x, transform.y + y, options.panBounds);
-          }
-          svg.on('mousemove', pointermove);
-          svg.on('touchmove', pointermove);
-          svg.on('pointermove', pointermove);
-
-          //disable built in image dragging for firefox
-          svg.on('dragstart', function(e){ d3.event.preventDefault(); })
-
-          function pointerup() {
-            svg.style('cursor',oldCursor);
-            oldCursor = null;
-            cleanExit = true;
-            svg.on('mousemove', null);
-            svg.on('touchmove', null);
-            svg.on('pointermove', null);
-          }
-          svg.on('mouseup', pointerup);
-          svg.on('touchend', pointerup);
-          svg.on('pointerup', pointerup);
+        function pointermove(){
+          var newPosition = d3.mouse(this);
+          //scale to keep movements proportional to mouse movements
+          var x = (newPosition[0] - (position[0]||0)) / transform.scale;
+          var y = (newPosition[1] - (position[1]||0)) / transform.scale;
+          setSVGTranslation(svg, transform.x + x, transform.y + y, options.panBounds);
         }
-      }
-      svg.on('mousedown', mousedown);
-      svg.on('touchstart', mousedown);
-      svg.on('pointerdown', mousedown);
+        svg.on('mousemove', pointermove);
+        svg.on('touchmove', pointermove);
+        svg.on('pointermove', pointermove);
 
-      function pointerout(){
-        svg.style('cursor',oldCursor);
-        oldCursor = null;
-        cleanExit = true;
-        svg.on('mousemove', null);
-        svg.on('touchmove', null);
-        svg.on('pointermove', null);
+        //disable built in image dragging for firefox
+        svg.on('dragstart', function(e){ d3.event.preventDefault(); })
+
+        function pointerup() {
+          svg.style('cursor',oldCursor);
+          oldCursor = null;
+          cleanExit = true;
+          svg.on('mousemove', null);
+          svg.on('touchmove', null);
+          svg.on('pointermove', null);
+        }
+        svg.on('mouseup', pointerup);
+        svg.on('touchend', pointerup);
+        svg.on('pointerup', pointerup);
       }
-      svg.on('mouseout', pointerout);
-      svg.on('pointerout', pointerout);
     }
+    svg.on('mousedown', mousedown);
+    svg.on('touchstart', mousedown);
+    svg.on('pointerdown', mousedown);
 
-    if(options.zoom){
-      function mousewheel( datum ) {
+    function pointerout(){
+      svg.style('cursor',oldCursor);
+      oldCursor = null;
+      cleanExit = true;
+      svg.on('mousemove', null);
+      svg.on('touchmove', null);
+      svg.on('pointermove', null);
+    }
+    svg.on('mouseout', pointerout);
+    svg.on('pointerout', pointerout);
+
+    function mousewheel( datum ) {
+      if(options.zoom){
         var change = (d3.event.type == 'mousewheel') ? d3.event.wheelDelta : -d3.event.detail;
         if (change > 0){
           setSVGScale(self.svg, 1 + options.zoomIncrement);
@@ -553,9 +551,9 @@ function handlePointer (layer, data, options) {
         }
         d3.event.stopPropagation();
       };
-      svg.on('mousewheel', mousewheel);
-      svg.on('DOMMouseScroll', mousewheel);
-    }
+    };
+    svg.on('mousewheel', mousewheel);
+    svg.on('DOMMouseScroll', mousewheel);
   }
 
   function getSVGTransform(svg){
@@ -877,17 +875,19 @@ function handlePointer (layer, data, options) {
           this.options.data[subunit] = defaults(subunitData, this.options.data[subunit] || {});
           var geo = this.svg.select('.' + subunit).attr('data-info', JSON.stringify(this.options.data[subunit]));
           var $this = this.svg.select('.' + subunit);
-          var previousAttributes = JSON.parse($this.node().getAttribute('data-previousAttributes'));
-          if(!previousAttributes){
-            var previousAttributes = {
-              'fill':  $this.style('fill'),
-              'stroke': $this.style('stroke'),
-              'stroke-width': $this.style('stroke-width'),
-              'fill-opacity': $this.style('fill-opacity')
-            };
+          if($this.node()){
+            var previousAttributes = JSON.parse($this.node().getAttribute('data-previousAttributes'));
+            if(!previousAttributes){
+              var previousAttributes = {
+                'fill':  $this.style('fill'),
+                'stroke': $this.style('stroke'),
+                'stroke-width': $this.style('stroke-width'),
+                'fill-opacity': $this.style('fill-opacity')
+              };
+            }
+            previousAttributes.fill = color;
+            this.svg.select('.' + subunit).attr('data-previousAttributes',JSON.stringify(previousAttributes));
           }
-          previousAttributes.fill = color;
-          this.svg.select('.' + subunit).attr('data-previousAttributes',JSON.stringify(previousAttributes));
         }
         svg
           .selectAll('.' + subunit)

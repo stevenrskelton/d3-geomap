@@ -5,31 +5,45 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="../../platform/platform.js"></script>
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="../d3-geomap.html">
-	<link rel="import" href="index-links.html">
-	<style>
-		d3-geomap { display:inline-block;border:1px solid black; }
-		.params { display: inline-block; vertical-align: top; }
-		.params tr td:nth-of-type(1) { font-weight: bold; }
-		.params tr td:nth-of-type(2) { text-align: right; }
-		.params tr td:nth-of-type(3) { text-align: center; width: 200px }
-		.params tr td:nth-of-type(4) { text-align: right; }
-		.params tr td:nth-of-type(5) { text-align: right; width: 100px; }
-		.params input[type=text] { text-align: right; width: 50px; }
-		.params td { vertical-align: top }
+	<link rel="import" href="project-docs.html">
+	<style shim-shadowdom>
+		zoom-controller::shadow d3-geomap, d3-geomap {
+			display:inline-block;
+			border:1px solid black;
+			border-radius: 3px;
+		}
+		zoom-controller::shadow .params, .params {
+			display: inline-block;
+			vertical-align: top;
+			border: 1px solid #333;
+			background-color: PowderBlue;
+			margin: 10px;
+			padding: 10px;
+			border-radius: 3px;
+			vertical-align: top;
+		}
+		zoom-controller::shadow .params tr td:nth-of-type(1) { font-weight: bold; }
+		zoom-controller::shadow .params tr td:nth-of-type(2) { text-align: right; }
+		zoom-controller::shadow .params tr td:nth-of-type(3) { text-align: center; width: 200px }
+		zoom-controller::shadow .params tr td:nth-of-type(4) { text-align: right; }
+		zoom-controller::shadow .params tr td:nth-of-type(5) { text-align: right; width: 100px; }
+		zoom-controller::shadow .params input[type=text] { text-align: right; width: 50px; }
+		zoom-controller::shadow .params td { vertical-align: top }
 	</style>
 </head>
-<body unresolved>
+<body is="project-docs" unresolved>
 
-	<h2>Mouse &amp; Touch Interactions</h2>
-	Map background should be adjusted by mouse zoom and pan functionality.
-	Zoom should stay centered, and not allow areas outside the map to be visible.
-	Pan should not allow areas outside the map to be visible.
+	<h1>Mouse &amp; Touch Interactions</h1>
 
-	<p />
+	<p>
+		Map background should be adjusted by mouse zoom and pan functionality.
+		Zoom should stay centered, and not allow areas outside the map to be visible.
+		Pan should not allow areas outside the map to be visible.
+	</p>
 
-	<polymer-element name="zoom-controller" attributes="projection theme zoom pan" noscript>
+	<polymer-element name="zoom-controller">
 		<template>
 			<d3-geomap style="width:600px;height:630px;float:left;" projection="{{projection}}" theme="{{theme}}" zoom="{{zoom}}" pan="{{pan}}"></d3-geomap>
 
@@ -38,18 +52,18 @@
 				<tr>
 					<td>Pointer Zoom Increment</td>
 					<td>1%</td>
-					<td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td>
-					<td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" onchange="force()"></td>
+					<td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" on-change="{{force}}"></td>
+					<td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" on-change="{{force}}"></td>
 				</tr>
 				<tr>
 					<td>Pointer Zoom</td>
-					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" onchange="toggleZoom(this)"></td>
+					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" on-change="{{toggleZoom}}"></td>
 				</tr>
 				<tr>
 					<td>Pointer Pan</td>
-					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" onchange="togglePan(this)"></td>
+					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" on-change="{{togglePan}}"></td>
 				</tr>
-				<tr>
+				<!--<tr>
 					<td>Pointer Zoom</td>
 					<td colspan="4" style="text-align:center">{{projection.zoomScale}}</td>
 				</tr>
@@ -57,7 +71,7 @@
 					<td>Pointer Pan X</td>
 					<td>{{projection.panX}}</td><td style="font-weight: bold;">Pointer Pan Y</td>
 					<td colspan="2" style="padding-right:10px">{{projection.panY}}</td>
-				</tr>
+				</tr>-->
 				<tr style="height:60px;vertical-align:bottom;">
 					<td colspan="5"><h3>Projection</h3></td>
 				</tr>
@@ -87,58 +101,63 @@
 					<td>backgroundImage</td>
 					<td colspan="4" style="text-align:left">
 						<input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"><br>
-						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
-						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'}}">SRTM30+ (high resolution, 4.2MB)<br>
-						<input type="radio" name="bg" value="../Equirectangular_projection_SW.jpg" onclick="changeBG(this)" checked?="{{theme.backgroundImage=='../Equirectangular_projection_SW.jpg'}}">Photo Realistic (595KB)<br>
+						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus.jpg" on-click="{{changeBG}}" checked?="{{theme.backgroundImage=='../SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
+						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg" on-click="{{changeBG}}" checked?="{{theme.backgroundImage=='../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'}}">SRTM30+ (high resolution, 4.2MB)<br>
+						<input type="radio" name="bg" value="../Equirectangular_projection_SW.jpg" on-click="{{changeBG}}" checked?="{{theme.backgroundImage=='../Equirectangular_projection_SW.jpg'}}">Photo Realistic (595KB)<br>
 					</td>
 				</tr>
 			</table>
 		</template>
+		<script>
+		Polymer({
+			zoom: true,
+			pan: true,
+			panY: 0,
+			panX: 0,
+			zoomScale: 0,
+			projection: {
+				x: 17,
+				y: -2,
+				scale: 5,
+				zoomIncrement: 0.1,
+				panY: 0,
+				panX: 0,
+				zoomScale: 0
+			},
+			theme: {
+				defaultFill: 'transparent',
+				borderWidth: 1,
+				borderColor: '#ddd',
+				backgroundImage: '../Equirectangular_projection_SW.jpg'
+			},
+			toggleZoom: function(e,i,checkbox){
+				this.zoom = checkbox.checked;
+			},
+			togglePan: function(e,i,checkbox){
+				this.pan = checkbox.checked;
+			},
+			changeBG: function(e,i,radio){
+				this.theme.backgroundImage = radio.value;
+			},
+			toPercent: {
+				toDOM: function(value) { return value * 100; },
+				toModel: function(value) { return value / 100; }
+			},
+			ready: function(){
+				var observer = new ObjectObserver(this.projection);
+				var self = this;
+				observer.open(function(added, removed, changed, getOldValueFn) {
+					Object.keys(changed).forEach(function(property) {
+						if(property==='panY') self.panY = changed[property];
+						if(property==='panX') self.panX = changed[property];
+						if(property==='zoomScale') self.zoomScale = changed[property];
+					});
+				});
+			}
+		});
+		</script>
 	</polymer-element>
 
-	<template id="example" bind>
-		<zoom-controller projection="{{projection}}" theme="{{theme}}" zoom="{{zoom}}" pan="{{pan}}"></zoom-controller>
-	</template>
-
-	<p>
-
-	<script>
-
-	var model = {
-		zoom: true,
-		pan: true,
-		projection: {
-			x: 17,
-			y: -2,
-			scale: 5,
-			zoomIncrement: 0.1,
-		},
-		theme: {
-			defaultFill: 'transparent',
-			borderWidth: 1,
-			borderColor: '#ddd',
-			backgroundImage: '../Equirectangular_projection_SW.jpg'
-			//backgroundImage:'../SRTM30_Plus/srtm30plus.jpg'
-			//backgroundImage: '../SRTM30_Plus/srtm30plus_hilldhading_B.overview_res5km.jpg'
-		}
-	}
-
-	function toggleZoom(checkbox){
-		model.zoom = checkbox.checked;
-	}
-	function togglePan(checkbox){
-		model.pan = checkbox.checked;
-	}
-	function changeBG(radio){
-		model.theme.backgroundImage = radio.value;
-	}
-
-	window.addEventListener('polymer-ready', function(){
-		PolymerExpressions.prototype.toPercent = function(value) { return value * 100; }
-		PolymerExpressions.prototype.toPercent.toModel = function(value) { return value / 100; }
-		document.getElementById('example').model = model;
-	});
-	</script>
-	<index-links page="mouse-touch.html"></index-links>
+	<zoom-controller></zoom-controller>
 </body>
 </html>

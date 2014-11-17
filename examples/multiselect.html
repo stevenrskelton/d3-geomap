@@ -5,14 +5,27 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="../../platform/platform.js"></script>
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="../d3-geomap.html">
 	<link rel="import" href="../../flag-icon/flag-icon.html">
-	<link rel="import" href="index-links.html">
+	<link rel="import" href="project-docs.html">
+	<style>
+		.params {
+			display: inline-block;
+			vertical-align: top;
+			border: 1px solid #333;
+			background-color: PowderBlue;
+			margin: 10px;
+			padding: 10px;
+			border-radius: 3px;
+			vertical-align: top;
+		}
+	</style>
 </head>
-<body unresolved>
+<body is="project-docs" unresolved>
 
-	<h2>Multi-select</h2>
+	<h1>Multi-select</h1>
+
 	Enable built in region selection.
 
 	<p>
@@ -26,9 +39,10 @@
 	</polymer-element>
 
 	<template id="example" bind>
-		<d3-geomap style="width:900px;" selected="{{selected}}" multiselect></d3-geomap>
-
-		<strong>Selected:</strong> <map-to-kv map="{{selected}}"></map-to-kv>
+		<div class="params">
+			<strong>Selected:</strong> <map-to-kv map="{{selected}}"></map-to-kv>
+		</div>
+		<d3-geomap selected="{{selected}}" multiselect></d3-geomap>
 	</template>
 
 	<p>
@@ -50,6 +64,5 @@
 		};
 	});
 	</script>
-	<index-links page="multiselect.html"></index-links>
 </body>
 </html>

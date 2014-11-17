@@ -5,14 +5,16 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="../../platform/platform.js"></script>
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="../d3-geomap.html">
+	<link rel="import" href="project-docs.html">
 </head>
-<body unresolved>
+<body is="project-docs" unresolved>
+
+	<h1>Marks</h1>
 
 	<template id="example" is="auto-binding">
 		<d3-geomap marks="{{marks}}"></d3-geomap>
-
 
 		<script>
 			var example = document.querySelector('#example');
@@ -21,7 +23,5 @@
 
 	</template>
 
-
-	
 </body>
 </html>
