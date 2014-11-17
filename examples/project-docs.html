@@ -1,0 +1,122 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../core-scaffold/core-scaffold.html">
+<link rel="import" href="../../core-menu/core-menu.html">
+<link rel="import" href="../../core-menu/core-submenu.html">
+<link rel="import" href="../../core-item/core-item.html">
+
+<polymer-element name="project-docs" extends="body" attributes="raw">
+<style shim-shadowdom>
+	#drawer core-toolbar {
+		background-color: #CFD8DC;
+		color: black;
+	}
+	table.docs {
+		border-collapse: collapse;
+		background-color: white;
+	}
+	table.docs td, 
+	table.docs th {
+		padding: 6px 13px;
+		border: 1px solid #DDD;
+	}
+	table.docs code {
+		padding: 0.2em 0px;
+		margin: 0px;
+		font-size: 85%;
+		background-color: rgba(0, 0, 0, 0.04);
+		border-radius: 3px;
+		font: 12px Consolas,"Liberation Mono",Menlo,Courier,monospace;
+	}
+</style>
+<template>
+	<core-scaffold>
+		<core-header-panel navigation flex mode="seamed">
+			<core-toolbar><div style="width:100%;margin-left:0;margin-right:16px;text-align:center;font-size:18px;"><strong>&lt;d3-geomap&gt;</strong><br>Documentation</div></core-toolbar>
+			<core-menu on-core-select="{{changePage}}" id="docmenu">
+				<core-item on-click="{{redirect}}" link="index.html" label="Getting Started" icon="help"></core-item>
+				<core-submenu on-click="{{redirect}}" on-tap="{{submenuclick}}" label="Features" icon="grade">
+					<core-item on-click="{{redirect}}" link="world.html" label="World Countries"></core-item>
+					<core-item on-click="{{redirect}}" link="usa.html" label="USA States"></core-item>
+					<core-item on-click="{{redirect}}" link="backgrounds.html" label="Backgrounds"></core-item>
+					<core-item on-click="{{redirect}}" link="marks.html" label="Marks"></core-item>
+					<core-item on-click="{{redirect}}" link="mouse-touch.html" label="Mouse Interations"></core-item>
+					<core-item on-click="{{redirect}}" link="multiselect.html" label="Multi-Select"></core-item>
+					<core-item on-click="{{redirect}}" link="responsive-size.html" label="Responsiveness"></core-item>
+				</core-submenu>
+				<core-item on-click="{{redirect}}" link="css.html" label="CSS Styling" icon="text-format"></core-item>
+				<core-submenu on-click="{{redirect}}" on-tap="{{submenuclick}}" label="Demos" icon="launch">
+					<core-item on-click="{{redirect}}" link="cia.html" label="CIA World Factbook"></core-item>
+					<core-item on-click="{{redirect}}" link="ebola.html" label="Ebola Outbreaks"></core-item>
+				</core-submenu>
+			</core-menu>
+		</core-header-panel>
+
+		<div tool flex><content select="h1"></content></div>
+		<div tool style="float:right">
+			<a href="https://github.com/stevenrskelton/d3-geomap" title="View on GitHub" target="_blank">
+				<img src="GitHub-Mark-64px.png" alt="GitHub" height="50">
+			</a>
+		</div>
+
+		<div class="content" style="margin:15px"><content></content></div>
+
+	</core-scaffold>
+</template>
+<script>
+	Polymer({
+		redirect: function(e,i,obj){
+			var link = obj.getAttribute('link');
+			if(link !== null) document.location.href = link;
+			else obj.toggle();
+		},
+		raw: false,
+		init: false,
+		changePage: function(e,obj){
+			var link = obj.item.getAttribute('link');
+			if(this.init && obj.isSelected && link){
+				var href = document.location.href;
+				href = href.substring(0, href.lastIndexOf('/examples/') + 10) + link;
+				if(href !== document.location.href) document.location.href= href;
+			}
+		},
+		submenuclick: function(e, obj){
+			var href = this.getHref();
+			if(!e.currentTarget.opened){
+				var f = this.trySelectItem(href);
+				[].forEach.call(e.currentTarget.children, f);
+			}
+			if([].every.call(this.$.docmenu.querySelectorAll('*'), function(element){ return !element.opened; })){
+				var p = e.currentTarget.parentElement;
+				p.selected = null;
+			}
+		},
+		ready: function(){
+			var href = this.getHref();
+			var f = this.trySelectItem(href);
+			[].forEach.call(this.$.docmenu.querySelectorAll('*'), f);
+			var self = this;
+			this.async(function(){ self.init = true; });
+		},
+		getHref: function(){
+			var href = document.location.href;
+			href = href.substring(href.lastIndexOf('/examples/') + 10);
+			if(href.length==0) href = 'index.html';
+			return href;
+		},
+		trySelectItem: function(href){
+			return function(element) {
+				if(element.getAttribute('link') === href){
+					while(element.nodeName === 'CORE-ITEM' || element.nodeName === 'CORE-SUBMENU'){
+						var p = element.parentElement;
+						for(var i=0;i<p.children.length;i++){
+							if(p.children[i]===element) p.selected = i;
+						}
+						if(!p.opened) p.opened = true;
+						element = p;
+					}
+				}
+			}
+		}
+	});
+</script>
+</polymer-element>
