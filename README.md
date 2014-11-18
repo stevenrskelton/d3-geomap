@@ -28,8 +28,6 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 > [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
 
-> [Responsiveness and Sizing](http://files.stevenskelton.ca/d3-geomap/examples/responsive-size.html)
-
 > [CSS Styling](http://files.stevenskelton.ca/d3-geomap/examples/css.html)
 
 
@@ -143,18 +141,6 @@ Template Variable		|	Description
 `{{hover.id}}`			|	[RegionID](#region-ids) of region
 `{{hover.name}}`		|	Name of region
 `{{hover.data}}`		|	Custom user data assigned to region (_empty by_default_)
-
-## Todo
-
-- disabled regions
-- different projections, see [D3 Geo Projections](https://github.com/mbostock/d3/wiki/Geo-Projections)
-- expose more DataMaps functionality (bubbles, arcs)
-- maybe: different maps (provinces/states, US districts, etc)
-
-## Bugs
-- __Internet Explorer is completely broken until it supports templates__
-- Zooming out will not center if areas outside of map become visible
-- mobile/touch support for pan, zoom is not good
 
 ## History
 

@@ -6,11 +6,140 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="../../polymer/polymer.html">
+	<link rel="import" href="../../prism-js/prism-js.html">
 	<link rel="import" href="project-docs.html">
 </head>
 <body unresolved is="project-docs">
 	<h1>Getting Started</h1>
 
-	TODO: Import Readme.md
+	<h2>Setup</h2>
+
+	<ol>
+		<li>
+			Add the library using the Javascript package manager <a href="http://bower.io/" alt="Bower: A package manager for the web">Bower</a>:
+			<prism-js language="css">bower install --save d3-geomap</prism-js>
+		</li>
+		<li>
+			Import Web Components' polyfill:
+			<prism-js language="markup">&lt;script src="bower_components/webcomponentsjs/webcomponents.min.js"&gt;&lt;/script&gt;</prism-js>
+		</li>
+		<li>
+			Import Custom Element:
+			<prism-js language="markup">&lt;link rel="import" href="bower_components/d3-geomap/d3-geomap.html"&gt;</prism-js>
+		</li>
+		<li>
+			<p>
+			Start using it!
+			</p>
+
+<prism-js language="markup">&lt;d3-geomap&gt;
+	&lt;!-- add templates here --&gt;
+&lt;/d3-geomap&gt;</prism-js>
+
+		</li>
+	</ol>
+
+	<h2>Element Attributes</h2>
+
+	<table class="docs">
+		<thead>
+			<tr>
+				<th>Attribute</th>
+				<th>Options</th>
+				<th>Default</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><code>data</code></td>
+				<td><em>object</em></td>
+				<td><code>null</code></td>
+				<td>keys are region id, values are arbitrary data to be associated with region</td>
+			</tr>
+			<tr>
+				<td><code>hover</code></td>
+				<td><em>object</em></td>
+				<td><code>null</code></td>
+				<td>Region hovered over by user pointer</td>
+			</tr>
+			<tr>
+				<td><code>map</code></td>
+				<td><em>string</em></td>
+				<td><code>world</code></td>
+				<td>Acceptable values are <code>world</code> and <code>usa</code>, will render world and USA maps respectivily.</td>
+			</tr>
+			<tr>
+				<td><code>multiselect</code></td>
+				<td><em>boolean</em></td>
+				<td><code>false</code></td>
+				<td>If true, <code>selected</code> is automatically populated by user clicks</td>
+			</tr>
+			<tr>
+				<td><code>theme</code></td>
+				<td><em>object</em></td>
+				<td><code>_default_</code></td>
+				<td>CSS styles to apply to map, <em>see [Themes]</em></td>
+			</tr>
+			<tr>
+				<td><code>selected</code></td>
+				<td><em>object</em></td>
+				<td><code>null</code></td>
+				<td>keys are region id, values are a CSS color.  Also supports an <code>array</code> if region ids where <code>defaultSelectedFill</code> color is assumed</td>
+			</tr>
+			<tr>
+				<td><code>projection</code></td>
+				<td><em>object</em></td>
+				<td><code>_default_</code></td>
+				<td>Center of map and size, <em>see [Projection]</em></td>
+			</tr>
+			<tr>
+				<td><code>pan</code></td>
+				<td><em>boolean</em></td>
+				<td><code>false</code></td>
+				<td>Enable mouse/touch pan on drag</td>
+			</tr>
+			<tr>
+				<td><code>zoom</code></td>
+				<td><em>boolean</em></td>
+				<td><code>false</code></td>
+				<td>Enable mouse scroll-wheel/touch pinch zoom</td>
+			</tr>
+			<tr>
+				<td><code>hovertemplate</code></td>
+				<td><em>function</em></td>
+				<td><code>null</code></td>
+				<td><em>See [hovertemplate]</em></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>Element Events</h2>
+
+	<table class="docs">
+		<thead>
+			<tr>
+				<th>Event</th>
+				<th>Value</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><code>clicked</code></td>
+				<td><code>object</code></td>
+				<td>Region clicked by user</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>Region IDs</h2>
+
+	<p>
+		Region IDs are used to uniquely identify regions, and are the keys to both the data and selected object maps.<br>
+		The world country map uses 3 letter ISO 3166-1 alpha-3 country codes,<br>
+		while the USA state map uses 2 letter ANSI standard INCITS 38:2009 codes.
+	</p>
+
 </body>
 </html>
