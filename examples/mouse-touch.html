@@ -26,10 +26,10 @@
 		}
 		zoom-controller::shadow .params tr td:nth-of-type(1) { font-weight: bold; }
 		zoom-controller::shadow .params tr td:nth-of-type(2) { text-align: right; }
-		zoom-controller::shadow .params tr td:nth-of-type(3) { text-align: center; width: 200px }
+		zoom-controller::shadow .params tr td:nth-of-type(3) { text-align: center; width: 100px }
 		zoom-controller::shadow .params tr td:nth-of-type(4) { text-align: right; }
-		zoom-controller::shadow .params tr td:nth-of-type(5) { text-align: right; width: 100px; }
-		zoom-controller::shadow .params input[type=text] { text-align: right; width: 50px; }
+		zoom-controller::shadow .params tr td:nth-of-type(5) { text-align: right; width: 50px; }
+		zoom-controller::shadow .params input[type=number] { text-align: right; width: 50px; }
 		zoom-controller::shadow .params td { vertical-align: top }
 	</style>
 </head>
@@ -50,18 +50,18 @@
 			<table class="params">
 				<tr style="height:40px"><td colspan="5"><h3>Pointer Control<h3></td></tr>
 				<tr>
-					<td>Pointer Zoom Increment</td>
+					<td>Zoom Increment</td>
 					<td>1%</td>
 					<td><input type="range" onfocus="this.select()" min="1" max="100" value="{{projection.zoomIncrement|toPercent}}" on-change="{{force}}"></td>
-					<td>100%</td><td><input type="text" value="{{projection.zoomIncrement|toPercent}}" on-change="{{force}}"></td>
+					<td>100%</td><td><input type="number" value="{{projection.zoomIncrement|toPercent}}" on-change="{{force}}"></td>
 				</tr>
 				<tr>
-					<td>Pointer Zoom</td>
-					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{zoom}}" on-change="{{toggleZoom}}"></td>
+					<td>Zoom</td>
+					<td colspan="4" style="text-align:left"><input type="checkbox" checked?="{{zoom}}" on-change="{{toggleZoom}}"></td>
 				</tr>
 				<tr>
-					<td>Pointer Pan</td>
-					<td colspan="4" style="text-align:center"><input type="checkbox" checked?="{{pan}}" on-change="{{togglePan}}"></td>
+					<td>Pan</td>
+					<td colspan="4" style="text-align:left"><input type="checkbox" checked?="{{pan}}" on-change="{{togglePan}}"></td>
 				</tr>
 				<!--<tr>
 					<td>Pointer Zoom</td>
@@ -80,25 +80,25 @@
 					<td>-180°</td>
 					<td><input type="range" onfocus="this.select()" min="-180" max="180" value="{{projection.x}}"></td>
 					<td>180°</td>
-					<td><input type="text" value="{{projection.x}}"></td>
+					<td><input type="number" value="{{projection.x}}"></td>
 				</tr>
 				<tr>
 					<td>Y</td>
 					<td>-90°</td>
 					<td><input type="range" onfocus="this.select()" min="-90" max="90" value="{{projection.y}}"></td>
-					<td>90°</td>	<td><input type="text" value="{{projection.y}}"></td>
+					<td>90°</td>	<td><input type="number" value="{{projection.y}}"></td>
 				</tr>
 				<tr>
 					<td>Scale</td>	<td>1x</td>
 					<td><input type="range" onfocus="this.select()" min="1" max="15" value="{{projection.scale}}"></td>
 					<td>15x</td>
-					<td><input type="text" value="{{projection.scale}}"></td>
+					<td><input type="number" value="{{projection.scale}}"></td>
 				</tr>
 				<tr style="height:60px;vertical-align:bottom;">
 					<td colspan="5"><h3>Theme</h3></td>
 				</tr>
 				<tr>
-					<td>backgroundImage</td>
+					<td>Background</td>
 					<td colspan="4" style="text-align:left">
 						<input disabled type="text" value="{{theme.backgroundImage}}" style="width:100%;text-align:left;"><br>
 						<input type="radio" name="bg" value="../SRTM30_Plus/srtm30plus.jpg" on-click="{{changeBG}}" checked?="{{theme.backgroundImage=='../SRTM30_Plus/srtm30plus.jpg'}}">SRTM30+ (170KB)<br>
