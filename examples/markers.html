@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>D3 SVG Geographic Map</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="../../webcomponentsjs/webcomponents.min.js"></script>
+	<link rel="import" href="../d3-geomap.html">
+	<link rel="import" href="project-docs.html">
+	<link rel="import" href="../../prism-js/prism-js.html">
+</head>
+<body is="project-docs" unresolved>
+
+	<h1>Markers and Bubbles</h1>
+
+	Markers can be rendered on the map, the most common is a bubble.<nbr>
+	Marker overlays are specified using the <code>markerHoverTemplate</code> attribute.
+
+<prism-js language="markup">&lt;d3-geomap markerHoverTemplate="markerhovertemplate"&gt;
+	&lt;fill name="MINE" color="rgba(255,215,0,0.95)"&gt;&lt;/fill&gt;
+
+	&lt;marker
+		name="Grasberg"
+		latitude="-4.0310"
+		longitude="137.0657"
+		radius="36"
+		fillkey="MINE"
+		reserves="106.231"
+		country="Indonesia"
+		image="Grasberg_mine.jpg"
+	&gt;&lt;/marker&gt;
+	&lt;!-- more markers --&gt;
+
+	&lt;template id="markerhovertemplate"&gt;
+		&lt;!-- HTML --&gt;
+	&lt;/template&gt;
+&lt;/d3-geomap&gt;</prism-js>
+
+	<h2>Demo</h2>
+
+	<template is="auto-binding">
+		<d3-geomap markerHoverTemplate="markerhovertemplate">
+			<fill name="MINE" color="rgba(255,215,0,0.95)"></fill>
+			<marker
+				name="Grasberg"
+				country="Indonesia"
+				radius="36"
+				reserves="106.231"
+				latitude="-4.0310"
+				longitude="137.0657"
+				fillkey="MINE"
+				image="Grasberg_mine.jpg"
+			></marker>
+			<marker
+				name="South Deep"
+				country="South Africa"
+				radius="27"
+				reserves="81.413"
+				latitude="-26.25"
+				longitude="27.40"
+				fillkey="MINE"
+				image="south_deep_ops.jpg"
+			></marker>
+			<marker
+				name="Lihir"
+				country="Papua New Guinea"
+				radius="21"
+				reserves="64.1"
+				latitude="-3.0730"
+				longitude="152.3830"
+				fillkey="MINE"
+				image="lihir-gold-mine.jpg"
+			></marker>
+			<marker
+				name="Muruntau"
+				country="Uzbekistan"
+				radius="17"
+				reserves="50"
+				latitude="41.2954"
+				longitude="64.3418"
+				fillkey="MINE"
+				image="Muruntov_mine.JPG"
+			></marker>
+			<marker
+				name="Olympiada"
+				country="Russia"
+				radius="16"
+				reserves="47.5"
+				latitude="56.01"
+				longitude="93.04"
+				fillkey="MINE"
+				image="olimpiada-gold-mine.jpg"
+			></marker>
+			<marker
+				name="Oyu Tolgoi"
+				country="Mongolia"
+				radius="15"
+				reserves="46.34"
+				latitude="43.003"
+				longitude="106.5035"
+				fillkey="MINE"
+				image="oyu-tolgoi-mine.jpg"
+			></marker>
+			<marker
+				name="Pueblo Viejo"
+				country="Dominican Republic"
+				radius="13"
+				reserves="40.085"
+				latitude="18.24"
+				longitude="-70.46"
+				fillkey="MINE"
+				image="pueblo-viejo-mine.jpg"
+			></marker>
+			<marker
+				name="Mponeng"
+				country="South Africa"
+				radius="13"
+				reserves="39.557"
+				latitude="-26.261"
+				longitude="27.255"
+				fillkey="MINE"
+				image="mponeng-mine-shaft.jpg"
+			></marker>
+			<marker
+				name="Cadia East"
+				country="Australia"
+				radius="13"
+				reserves="37.6"
+				latitude="-33.467"
+				longitude="148.993"
+				fillkey="MINE"
+				image="cadia-valley-operations.jpg"
+			></marker>
+			<marker
+				name="Obuasi"
+				country="Ghana"
+				radius="5"
+				reserves="29.83"
+				latitude="6.12"
+				longitude="-1.41"
+				fillkey="MINE"
+				image="obuasi-gold-mine.png"
+			></marker>
+
+			<template id="markerhovertemplate">
+				<div style="
+					border-radius: 3px;
+					background-color: #FFF;
+					box-shadow: 1px 1px 5px #CCC;
+					font-size: 12px;
+					border: 1px solid #CCC;
+					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				">
+					<table>
+						<tr>
+							<td rowspan="2">
+								<img src="goldmines/{{hover.data.image}}" style="width:100px;padding:4px 4px 0 4px;">
+							</td>
+							<td style="vertical-align:top;padding-right:10px;">
+								<strong>{{hover.name}}</strong><br>
+								{{hover.data.country}}<br>
+								<span style="text-decoration:underline">Gold Reserves</span>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: center;height:100%;font-weight:bold;font-size:larger">
+								{{hover.data.reserves}} M Oz
+							</td>
+						</tr>
+					</table>
+				</div>
+			</template>
+		</d3-geomap>
+	</template>
+
+	<h2><code>&lt;marker&gt;</code> Attributes</h2>
+
+	<table class="docs">
+		<thead>
+			<tr>
+				<th>Attribute</th>
+				<th>Options</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><code>name</code></td>
+				<td><em>string</em></td>
+				<td>Unique name of region.</td>
+			</tr>
+			<tr>
+				<td><code>latitude</code></td>
+				<td><em>float</em></td>
+				<td>Geographic coordinate that specifies the north-south position. Ranges from 90 at the north, 0 at the equator, and -90 at the south</td>
+			</tr>
+			<tr>
+				<td><code>longitude</code></td>
+				<td><em>float</em></td>
+				<td>Angle east or west from the Prime Meridian, ranging from 0° at the Prime Meridian to +180° eastward and −180° westward</td>
+			</tr>
+			<tr>
+				<td><code>radius</code></td>
+				<td><em>integer</em></td>
+				<td>Size in pixels for the radius of a bubble</td>
+			</tr>
+			<tr>
+				<td><code>fillkey</code></td>
+				<td><em>string</em></td>
+				<td>Named fill to use</td>
+			</tr>
+			<tr>
+				<td><code>*</code></td>
+				<td><em>any</em></td>
+				<td>User specified data fields to be accessible in <code>template</code></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

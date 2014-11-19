@@ -9,7 +9,7 @@ https://github.com/stevenrskelton/d3-geomap
 <script src="../topojson/topojson.js"></script>
 <script src="datamaps/datamaps.js"></script>
 
-<polymer-element name="d3-geomap" attributes="selected data hover clicked map theme multiselect projection pan zoom hovertemplate cover marks">
+<polymer-element name="d3-geomap" attributes="selected data hover hoverType clicked map theme multiselect projection pan zoom hoverTemplate markerHoverTemplate cover marks">
   <template>
 	<style>
 		:host { display: block; }
@@ -52,7 +52,20 @@ https://github.com/stevenrskelton/d3-geomap
 
 	<div id="container" style="position:relative;height:inherit;overflow:hidden;">
 		<div id="hoverDiv" style="z-index: 1001; position: absolute;" hidden?="{{!hover}}">
-			<template ref="{{hovertemplate}}" if="{{forceRefresh}}" bind>
+			<template ref="{{hoverTemplate}}" if="{{forceRefresh && hoverType=='region'}}" bind>
+				<div style="
+					padding: 4px;
+					border-radius: 1px;
+					background-color: #FFF;
+					box-shadow: 1px 1px 5px #CCC;
+					font-size: 12px;
+					border: 1px solid #CCC;
+					font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				">
+					<strong>{{hover.name}}</strong>
+				</div>
+			</template>
+			<template ref="{{markerHoverTemplate}}" if="{{forceRefresh && hoverType=='marker'}}" bind>
 				<div style="
 					padding: 4px;
 					border-radius: 1px;
@@ -157,7 +170,8 @@ https://github.com/stevenrskelton/d3-geomap
 		multiselect: false,
 		cover: false,
 		selected: {},
-		hovertemplate: null,
+		hoverTemplate: null,
+		markerHoverTemplate: null,
 		theme: {
 			defaultFill: defaultTheme.defaultFill,
 			defaultSelectedFill: defaultTheme.defaultSelectedFill,
@@ -184,12 +198,17 @@ https://github.com/stevenrskelton/d3-geomap
 			this.$.container.style.backgroundColor = this.theme.backgroundColor || defaultTheme.backgroundColor;
 			this.$.container.style.cursor = this.theme.cursor || defaultTheme.cursor;
 
+			//load fills
+			var fills = { defaultFill: self.theme.defaultFill };
+			[].forEach.call(this.children, function(element){
+				if(element.nodeName === 'FILL')
+					fills[element.getAttribute('name')] = element.getAttribute('color');
+			});
+
 			this.d3map = new Datamap({
 				element: this.$.container,
 				scope: self.map,
-				fills: {
-					defaultFill: self.theme.defaultFill
-				},
+				fills: fills,
 				data: self.data || {},
 				setProjection: projection,
 				geographyConfig: {
@@ -199,6 +218,7 @@ https://github.com/stevenrskelton/d3-geomap
 					borderColor: self.theme.borderColor || defaultTheme.borderColor,
 					popupTemplate: function(element, top, left) { //this function should just return a string
 						if(!self.hover || self.hover.id != element.id) self.hover = element;
+						self.hoverType = 'region';
 						self.$.hoverDiv.style.top = top + 'px';
 						self.$.hoverDiv.style.left = left + 'px';
 					},
@@ -209,22 +229,9 @@ https://github.com/stevenrskelton/d3-geomap
 					highlightBorderWidth: self.theme.highlightBorderWidth || defaultTheme.highlighBorderWidth
 				},
 				done: function(datamap) {
-					
-					//adding marks
-					datamap.svg.selectAll(".mark")
-						.data(self.marks)
-						.enter()
-						.append("image")
-						.attr('class','mark')
-						//.attr("r",4)
-						.attr('width', 20)
-						.attr('height', 20)
-						.attr("xlink:href", function(d) {
-							//use this royalty free icon when image is not defined
-							return d.image || 'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/location-24-20.png'
-						})
-						.attr("transform", function(d) {console.log(d); return "translate(" + datamap.projection([d.long,d.lat]) + ")";});
-					
+
+					self.drawMarkers(datamap);
+
 					var subunits = datamap.svg.selectAll('.datamaps-subunit');
 					subunits.on('click', function(geography) {
 						self.itemClicked(geography);
@@ -411,11 +418,10 @@ https://github.com/stevenrskelton/d3-geomap
 		},
 		mouseChanged: function(){
 			if(this.d3map){
-				this.d3map.pointer(null, {
-					zoomIncrement: this.projection.zoomIncrement || 0.1,
-					zoom: this.zoom,
-					pan: this.pan
-				});
+				if(this.projection.zoomIncrement===null) this.projection.zoomIncrement = 0.1;
+				this.projection.zoom = this.zoom;
+				this.projection.pan = this.pan;
+				this.d3map.pointer(null, this.projection);
 			}
 		},
 		projectionChanged: function(oldVal, newVal){
@@ -435,7 +441,11 @@ https://github.com/stevenrskelton/d3-geomap
 				});
 			}
 		},
-		hovertemplateChanged: function(a, t){
+		hoverTemplateChanged: function(a, t){
+			this.addTemplateIfNotInDocument(t);
+			this.forceRefresh++;
+		},
+		markerHoverTemplateChanged: function(a, t){
 			this.addTemplateIfNotInDocument(t);
 			this.forceRefresh++;
 		},
@@ -457,7 +467,48 @@ https://github.com/stevenrskelton/d3-geomap
 					});
 				}
 			}
+		},
+		drawMarkers: function(datamap){
+			var self = this;
+			var bubbles = [];
+			[].forEach.call(this.children, function(element){
+					if(element.nodeName === 'MARKER'){
+					var bubble = {
+						name: element.getAttribute('name'),
+						latitude: +element.getAttribute('latitude'),
+						longitude: +element.getAttribute('longitude'),
+						fillKey: element.getAttribute('fillkey')
+					};
+					[].forEach.call(element.attributes, function(attribute){
+						bubble[attribute.name] = attribute.value;
+					});
+					bubbles.push(bubble);
+				}
+			});
+			if(bubbles.length > 0) datamap.bubbles(bubbles, {
+				popupTemplate: function(element, top, left) { //this function should just return a string
+					if(!self.hover || self.hover.id != element.id) self.hover = element;
+					self.hoverType = 'marker';
+					self.$.hoverDiv.style.top = top + 'px';
+					self.$.hoverDiv.style.left = left + 'px';
+				}
+			});
+
+			//adding marks
+			datamap.svg.selectAll(".mark")
+				.data(self.marks)
+				.enter()
+				.append("image")
+				.attr('class','mark')
+				//.attr("r",4)
+				.attr('width', 20)
+				.attr('height', 20)
+				.attr("xlink:href", function(d) {
+					//use this royalty free icon when image is not defined
+					return d.image || 'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/location-24-20.png'
+				})
+				.attr("transform", function(d) {console.log(d); return "translate(" + datamap.projection([d.long,d.lat]) + ")";});
 		}
 	});
-  </script>    
+  </script>
 </polymer-element>

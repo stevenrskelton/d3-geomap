@@ -904,8 +904,9 @@ function handlePointer (layer, data, options) {
       var position = d3.mouse(this);
       //replaced code that renders a DIV with a call to template
       var transform = getSVGTransform(self.svg);
-      var id = element.data()[0].id;
-      var name = element.data()[0].properties.name
+      var elementData = element.data()[0];
+      var id = elementData.id;
+      var name = (elementData.properties ? elementData.properties.name : elementData.name);
       var data = JSON.parse(element.attr('data-info'));
       var top = ((position[1] + transform.y) * transform.scale + 30);
       var left = ((position[0] + transform.x) * transform.scale);
