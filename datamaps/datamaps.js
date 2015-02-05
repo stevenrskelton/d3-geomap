@@ -6,6 +6,7 @@
   
   var defaultOptions = {
     scope: 'world',
+    responsive: false,
     setProjection: setProjection,
     projection: 'equirectangular',
     dataType: 'json',
@@ -66,9 +67,16 @@
   function addContainer( element, height, width ) {
     this.svg = d3.select( element ).append('svg')
       .attr('width', width || element.offsetWidth)
+      .attr('data-width', width || element.offsetWidth)
       .attr('class', 'datamap')
       .attr('height', height || element.offsetHeight)
       .style('overflow', 'hidden'); // IE10+ doesn't respect height/width when map is zoomed in
+
+    if (this.options.responsive) {
+      d3.select(this.options.element).style({'position': 'relative', 'padding-bottom': '60%'});
+      d3.select(this.options.element).select('svg').style({'position': 'absolute', 'width': '100%', 'height': '100%'});
+      d3.select(this.options.element).select('svg').select('g').selectAll('path').style('vector-effect', 'non-scaling-stroke');
+    }
 
     return this.svg;
   }
@@ -490,59 +498,61 @@ function handlePointer (layer, data, options) {
 
     var cleanExit = true;
 
-    var oldCursor;
-    function mousedown(){
-      if(options.pan && d3.event.which == 1){
-        position = d3.mouse(this);
-        var transform = getSVGTransform(self.svg);
-        if(cleanExit) oldCursor = svg.node().style.cursor;
-        cleanExit = false;
-        svg.style('cursor','move');
+    if(options.pan){
+      var oldCursor;
+      function mousedown(){
+        if(d3.event.which == 1){
+          position = d3.mouse(this);
+          var transform = getSVGTransform(self.svg);
+          if(cleanExit) oldCursor = svg.node().style.cursor;
+          cleanExit = false;
+          svg.style('cursor','move');
 
-        function pointermove(){
-          var newPosition = d3.mouse(this);
-          //scale to keep movements proportional to mouse movements
-          var x = (newPosition[0] - (position[0]||0)) / transform.scale;
-          var y = (newPosition[1] - (position[1]||0)) / transform.scale;
-          setSVGTranslation(svg, transform.x + x, transform.y + y, options.panBounds);
+          function pointermove(){
+            var newPosition = d3.mouse(this);
+            //scale to keep movements proportional to mouse movements
+            var x = (newPosition[0] - (position[0]||0)) / transform.scale;
+            var y = (newPosition[1] - (position[1]||0)) / transform.scale;
+            setSVGTranslation(svg, transform.x + x, transform.y + y, options.panBounds);
+          }
+          svg.on('mousemove', pointermove);
+          svg.on('touchmove', pointermove);
+          svg.on('pointermove', pointermove);
+
+          //disable built in image dragging for firefox
+          svg.on('dragstart', function(e){ d3.event.preventDefault(); })
+
+          function pointerup() {
+            svg.style('cursor',oldCursor);
+            oldCursor = null;
+            cleanExit = true;
+            svg.on('mousemove', null);
+            svg.on('touchmove', null);
+            svg.on('pointermove', null);
+          }
+          svg.on('mouseup', pointerup);
+          svg.on('touchend', pointerup);
+          svg.on('pointerup', pointerup);
         }
-        svg.on('mousemove', pointermove);
-        svg.on('touchmove', pointermove);
-        svg.on('pointermove', pointermove);
-
-        //disable built in image dragging for firefox
-        svg.on('dragstart', function(e){ d3.event.preventDefault(); })
-
-        function pointerup() {
-          svg.style('cursor',oldCursor);
-          oldCursor = null;
-          cleanExit = true;
-          svg.on('mousemove', null);
-          svg.on('touchmove', null);
-          svg.on('pointermove', null);
-        }
-        svg.on('mouseup', pointerup);
-        svg.on('touchend', pointerup);
-        svg.on('pointerup', pointerup);
       }
-    }
-    svg.on('mousedown', mousedown);
-    svg.on('touchstart', mousedown);
-    svg.on('pointerdown', mousedown);
+      svg.on('mousedown', mousedown);
+      svg.on('touchstart', mousedown);
+      svg.on('pointerdown', mousedown);
 
-    function pointerout(){
-      svg.style('cursor',oldCursor);
-      oldCursor = null;
-      cleanExit = true;
-      svg.on('mousemove', null);
-      svg.on('touchmove', null);
-      svg.on('pointermove', null);
+      function pointerout(){
+        svg.style('cursor',oldCursor);
+        oldCursor = null;
+        cleanExit = true;
+        svg.on('mousemove', null);
+        svg.on('touchmove', null);
+        svg.on('pointermove', null);
+      }
+      svg.on('mouseout', pointerout);
+      svg.on('pointerout', pointerout);
     }
-    svg.on('mouseout', pointerout);
-    svg.on('pointerout', pointerout);
 
-    function mousewheel( datum ) {
-      if(options.zoom){
+    if(options.zoom){
+      function mousewheel( datum ) {
         var change = (d3.event.type == 'mousewheel') ? d3.event.wheelDelta : -d3.event.detail;
         if (change > 0){
           setSVGScale(self.svg, 1 + options.zoomIncrement);
@@ -551,9 +561,9 @@ function handlePointer (layer, data, options) {
         }
         d3.event.stopPropagation();
       };
-    };
-    svg.on('mousewheel', mousewheel);
-    svg.on('DOMMouseScroll', mousewheel);
+      svg.on('mousewheel', mousewheel);
+      svg.on('DOMMouseScroll', mousewheel);
+    }
   }
 
   function getSVGTransform(svg){
@@ -739,6 +749,21 @@ function handlePointer (layer, data, options) {
     }
 
     return this.draw();
+  }
+
+  // resize map
+  Datamap.prototype.resize = function () {
+
+    var self = this;
+    var options = self.options;
+
+    if (options.responsive) {
+      var prefix = '-webkit-transform' in document.body.style ? '-webkit-' : '-moz-transform' in document.body.style ? '-moz-' : '-ms-transform' in document.body.style ? '-ms-' : '',
+          newsize = options.element.clientWidth,
+          oldsize = d3.select( options.element).select('svg').attr('data-width');
+
+      d3.select(options.element).select('svg').selectAll('g').style(prefix + 'transform', 'scale(' + (newsize / oldsize) + ')');
+    }
   }
 
   // actually draw the features(states & countries)
