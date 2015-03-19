@@ -32,7 +32,6 @@
   },
   "devDependencies": {
     "core-elements": "Polymer/core-elements#>=0.5.1",
-    "prism-js": "prism-js#>=0.1.0",
     "sortable-table": "sortable-table#>=0.10.1",
     "flag-icon": "flag-icon#>=0.7.1",
     "transform-to-json": "transform-to-json#>=1.0.2"
