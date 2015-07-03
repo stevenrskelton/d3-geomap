@@ -26,12 +26,12 @@
     "map"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#>=0.5.1",
+    "polymer": "Polymer/polymer#^0.5.5",
     "d3": "d3#>=3.4.11",
     "topojson": "topojson#>=1.6.18"
   },
   "devDependencies": {
-    "core-elements": "Polymer/core-elements#>=0.5.1",
+    "core-elements": "Polymer/core-elements#^0.5.5",
     "sortable-table": "sortable-table#>=0.10.1",
     "flag-icon": "flag-icon#>=0.7.1",
     "transform-to-json": "transform-to-json#>=1.0.2"
