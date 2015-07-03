@@ -16,19 +16,19 @@ Maintained by [Steven Skelton](https://github.com/stevenrskelton)
 
 ## Live Demos
 
-> [World Countries Map](http://files.stevenskelton.ca/d3-geomap/examples/world.html)
+> [World Countries Map](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/world.html)
 
-> [USA State Map](http://files.stevenskelton.ca/d3-geomap/examples/usa.html)
+> [USA State Map](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/usa.html)
 
-> [Backgrounds](http://files.stevenskelton.ca/d3-geomap/examples/backgrounds.html)
+> [Backgrounds](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/backgrounds.html)
 
-> [Markers](http://files.stevenskelton.ca/d3-geomap/examples/markers.html)
+> [Markers](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/markers.html)
 
-> [Mouse and Touch Control](http://files.stevenskelton.ca/d3-geomap/examples/mouse-touch.html)
+> [Mouse and Touch Control](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/mouse-touch.html)
 
-> [Multi-Select](http://files.stevenskelton.ca/d3-geomap/examples/multiselect.html)
+> [Multi-Select](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/multiselect.html)
 
-> [CSS Styling](http://files.stevenskelton.ca/d3-geomap/examples/css.html)
+> [CSS Styling](http://files.stevenskelton.ca/d3-geomap/d3-geomap/examples/css.html)
 
 
 ## Usage
